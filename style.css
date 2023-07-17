@@ -1,0 +1,192 @@
+html {
+    margin: 2px;
+    padding: 2px; 
+}
+body {
+    background-color: white; 
+    font-family: Verdana, sans-serif; 
+    font-size: 9pt;
+}
+h1 {
+    font-size: 200%; 
+    color: navy; 
+    text-align: center;
+}
+h2 {
+    font-size: 160%;
+    color: navy;
+    padding-left: 5px;
+}
+h3 {
+    font-size: 140%;
+    color: navy;
+    padding-left: 5px;
+}
+h4 {
+    font-size: 120%;
+    color: navy;
+    padding-left: 5px;
+}
+p,ul,li,td {
+    color: black; 
+}
+a:link {
+    color: blue;
+    background-color: transparent; 
+    text-decoration: underline;
+}
+a:visited {
+    color: gray;
+}
+a:active {
+    color: yellow;
+    background-color: transparent;
+    text-decoration: underline;
+}
+a:hover {
+    color: red;
+    text-decoration: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 2px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: rgba(150, 212, 212, 0.4); 
+}
+
+tr:hover {background-color: #EEFFEE;}
+
+th:nth-child(even),td:nth-child(even) {
+  background-color: rgba(150, 212, 212, 0.4);
+}
+
+img {
+  float: right;
+}
+
+button {
+  background-color: lightyellow; 
+  color: navy;
+  text-align: center;
+}
+
+.input {
+  float: none;
+  background-color: black; 
+  color: white;
+  text-align: center;
+}
+
+#entete {
+  background-color: navy;
+  color: yellow;
+  border: 1px solid orange;
+  margin: 2px;
+  padding: 2px;
+   width:100%;
+}
+
+.menu {
+  background-color: navy;
+  color: yellow;
+  border: 2px solid orange;
+  margin: 2px;
+  padding: 2px;
+  width:100%;
+}
+
+.corpstexte {
+  background-color: #def;
+  color: black;
+  border: 1px solid black;
+  margin: 2px;
+  padding: 2px;
+  clear: right;
+  overflow: auto;
+  display: none;
+  width:100%;
+}
+
+.typebouee {
+  background-color: #ffffee;
+  color: black;
+  border: 1px solid black;
+  margin: 2px;
+  padding: 2px;
+  visibility: hidden;
+  width:100%;
+}
+
+.graphicLayout1 {
+  background-color: #ffffff;
+  color: black;
+  border: 1px solid black;
+  margin: 2px;
+  padding: 2px;
+  height: 700px;
+  clear: right;
+  float: left;
+  overflow: auto;
+}
+
+.canvas {
+    left:0;
+    position:relative;
+}
+ 
+ #canvas1 {
+  background-color: transparent;
+  opacity:0.75;
+  border: 0.5px solid grey;
+  left:0;
+  height: 500px;
+  width: 500px;
+  z-index: 2;
+  position: absolute;
+}
+  
+#canvas3 {
+  background-color: transparent;
+  opacity:1;
+  left:0;
+  height: 500px;
+  width: 500px;
+  z-index: 0;
+  position: absolute;
+}
+
+#canvas2 {
+  background-color: transparent;
+  opacity:1;
+  right: 0;
+  top: 0;
+  height: 150px;
+  width: 150px;
+  z-index: 1;
+  position: absolute;
+}
+
+.graphicLayout2 {
+  background-color: #eeffde;
+  color: black;
+  border: 1px solid black;
+  margin: 2px;
+  padding: 2px; 
+  height: 700px;
+  overflow: auto;
+}
+
+#osm-map {
+  height:600px;
+  width:100%;
+}
+

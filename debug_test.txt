@@ -1,0 +1,26 @@
+
+TWD�:90, TWD radian:0.000000
+
+TWD°:90, TWD radian:0.000000
+
+TWD°:180, TWD radian:-1.570796
+
+TWD°:270, TWD radian:-3.141593
+
+TWD°:355, TWD radian:-4.625123
+
+TWD°:360, TWD radian:-4.712389
+
+TWD°:360, TWD radian:0.000000
+
+TWD°:360, TWD radian:1.570796
+
+TWD°:270, TWD radian:3.141593
+
+TWD°:180, TWD radian:4.712389
+
+TWD°:90, TWD radian:0.000000
+
+TWD°:45, TWD radian:0.785398
+
+TWD°:60, TWD radian:0.523599
