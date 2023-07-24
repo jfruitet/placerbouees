@@ -10,9 +10,21 @@
   <title>Placement de Bouées RC</title>
   <!-- Feuilles de style -->
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
+<!-- link rel="stylesheet" href="map.css"  -->
+ 
+<!-- icones de Material --> 
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<!-- link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" -->
+<link rel="stylesheet" href="css/material-icons.css">
+<link rel="stylesheet" href="css/material.css">  
+
 <!-- Javascript ---------->
 <script src="js/myscript.js"></script>
+<script src="js/geo_utils.js"></script>
+
+
 
   <!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -35,12 +47,36 @@
   </div>
  </noscript>
  
- <div class="corpstexte">   
+ <div class="corpstexte">  
+  
   <h1>Placement de Bouées RC</h1>    
     <a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
     <p>Test de l'algorithme de placement de bouées dans une zone de navigation de voile radiocommandée.</p>
     <img src="images/parcours_regate-vrc_imagette.gif" alt="logo" style="max-width:100%;height:auto;">
-    <p>En cours...</p>
+    <p><b>Légende</b> <span class="material-symbols-outlined">anchor</span> Bouée ancrée 
+&nbsp;<span class="material-symbols-outlined">location_on</span> Bouée mobile
+&nbsp; <span class="material-symbols-outlined">moving</span> En déplacement
+&nbsp; <span class="material-symbols-outlined">person_pin_circle</span> Zone concurrents 
+&nbsp; <span class="material-symbols-outlined">houseboat</span> Ponton
+<br /><span class="material-symbols-outlined">flag</span> Vent enregistré
+&nbsp;<span class="material-symbols-outlined">air</span> Vent
+&nbsp; <span class="material-symbols-outlined">sailing</span>En course
+<br /><span class="material-symbols-outlined">north</span> Nord
+&nbsp; <span class="material-symbols-outlined">north_east</span> Nord-Est
+&nbsp; <span class="material-symbols-outlined">east</span> Est
+&nbsp; <span class="material-symbols-outlined">south_east</span> Sud-Est
+&nbsp; <span class="material-symbols-outlined">south</span>Sud 
+&nbsp; <span class="material-symbols-outlined">south_west</span> Sud-Ouest
+&nbsp; <span class="material-symbols-outlined">west</span> Ouest 
+&nbsp; <span class="material-symbols-outlined">north_west</span> Nord-Ouest
+<br /> <span class="material-symbols-outlined">archive</span>Données enregistrées
+&nbsp; <span class="material-symbols-outlined">podcasts</span> Connexion établie
+&nbsp; <span class="material-symbols-outlined">signal_disconnected</span> Connexion interrompue
+&nbsp; <span class="material-symbols-outlined">wifi</span> WiFi
+&nbsp; <span class="material-symbols-outlined">wifi_off</span> Wifi désactivé
+&nbsp; <span class="material-symbols-outlined">broadcast_on_home</span> Diffusion activée
+&nbsp; <span class="material-symbols-outlined">open_in_phone</span> Envoyé au mobile
+</p>
  </div>
 
 <div class="graphicLayout1">
@@ -63,22 +99,19 @@
  <button class="input" id="draw" onclick="drawAll();">Afficher</button>
  -->
  &nbsp; <button class="input" id="clear" onclick="ajouterBouees(); ">Bouées</button> 
+ &nbsp; <button class="input" id="bdelete" onclick="boueesDelete(); ">Retirer</button>
+ &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
  &nbsp; <button class="input" id="bvalider" onclick="boueesValider(); ">Valider</button>
-  &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
- &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; 
+ &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  &nbsp; &nbsp; &nbsp; 
 
 <div id="typebouee"> 
- <label for="babord">Bâbord</label> 
-<input type="radio" id="babord" name="franchissement" value="babord" />
- <label for="tribord">Tribord</label>
-<input type="radio" id="tribord" name="franchissement" value="tribord" checked>
- &nbsp; &nbsp;
-  <label for="depart">Départ</label> 
-<input type="checkbox" id="depart" name="depart" value="depart" checked />
-  <label for="arrivee">Arrivée</label>
-<input type="checkbox" id="arrivee" name="arrivee" value="arrivee" />
-  <label for="porte">Porte</label>
-<input type="checkbox" id="porte" name="porte" value="porte" />
+<input type="radio" id="babord" name="franchissement" value="babord" /><label for="babord">Bâbord</label> 
+<input type="radio" id="tribord" name="franchissement" value="tribord" checked><label for="tribord">Tribord</label>
+ &nbsp; &nbsp; 
+<input type="radio" id="depart" name="type" value="depart" checked /><label for="depart">Départ</label>  
+<input type="radio" id="arrivee" name="type" value="arrivee" /><label for="arrivee">Arrivée</label>  
+<input type="radio" id="porte" name="type" value="porte" /><label for="porte">Porte</label>
+<input type="radio" id="dogleg" name="type" value="dogleg" /><label for="dogleg">DogLeg</label>
 </div>  
 
  <div class="canvas">
@@ -86,26 +119,31 @@
  This text is displayed if your browser does not support HTML5 Canvas.
     </canvas> 
     <canvas id="canvas2"></canvas>
-    <canvas id="canvas3" onmousemove="drawReticule();"></canvas>    
+    <canvas id="canvas3" onmousemove="drawReticule(event);"></canvas>    
  </div>
 </div>
+
+<script src="js/le-plessis.js"></script>
+<script src="js/icones.js"></script>
+<script src="js/map.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/bouees.js"></script>
 
 
 <div class="graphicLayout2">
 
  <h3>Carte</h3>
- <p>Zone de navigation et bouées fixes...<br /></p>
- 
+ <p id="mapinfo">Zone de navigation et bouées fixes...</p>
+
 <div id="osm-map"></div> 
 </div>
     
-<script src="js/geo_utils.js"></script>
-<script src="js/le-plessis.js"></script>
-<script src="js/canvas.js"></script>
+
 <script>
+document.getElementById('bdelete').style.visibility="hidden";
 document.getElementById('breset').style.visibility="hidden";
-document.getElementById('typebouee').style.visibility="hidden";
 document.getElementById('bvalider').style.visibility="hidden";
+document.getElementById('typebouee').style.visibility="hidden";
 
 // Chargement de la carte
  window.onload = function(){
@@ -115,42 +153,7 @@ document.getElementById('bvalider').style.visibility="hidden";
         drawAll();
         // document.getElementById("rotation").style.display="inline";
         document.getElementById("transfert").style.visibility="hidden";
-        // Carte de l'étang du Plessis           
-        // Where you want to render the map.
-        var element = document.getElementById('osm-map');
-
-        // Height has to be set. You can do this in CSS too.
-        //element.style = 'height:600px;width:100%';
-
-        // Create Leaflet map on map element.
-        var map = L.map(element);
-
-        // Add OSM tile layer to the Leaflet map.
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            maxZoom: 20,
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-        // Target's GPS coordinates.
-        var target = L.latLng('47.24338', '-1.47402');
-
-        // Set map's center to target with zoom 18. Zoom Maximum 
-        map.setView(target, 18);
-
-        // Place a marker on the same location.
-        L.marker(target).addTo(map)
-            .bindPopup('Zone réservée au voiliers radiocommandés.<br><a href="https://arbl.fr/">ARBL</a>.')
-            //.openPopup()
-            ;
-        // Ajout de la zone de navigation
-        L.geoJSON(geojsonZoneNav).addTo(map);
-        // Ajout des balises
-        L.geoJSON(geojsonBalises).addTo(map);
-
-        L.geoJSON(geojsonBalises, {
-            onEachFeature: popupInfo
-            }).addTo(map);
-    
+        displayMap();
  }   
 </script>
 

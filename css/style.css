@@ -30,6 +30,12 @@ h4 {
 p,ul,li,td {
     color: black; 
 }
+
+.surligne {
+    color: black;
+    background-color: yellow; 
+}
+
 a:link {
     color: blue;
     background-color: transparent; 
@@ -86,6 +92,13 @@ button {
   text-align: center;
 }
 
+.map {
+  float: none;
+  background-color: #006600; 
+  color: white;
+  text-align: center;
+}
+
 #entete {
   background-color: navy;
   color: yellow;
@@ -119,7 +132,15 @@ button {
 .typebouee {
   background-color: #ffffee;
   color: black;
-  border: 1px solid black;
+  margin: 2px;
+  padding: 2px;
+  visibility: hidden;
+  width:100%;
+}
+
+.mapmenu {
+  background-color: #eeffde;
+  color: black;
   margin: 2px;
   padding: 2px;
   visibility: hidden;
@@ -145,7 +166,7 @@ button {
  
  #canvas1 {
   background-color: transparent;
-  opacity:0.75;
+  opacity:1.0;
   border: 0.5px solid grey;
   left:0;
   height: 500px;
