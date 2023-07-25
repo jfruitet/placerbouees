@@ -54,8 +54,8 @@
  <p> <span id="twddeg">TWD ° ?</span> &nbsp; &nbsp; &nbsp; <span id="twdrad"></span>,  
  &nbsp; &nbsp; &nbsp; Zoom:<span id="zoomv">?</span>
  <br />
- &nbsp; &nbsp; &nbsp; X:<span id="coordx">?</span> Y:<span id="coordy">?</span>
- &nbsp; &nbsp; &nbsp; Lon:<span id="lon">?</span> Lat:<span id="lat">?</span> 
+ X:<span id="coordx">?</span> Y:<span id="coordy">?</span>
+ &nbsp; &nbsp; &nbsp; Lon:<span id="lon">?</span> Lat:<span id="lat">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance">...</span> 
  </p>
 <b>TWD</b> : <input type="text" id="twd" name="twd" size="5">  
  <button class="input" onclick="setTWD(); affiche_fleche_TWD();">Soumettre</button>
@@ -82,10 +82,10 @@
 </div>  
 
  <div class="canvas">
-    <canvas id="canvas1" onmousedown="show_coords(event); screen2earth();">  
+    <canvas id="canvas1" width="500" height="500" onmousedown="show_coords(event); screen2earth();">  
  This text is displayed if your browser does not support HTML5 Canvas.
     </canvas> 
-    <canvas id="canvas3" onmousemove="drawReticule(event);"></canvas>  
+    <canvas id="canvas3" width="500" height="500" onmousemove="drawReticule(event);"></canvas>  
     <div  class="info">
         <canvas id="canvas2" width="150" height="150"></canvas>
         <canvas id="canvas4" width="150" height="250"></canvas> 

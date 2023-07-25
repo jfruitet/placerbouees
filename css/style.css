@@ -181,23 +181,11 @@ button {
   opacity:1;
   border: 0.5px solid grey;
   left:0;
-  height: 500px;
-  width: 500px;
   z-index: 2;
   position: absolute;
 }
   
-#canvas3 {
-  background-color: transparent;
-  opacity:1;
-  left:0;
-  height: 500px;
-  width: 500px;
-  z-index: 3;
-  position: absolute;
-}
-
-#canvas2 {
+  #canvas2 {
   background-color: transparent;
   opacity:1;
   right: 0;
@@ -206,6 +194,14 @@ button {
   position: absolute;
 }
 
+
+#canvas3 {
+  background-color: transparent;
+  opacity:1;
+  left:0;
+  z-index: 3;
+  position: absolute;
+}
 
 #canvas4 {
   background-color:  transparent;

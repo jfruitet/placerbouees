@@ -422,6 +422,15 @@ function draw_scale(){
     ctx.translate(-canvasw/2, -canvash/2-20);   
 */
 
+//---------------------------
+function fromScreenToGeoCoord(x, y){
+    // Ne pas oublier d'appliquer les transformations inverses (-T') ° TR ° (-T)
+    var cx=setCanvasX(x,y,twd_radian); 
+    var cy=setCanvasY(x,y,twd_radian);
+    return {"lon":get_lon_Xecran(cx),"lat":get_lat_Yecran(cy)};
+}
+
+
 function setCanvasX(x,y, radian){
 // On applique une translation -T1, une rotation inverse R  et une translation T2   
     var x0 = x - canvasw/2; // Translation T1

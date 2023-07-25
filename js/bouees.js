@@ -2,6 +2,9 @@
 // Version sans rectangle ni calcul d'intériorité
 // Trace des Bouees
 
+let distance = 0;
+let gcoord1={"lon":0.0, "lat":0.0};
+let gcoord2={"lon":0.0, "lat":0.0};
  
 /**********************************************
  *  Réticule
@@ -34,14 +37,33 @@ function show_reticule(x,y) {
 // Appelée qd la souris passe sur le canvas 3
 async function myMoveFunction(){
 // Affiche un réticule quand la souris se déplace
-  xcoord= event.offsetX;
-  ycoord= event.offsetY;
-  var x = setMouseXPos(xcoord);
-  var y = setMouseYPos(ycoord);
-  show_reticule(x,y);
-  document.getElementById("coordx").innerHTML = x;
-  document.getElementById("coordy").innerHTML = y;
-  await sleep(200);
+    xcoord= event.offsetX;
+    ycoord= event.offsetY;
+    var x = setMouseXPos(xcoord);
+    var y = setMouseYPos(ycoord);
+    show_reticule(x,y);
+    document.getElementById("coordx").innerHTML = x;
+    document.getElementById("coordy").innerHTML = y;
+    // Calcul de distance
+    gcoord2=fromScreenToGeoCoord(x, y);
+    document.getElementById("lon").innerHTML = Math.round(gcoord2.lon * 100000) / 100000;
+    document.getElementById("lat").innerHTML = Math.round(gcoord2.lat * 100000) / 100000;    
+    
+    if ((bouees !== undefined) && (bouees.length>=1)){
+        gcoord1=fromScreenToGeoCoord(bouees[bouees.length-1].x, bouees[bouees.length-1].y);
+
+        // On applique la formule de la distance selon un grand cercle 
+        // seulement valable à l'équateur pour les longitudes sur la projection Mercator
+        // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  Math.PI / 180
+        // Sur les latitudes la formule 
+        var anglelon=gcoord2.lon-gcoord1.lon;
+        var anglelat=gcoord2.lat-gcoord1.lat;
+        var dlon =  6378137 * anglelon * Math.PI / 180.0;
+        var dlat =  6356752 * anglelat * Math.PI / 180.0;  
+        distance = Math.sqrt(dlon * dlon + dlat * dlat);
+        document.getElementById("distance").innerHTML = "<span class=\"surligne\">"+ (Math.round(distance * 100000) / 100000) +"</span>";
+    }    
+    await sleep(200);
     // Let's go reticule  
 }
 
@@ -130,7 +152,7 @@ function drawReticule(event){
     document.getElementById("consigne").innerHTML="Double clic pour placer une à une les bouées en travers du vent. "; 
 
     removeEvent(canvas3,"click");
-    removeEvent(canvas3,"mouseover");
+    // removeEvent(canvas3,"mouseover");
     addEvent(canvas3,"dblclick",nouvelleBouee());  
 }
 
@@ -256,7 +278,7 @@ function drawBouees(){
 // Trace une petitebouee circulaire
 function drawBoueeColor(x,y,color,flag,idfixe,contxt){   
     contxt.fillStyle=color;
-    contxt.strokeStyle = color;
+    contxt.strokeStyle = "black";
     contxt.beginPath();
     if (idfixe>=0){
         contxt.rect(x-3, y-3, 6, 6);   
@@ -266,8 +288,10 @@ function drawBoueeColor(x,y,color,flag,idfixe,contxt){
         contxt.ellipse(x, y, 4, 3, 0, 0, Math.PI * 2);
         contxt.fill();   
     }
+    ctx3.stroke();
+    
     contxt.strokeStyle = flag;
-    contxt.beginPath();
+    contxt.beginPath();   
     contxt.moveTo(x, y-3);
     contxt.lineTo(x, y-13);
     contxt.lineTo(x+5, y-10);
