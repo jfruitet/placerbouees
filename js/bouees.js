@@ -85,19 +85,49 @@ function drawReticule(event){
     document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";
 }
 
-// arrête la saisie des bouées
+// affiche les bouées sur la map, arrête la saisie des bouées
  function boueesValider(){
+    if ((bouees !== undefined) && (bouees.length>0)){
+        var x;
+        var y;
+        for (var index=0; index<bouees.length; index++){
+            // Passer dans le repère d'origine du canvas
+            cx=setCanvasX(bouees[index].x,bouees[index].y,twd_radian); // Passer dans le repère d'origine du canvas
+            cy=setCanvasY(bouees[index].x,bouees[index].y,twd_radian);
+            bouees[index].cx=cx;
+            bouees[index].cy=cy;           
+            bouees[index].lon=get_lon_Xecran(cx); // Attention de ne pas inverser l'ordre des changements de repères
+            bouees[index].lat=get_lat_Yecran(cy);
+            // console.debug("Index:"+index+" X:"+x+" Y:"+y+"  --> Cx:"+cx+" Cy:"+cy+"  --> Lon:"+bouees[index].lon+" Lat:"+bouees[index].lat+"\n");
+        }    
+        
+        // Imprimer les coordonnées
+        /* 
+        for (var index=0; index<bouees.length; index++){
+            let txt = '{';
+            for (let elt in bouees[index]) {
+                txt += '"'+elt+'":"'+bouees[index][elt] +'", '; 
+            }
+
+            console.debug(txt+"}\n");
+        }     
+        */
+    }
+ 
+    addBouees2Map();
     saisir_encore=false;
-    drawBouees();
-    document.getElementById("transfert").style.visibility="visible"; 
+    //drawBouees();
     removeEvent(canvas3,"dblclick");
-    removeEvent(canvas3,"mouseover");      
+    removeEvent(canvas3,"mouseover");  
+    drawAll();    
+    document.getElementById("transfert").style.visibility="visible";
+    document.getElementById("consigne").innerHTML="Tranférez les bouées vers le serveur. ";      
  }
 
 
  // saisie des bouées du parcours (MAXBOUEES au plus)
  function placerBouees(){
-    document.getElementById("consigne").innerHTML="Double clic pour placer une à une les bouées dans le rectangle (20 au plus). "; 
+    document.getElementById("consigne").innerHTML="Double clic pour placer une à une les bouées en travers du vent. "; 
 
     removeEvent(canvas3,"click");
     removeEvent(canvas3,"mouseover");

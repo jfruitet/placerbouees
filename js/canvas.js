@@ -37,6 +37,10 @@ const canvas3 = document.getElementById("canvas3");
 const ctx3 = canvas3.getContext("2d");
 canvas3.height=canvas3.width;
 
+const canvas4 = document.getElementById("canvas4");
+const ctx4 = canvas4.getContext("2d");
+
+
 // Secteurs du vent 
 function secteur_vent(twd){
     return windsector[Math.round ((twd % 360) / 22.5)];
@@ -51,15 +55,15 @@ function affiche_fleche_TWD(){
     // console.debug("twd "+twd);
     if (((twd>90) && (twd<=135)) || ((twd>225) && (twd<=270))){
         // console.debug("twd bas "+twd);
-        ctx2.translate(canvas2.width/2, 120);        
+        ctx2.translate(canvas2.width/2, 100);        
     }
     else if ((twd>135) && (twd<=225)){
         // console.debug("twd bas "+twd);
-        ctx2.translate(canvas2.width/2, 140);        
+        ctx2.translate(canvas2.width/2, 120);        
     }
     else{
         // console.debug("twd haut "+twd);
-        ctx2.translate(canvas2.width/2, 100);
+        ctx2.translate(canvas2.width/2, 90);
     }
     ctx2.rotate(Math.PI-twd_radian); // PI - twd_radian parce que j'ai construit la flèche horizontalement !:>((
     //ctx2.rotate(-twd_radian);
@@ -76,16 +80,70 @@ function affiche_fleche_TWD(){
     ctx2.stroke();  
     ctx2.restore(); // restore to original stat  
 
-    ctx2.font = "32pt Calibri";
+    ctx2.font = "16pt Calibri";
     ctx2.fillStyle = "green";
     var msg="TWD "+ twd +"° : "+secteur_vent(twd);
-    ctx2.fillText(msg, 10, 50); 
-    ctx2.font = "20pt Calibri";
+    ctx2.fillText(msg, 2, 24); 
+    ctx2.font = "12pt Calibri";
     ctx2.fillStyle = "black";
-    ctx2.fillText("Direction d'où vient le vent", 5, 80);     
-    // ctx.drawImage(canvas2, canvas.width-100, 5);
+    ctx2.fillText("Direction d'où vient", 2, 48); 
+    ctx2.fillText("le vent", 2, 64);     
+}
+
+//
+function drawPetiteBalise(x, y, fillcolor, flag){
+    // Corps de la balise mobile        
+ 
+    ctx4.beginPath();
+    ctx4.fillStyle = fillcolor; 
+    ctx4.strokeStyle = "black"; 
+    ctx4.ellipse(x, y, 8, 6, 0, 0, Math.PI * 2);
+    ctx4.fill();  
+    ctx4.stroke(); 
     
-    // ctx2.resetTransform();
+    // Drapeau de la balise mobile 
+    ctx4.beginPath();    
+    ctx4.strokeStyle = flag;
+    ctx4.fillStyle = flag;
+    ctx4.moveTo(x, y-6);
+    ctx4.lineTo(x, y-24);
+    ctx4.lineTo(x+10, y-18);
+    ctx4.lineTo(x, y-16);
+    ctx4.fill();
+    ctx4.lineWidth = 2;
+    ctx4.stroke();       
+}
+
+// Affiche la légende dans le canvas4
+function affiche_legende(){
+    ctx4.clearRect(0, 0, canvas4.width, canvas4.height);
+    ctx4.font = "16pt Calibri";
+    ctx4.beginPath(); 
+    ctx4.fillStyle = "#0033aa";
+    ctx4.fillText("Légende", 2, 24); 
+    ctx4.font = "12pt Calibri";
+    ctx4.fillText("Bouées fixes", 2, 48); 
+    ctx4.fillText("Balises mobiles", 2, 94); 
+    ctx4.font = "10pt Calibri";
+    ctx4.fillText("Départ tribord", 2, 130); 
+    ctx4.fillText("Arrivée bâbord", 2, 166);
+    ctx4.fillText("Dog leg tribord", 2, 204);
+    ctx4.fillText("Porte bâbord", 2, 240);
+       
+    ctx4.stroke(); 
+    // dot     
+    var x=120;
+    var y=42;  
+    ctx4.beginPath();    
+    ctx4.fillStyle = "#0033aa";   
+    ctx4.ellipse(x, y, 6, 6, 0, 0, Math.PI * 2);
+    ctx4.fill();   
+    ctx4.stroke();  
+    
+    drawPetiteBalise(120, 128, "yellow", "green");
+    drawPetiteBalise(120, 164, "blue", "red");
+    drawPetiteBalise(120, 202, "black", "green");
+    drawPetiteBalise(120, 238, "purple", "red");    
 }
 
 /******************************************
@@ -578,36 +636,9 @@ function draw_Ecran_balises(context){
 
 // ----------------------- 
 function tranfertBouees(){
-     if ((bouees !== undefined) && (bouees.length>0)){
-        var x;
-        var y;
-        for (var index=0; index<bouees.length; index++){
-            // Passer dans le repère d'origine du canvas
-            cx=setCanvasX(bouees[index].x,bouees[index].y,twd_radian); // Passer dans le repère d'origine du canvas
-            cy=setCanvasY(bouees[index].x,bouees[index].y,twd_radian);
-            bouees[index].cx=cx;
-            bouees[index].cy=cy;           
-            bouees[index].lon=get_lon_Xecran(cx); // Attention de ne pas inverser l'ordre des changements de repères
-            bouees[index].lat=get_lat_Yecran(cy);
-            // console.debug("Index:"+index+" X:"+x+" Y:"+y+"  --> Cx:"+cx+" Cy:"+cy+"  --> Lon:"+bouees[index].lon+" Lat:"+bouees[index].lat+"\n");
-        }    
-        
-        // Imprimer les coordonnées
-        /* 
-        for (var index=0; index<bouees.length; index++){
-            let txt = '{';
-            for (let elt in bouees[index]) {
-                txt += '"'+elt+'":"'+bouees[index][elt] +'", '; 
-            }
-
-            console.debug(txt+"}\n");
-        }     
-        */
-     }
- 
-     drawAll();
-     addBouees2Map();
-     sauveBouees(); // Envoie la liste des buoées vers le serveur PHP pour le stokage
+    sauveBouees(); // Envoie la liste des bouées vers le serveur PHP pour le stokage
+    document.getElementById("transfert").style.visibility="hidden";
+    document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. "; 
  }
  
 // Dessine toutes les bouées placées sur le canvas1
