@@ -13,7 +13,7 @@ let zoom=1;   // Valeur multiplicative appliquée au calcul des positions sur le
 let zoomfactor=1; // compteur pour l'affichage 
 
 let cw = 500; // Dimension du viewport affecté au canvas ; un event.offsetX vaut entre 0 et cw 
-let ch = 500; 
+let ch = 500; // A vrai dire on devrait pouvoir identifier ça à la largeur du canvas
 
 const windsector=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","N"];
 
@@ -41,7 +41,7 @@ function afficheTexte() {
   }
 }
 
-
+// Non utilisé car aucun formulaire dans cette page
 function myFunction() {
   document.getElementById("frm1").submit();
 }

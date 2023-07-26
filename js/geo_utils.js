@@ -1,6 +1,20 @@
 // JavaScript Document
 // Fonctions de conversion de données d'un repère à l'autre
 
+
+let coeff_homothetie = 1.0; // On va garder les figures du canvas homothétiques de celles de la carte
+let delta_lonlat=360.0; // Maximum de taille de la fenêtre géographique
+
+let lonmin=180; // en degré géographique
+let latmin=90;
+let lonmax=-179; // en degré géographique EST ligne de changement d'horaire
+let latmax=-90;
+
+let poly_xecran = []; // Tableau des coordonnées écran de la zone de navigation
+let poly_yecran = [];
+let ligne_xecran = []; // Tableau des coordonnées écran de la ligne de déambulation des concurrents
+let ligne_yecran = [];
+
 // angle est exprimé en degré dans le repère géographique
 // retourne la valeur de l'angle en radian dans le repère orthonormé direct
 function get_radian_repere_direct(angle){
@@ -14,20 +28,9 @@ function get_degre_repere_geographique(angle){
 }
 
 
-
 // Conversion d'un polygone géographique en polygone écran
 // Il faut calculer le rectangle englobant puis se ramener par homothétie et translation aux coordonnées du canvas
 // Attention : le repère géographique croit d'EST en OUEST (longitude) et de SUD au Nord (latitude)
-
-let lonmin=180; // en degré géographique
-let latmin=90;
-let lonmax=-179; // en degré géographique EST ligne de changement d'horaire
-let latmax=-90;
-
-let poly_xecran = []; // Tableau des coordonnées écran de la zone de navigation
-let poly_yecran = [];
-let ligne_xecran = []; // Tableau des coordonnées écran de la ligne de déambulation des concurrents
-let ligne_yecran = [];
 
 
 // Boite englobante de la zone de navigation + zone d'évolution des concurrents
@@ -43,7 +46,7 @@ function rectangle_englobantZN(){
     }
   }
   else {
-    console.debug("geo_utils.js :: 48 :: zonenav_lat vide\n");  
+    console.debug("geo_utils.js :: ligne 46 :: zonenav_lat vide\n");  
   }  
   if ((zoneconc_lat != undefined) && (zoneconc_lat.length>0)){
     index=0;
@@ -56,12 +59,23 @@ function rectangle_englobantZN(){
     }
   }  
   else{
-    console.debug("geo_utils.js :: 61 :: zoneconc_lat vide\n");
+    console.debug("geo_utils.js :: ligne 59 :: zoneconc_lat vide\n");
   }    
   
   delta_lat=latmax-latmin; 
   delta_lon=lonmax-lonmin;
- 
+  //console.debug("geo_utils.js :: ligne 66 :: delta_lon:"+delta_lon+" delta_lat:"+delta_lat+"\n");
+    
+  if (delta_lat<delta_lon){
+        coeff_homothetie = cw / delta_lon;
+        delta_lonlat=delta_lon;
+  }
+  else{
+        coeff_homothetie = ch / delta_lat;
+        delta_lonlat=delta_lat;  
+  }
+//console.debug("geo_utils.js :: ligne 72 :: coeff_homothetie:"+coeff_homothetie+" delta_lonlat:"+delta_lonlat+"\n");
+        
   milieu_lon= (lonmin + lonmax) /2.0;
   milieu_lat= (latmin + latmax) /2.0;
   pointsup={"lon":lonmax, "lat":latmax};

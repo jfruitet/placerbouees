@@ -114,8 +114,8 @@ function drawReticule(event){
         var y;
         for (var index=0; index<bouees.length; index++){
             // Passer dans le repère d'origine du canvas
-            cx=setCanvasX(bouees[index].x,bouees[index].y,twd_radian); // Passer dans le repère d'origine du canvas
-            cy=setCanvasY(bouees[index].x,bouees[index].y,twd_radian);
+            cx=setSaisieToDisplayX(bouees[index].x,bouees[index].y,twd_radian); // Passer dans le repère d'origine du canvas
+            cy=setSaisieToDisplayY(bouees[index].x,bouees[index].y,twd_radian);
             bouees[index].cx=cx;
             bouees[index].cy=cy;           
             bouees[index].lon=get_lon_Xecran(cx); // Attention de ne pas inverser l'ordre des changements de repères
@@ -157,17 +157,19 @@ function drawReticule(event){
 }
 
 // Recherche une bouée fixe dans le voisinage
-// En entrée une coordonnée écran dans le repère lié au canvas 
-function getBoueeFixeDansVoisinage(cx, cy){
+// En entrée une coordonnée dans le repère lié au canvas d'affichage
+// Correspondant à un changement de coordonnées lon, lat vers x,y du canvas d'affichage
+function getBoueeFixeDansVoisinage(x, y){
     var index=0; 
-    //console.debug ("getBoueeFixe :: X:"+cx+" Y:"+cy);
+    //console.debug ("getBoueeFixe :: X:"+x+" Y:"+y);
     while (index<balisesEcran.length){
         var xfixe= balisesEcran[index].x;
         var yfixe= balisesEcran[index].y;
         //console.debug ("Balise Index="+index+" Xfixe:"+xfixe+" Yfixe:"+yfixe);
-        if ((cx>=xfixe-3) && (cx<=xfixe+3) && (cy>=yfixe-2) && (cy<=yfixe+2)){
+        
+        if ((x>=xfixe-4) && (x<=xfixe+4) && (y>=yfixe-4) && (y<=yfixe+4)){
             //console.debug ("Got ONE Index="+index+" -> ID:"+balisesEcran[index].id+" "+balisesEcran[index].name+"\n");      
-            return balisesEcran[index].id;
+            return index;
         }  
         index++;
     }        
@@ -199,40 +201,48 @@ function nouvelleBouee() {
         ycoord= event.offsetY;
         var x = setMouseXPos(xcoord);  // retourne une position dans le canvas en fonction de la position de la souris 
         var y = setMouseYPos(ycoord);   // c'est une homothétie xcoord * (canvasw) / cw);
-        // Ne pas oublier d'appliquer les transformations inverses (-T') ° TR ° (-T)
-        var cx=setCanvasX(x,y,twd_radian); 
-        var cy=setCanvasY(x,y,twd_radian);
+        // Ne pas oublier d'appliquer les transformations inverses (-T') ° TR ° (-T) pour récupérer les coordonnées réelle de l'objet
+        // dans le repère d'affichage
+        var cx=setSaisieToDisplayX(x,y,twd_radian); 
+        var cy=setSaisieToDisplayY(x,y,twd_radian);
         
-        //console.debug("nouvelleBouee() :: N°:"+nbouees+" MX:"+xcoord+" MY:"+ycoord+" Zoom:"+zoom+" X:"+x+" Y:"+y+"\n");
+        //console.debug("nouvelleBouee() :: N°:"+nbouees+" MouseX:"+xcoord+" MouseY:"+ycoord+" Zoom:"+zoom+"\nCoordonnées écran de saisie X:"+x+" Y:"+y+"\n");
+        //console.debug("Coordonnées écran d'affichage CX:"+cx+" CY:"+cy+"\n");
+        
         // Verifier si on pointe la souris sur une bouée fixe
-        var idfixe=getBoueeFixeDansVoisinage(cx, cy);
+        idfixe=-1;
+        var indexfixe=getBoueeFixeDansVoisinage(cx, cy);
+        if (indexfixe>-1) { // C'est une bouée fixe ; on amène ses coordonnées dans le canvas de saisie
+            //console.debug ("Bouée fixe dans le canvas d'affichage\nX:"+balisesEcran[indexfixe].x+" Y:"+balisesEcran[indexfixe].y+" idfixe:"+balisesEcran[indexfixe].id+"\n");
+            // On repasse dans le repère de saisie par transformation Display --> Saisie
+            var newx = setDisplayToSaisieX(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+            var newy = setDisplayToSaisieY(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+            idfixe=balisesEcran[indexfixe].id;
+            cx=balisesEcran[indexfixe].x;
+            cy=balisesEcran[indexfixe].y;
+            x=newx;
+            y=newy;
+            //console.debug ("Bouée fixe dans le canvas de saisie X:"+x+" Y:"+y+" cx:"+cx+" cy:"+cy+" idfixe:"+idfixe+"\n");            
+        }
 
             if (fdepart)
             { 
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"red"}';
                 bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"yellow","flag":flag,"idfixe":idfixe};
-                drawBoueeColor(x,y,"yellow",flag,idfixe, ctx3); 
                 compteur++;
             }
             else if (farrivee)
             { 
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green"}';
                 bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"blue","flag":flag,"idfixe":idfixe};
-                drawBoueeColor(x,y,"blue",flag,idfixe, ctx3); 
                 compteur++;
             }
             else if (fporte)
             {
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green"}';
                 bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"purple","flag":flag,"idfixe":idfixe};
-                drawBoueeColor(x,y,"purple",flag,idfixe, ctx3); 
                 compteur++;
             } 
             else // fdogleg
             {
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green"}';
                 bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"black","flag":flag,"idfixe":idfixe};
-                drawBoueeColor(x,y,"black",flag,idfixe, ctx3);  
             }
             nbouees++; 
             //console.debug ("AVANT :: Compteur :"+ compteur+ " Flag :"+flag+" Tribord:"+ftribord+" Bâbord:"+fbabord+" Depart:"+fdepart+" Arrivée:"+farrivee+" Porte:"+fporte+" Dogleg:"+fdogleg+" idfixe:"+idfixe+"\n");
@@ -262,47 +272,47 @@ function nouvelleBouee() {
         boueesValider();       
     }
     // Dessiner les bouées... 
-    drawBouees(ctx3);
+    drawBouees();
 }
 
 // Dessine toutes les bouées placées sur le canvas
 function drawBouees(){
     if ((bouees !== undefined) && (bouees.length>0)){
         for (var index=0; index<bouees.length; index++){
-            drawBoueeColor(bouees[index].x,bouees[index].y,bouees[index].color,bouees[index].flag,bouees[index].idfixe,ctx3);
+            drawBoueeColor(bouees[index].x,bouees[index].y,bouees[index].color,bouees[index].flag,bouees[index].idfixe);
         }    
     }
 }
  
  
-// Trace une petitebouee circulaire
-function drawBoueeColor(x,y,color,flag,idfixe,contxt){   
-    contxt.fillStyle=color;
-    contxt.strokeStyle = "black";
-    contxt.beginPath();
+// Trace une un rectangle ou une ellipse surmontée d'un drapeau
+function drawBoueeColor(x,y,color,flag,idfixe){   
+    ctx3.fillStyle=color;
+    ctx3.strokeStyle = "black";
+    ctx3.beginPath();
     if (idfixe>=0){
-        contxt.rect(x-4, y-4, 8, 8);   
-        contxt.fill(); 
-        contxt.stroke();
+        ctx3.rect(x-4, y-4, 8, 8);   
+        ctx3.fill(); 
+        ctx3.stroke();
     }
     else{
-        contxt.ellipse(x, y, 5, 4, 0, 0, Math.PI * 2);
-        contxt.fill();   
-        contxt.stroke();     
+        ctx3.ellipse(x, y, 5, 4, 0, 0, Math.PI * 2);
+        ctx3.fill();   
+        ctx3.stroke();     
     }   
         
     // Flag
-    contxt.beginPath();
-    contxt.strokeStyle = flag;
-    contxt.beginPath();   
-    contxt.moveTo(x, y-4); 
-    contxt.lineTo(x, y-13);
-    contxt.lineTo(x+5, y-10);
-    contxt.lineTo(x, y-7);            
-    contxt.fillStyle=flag;
-    contxt.fill();
-    contxt.lineWidth = 0.5;
-    contxt.stroke();      
+    ctx3.beginPath();
+    ctx3.strokeStyle = flag;
+    ctx3.beginPath();   
+    ctx3.moveTo(x, y-4); 
+    ctx3.lineTo(x, y-13);
+    ctx3.lineTo(x+5, y-10);
+    ctx3.lineTo(x, y-7);            
+    ctx3.fillStyle=flag;
+    ctx3.fill();
+    ctx3.lineWidth = 0.5;
+    ctx3.stroke();      
 }
 
  // Trace une petite cible
@@ -327,7 +337,6 @@ function drawCible(x,y){
     ctx.save(); // save state  
     ctx.transform(1, 0, 0, 1, 0, 0); // Réinitialisation : scale h, skew h, skew v, scale v, move h, move v  
     ctx.translate(canvasw/2, canvash/2+20);// T1
-    //ctx.rotate(Math.PI - twd_radian + Math.PI / 2.0); // PI - twd_radian parce que j'ai construit la flèche horizontalement !:>((
     ctx.rotate(twd_radian - Math.PI / 2);   // R
     ctx.translate(-canvasw/2, -canvash/2-20);       // T2
     init_ecran_ZN(); 

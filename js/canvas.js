@@ -27,7 +27,7 @@ const ctx = canvas.getContext("2d");
 canvas.height=canvas.width;
 canvasw=canvas.width;
 canvash=canvas.height;
-// console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
+//console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
 
 const canvas2 = document.getElementById("canvas2");
 const ctx2 = canvas2.getContext("2d");
@@ -235,6 +235,8 @@ function get_Yecran_lat(lat){
     return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax)); 
 }    
 
+
+
 // et hop!
 function set_X_Ecran_polygone_navigation(){
   var index=0;
@@ -288,8 +290,11 @@ function drawAll(){
     draw_scale(); 
     draw_Ecran_poly_navigation(); 
     draw_Ecran_ligne_concurrents();   
+    if ((bouees !== undefined) && (bouees.length>0)){
+        drawBoueesContexte1();
+    }
+
     draw_Ecran_bouees_fixes(ctx);
-    drawBoueesContexte1();
     
 }
 
@@ -354,13 +359,14 @@ function get_lat_Yecran(y){
     return (y * (latmin-latmax) / (zoom * canvash) + latmax);
 } 
 
+
+
 // Conversion des coordonnées d'un point cliqué à la souris en coordonnées géographiques lon, lat 
 // cw et ch sont définis plus haut
 // Ne pas oublier que la définition sur l'écran est très grossière par rapport
 // à la grille du monde réel 
 
 function get_lon_MouseXecran(x){
-    //lon = lonmin -  x  * (lonmin-lonmax) / cw
     return (lonmin -  x  * (lonmin-lonmax) / cw);
 } 
  
@@ -426,37 +432,84 @@ function draw_scale(){
     ctx.restore(); // restore to original stat 
 }
 
-
+ 
 /** **************************************************
- * Transfert des positions des bouées vers la carte  *
+ * Transfert des positions des bouées de l'écran d'affichage 
+ * vers l'écran de saisie
  * ***************************************************/
-// Repasser dans le repère du canavas d'origine avant la rotation + Translation
+
+// Passer du canavas d'affichage vers le canvas de saisie
 /*
-    ctx.translate(canvasw/2, canvash/2+20); 
-    ctx.rotate(twd_radian - Math.PI / 2); --> Math.PI / 2 - twd_radian
-    M = [sin(𝛼)   -cos(𝛼)] 
-       [cos(𝛼)  sin(𝛼)]
-    ctx.translate(-canvasw/2, -canvash/2-20);   
+    ctx.translate(-canvasw/2, -(canvash/2+20);// T1
+    ctx.rotate(Math.PI / 2 - twd_radian);   // R
+    ctx.translate(canvasw/2, canvash/2-20);       // T2
+
+
+    M = [sin(𝛼)   cos(𝛼)] 
+       [-cos(𝛼)  sin(𝛼)]
+       
+    ctx.translate(+canvasw/2, (canvash/2+20);   
 */
 
 //---------------------------
-function fromScreenToGeoCoord(x, y){
-    // Ne pas oublier d'appliquer les transformations inverses (-T') ° TR ° (-T)
-    var cx=setCanvasX(x,y,twd_radian); 
-    var cy=setCanvasY(x,y,twd_radian);
+function fromDisplayToSaisieCoordLonLat(x, y){
+    // Appliquer les transformations inverses (T) ° (-R) ° (-T)
+    var cx=setDisplayToSaisieX(x,y,twd_radian); 
+    var cy=setDisplayToSaisieY(x,y,twd_radian);
     return {"lon":get_lon_Xecran(cx),"lat":get_lat_Yecran(cy)};
 }
 
 
-function setCanvasX(x,y, radian){
-// On applique une translation -T1, une rotation inverse R  et une translation T2   
+function setDisplayToSaisieX(x,y, radian){
+// On applique une translation T1, une rotation R  de (twd_radian - PI/2) et une translation -T1   
+    var x0 = x - canvasw/2; // Translation T1
+    var y0 = y - (canvash/2+20);
+    var x1 = x0*Math.sin(radian) + y0*Math.cos(radian); // Rotation R
+    return Math.round(x1) + canvasw/2; // Translation -T1
+}
+ 
+
+function setDisplayToSaisieY(x,y,radian){
+// On applique une translation T, une rotation R  et une translation -T   
+    var x0 = x - canvasw/2; // Translation T1
+    var y0 = y - (canvash/2+20);
+    var y1 = - x0 * Math.cos(radian) + y0*Math.sin(radian);
+    return Math.round(y1) + (canvash/2+20);
+}
+ 
+
+
+/** **************************************************
+ * Transfert des positions des bouées vers la carte  *
+ * ***************************************************/
+
+// Repasser dans le repère du canavas d'origine 
+/*
+    ctx.translate(-canvasw/2, -canvash/2+20); 
+    ctx.rotate(twd_radian - Math.PI / 2); --> Math.PI / 2 - twd_radian
+    M = [sin(𝛼)   -cos(𝛼)] 
+       [cos(𝛼)  sin(𝛼)]
+    ctx.translate(canvasw/2, canvash/2-20);   
+*/
+
+//---------------------------
+function fromScreenToGeoCoord(x, y){
+    // Ne pas oublier d'appliquer les transformations inverses (-T) ° TR ° (T)
+    var cx=setSaisieToDisplayX(x,y,twd_radian); 
+    var cy=setSaisieToDisplayY(x,y,twd_radian);
+    return {"lon":get_lon_Xecran(cx),"lat":get_lat_Yecran(cy)};
+}
+
+
+function setSaisieToDisplayX(x,y, radian){
+// On applique une translation -T, une rotation inverse R  et une translation T   
     var x0 = x - canvasw/2; // Translation T1
     var y0 = y - (canvash/2+20);
     var x1 = x0*Math.sin(radian) - y0*Math.cos(radian); // Rotation R
     return Math.round(x1) + canvasw/2; // Translation T2
 }
  
-function setCanvasY(x,y,radian){
+function setSaisieToDisplayY(x,y,radian){
 // On applique une translation T1, une rotation R  et une translation T2   
     var x0 = x - canvasw/2; // Translation T1
     var y0 = y - (canvash/2+20);
@@ -465,118 +518,7 @@ function setCanvasY(x,y,radian){
 }
  
  
- /**
-  *     Affiche les balises sur le canvas
-  */
-   
-   /* Quelques sources pour guider la programmation
-const txt = '{"name":"John", "age":30, "city":"New York"}'
-const obj = JSON.parse(txt);
-document.getElementById("demo").innerHTML = obj.name + ", " + obj.age;
-</script>
-
-let userStr = '{"name":"Sammy","email":"sammy@example.com","plan":"Pro"}';
-
-let userObj = JSON.parse(userStr, (key, value) => {
-  if (typeof value === 'string') {
-    return value.toUpperCase();
-  }
-  return value;
-});
-
-console.log(userObj);
-
-
-let userObj = {
-  name: "Sammy",
-  email: "sammy@example.com",
-  plan: "Pro"
-};
-
-let userStr = JSON.stringify(userObj);
-
-console.log(userStr);
-
-let userObj = {
-  name: "Sammy",
-  email: "sammy@example.com",
-  plan: "Pro"
-};
-
-function replacer(key, value) {
-  console.log(typeof value);
-  if (key === 'email') {
-    return undefined;
-  }
-  return value;
-}
-
-let userStrReplacer = JSON.stringify(userObj, replacer);
-
-console.log(userStrReplacer);
-
-// GET avec fetch()
-fetch('https://api.chucknorris.io/jokes/random?category=dev')
-  .then(res => res.json()) // the .json() method parses the JSON response into a JS object literal
-  .then(data => console.log(data));
-
-
-const newJoke = {
-  categories: ['dev'],
-  value: "Chuck Norris's keyboard is made up entirely of Cmd keys because Chuck Norris is always in command."
-};
-
-console.log(JSON.stringify(newJoke)); // {"categories":["dev"],"value":"Chuck Norris's keyboard is made up entirely of Cmd keys because Chuck Norris is always in command."}
-
-console.log(typeof JSON.stringify(newJoke)); // string
-
-*/
-
-/*
-// POST avec fetch()
-const newJoke = {
-  categories: ['dev'],
-  value: "Chuck Norris's keyboard is made up entirely of Cmd keys because Chuck Norris is always in command."
-};
-
-fetch('https://api.chucknorris.io/jokes/submit', { // fake API endpoint
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(newJoke), // turn the JS object literal into a JSON string
-})
-  .then(res => res.json())
-  .then(data => console.log(data))
-  .catch(err => {
-    console.error(err);
-  });
-*/  
-
-
-/*
-  "features": [
-    {
-      "geometry": {
-        "coordinates": [
-          -1.4745214367317487,
-          47.24395956032603
-        ],
-        "type": "Point"
-      },
-      "id": 1,
-      "properties": {
-        "description": "Ponton réservé au radio modélisme",
-        "title": "Ponton",
-        "name": "Ponton",
-        "color": "#000000",
-        "fillColor": "#000000",
-        "fillOpacity": 0.8
-      },
-      "type": "Feature"
-    },
-
-*/
+ 
 
 // ----------------------- 
 function sauveBouees(){
@@ -644,9 +586,9 @@ function init_ecran_bouees(){
 // Trace une petitebouee circulaire dans le contexte passé en argument
 // Les coordonnées fournies sont celle du contexte du canvas1 
 function drawBoueesFixesColor(x,y,fillcolor,context){   
-    context.fillStyle=fillcolor;
-    context.stokeStyle="black";
     context.beginPath();
+    context.fillStyle=fillcolor;
+    context.strokeStyle = "black";
     context.ellipse(x, y, 4, 4, 0, 0, Math.PI * 2);
     context.fill();
     context.stroke();       
@@ -669,11 +611,44 @@ function tranfertBouees(){
     document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. "; 
  }
  
+ 
+ // Trace une petitebouee circulaire
+ //--------------------------------
+function drawBoueeColorContexte1(x,y,color,flag,idfixe){   
+    ctx.fillStyle=color;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    if (idfixe>=0){
+        ctx.rect(x-4, y-4, 8, 8);   
+        ctx.fill(); 
+        ctx.stroke();
+    }
+    else{
+        ctx.ellipse(x, y, 5, 4, 0, 0, Math.PI * 2);
+        ctx.fill();   
+        ctx.stroke();     
+    }   
+        
+    // Flag
+    ctx.beginPath();
+    ctx.strokeStyle = flag;
+    ctx.beginPath();   
+    ctx.moveTo(x, y-4); 
+    ctx.lineTo(x, y-13);
+    ctx.lineTo(x+5, y-10);
+    ctx.lineTo(x, y-7);            
+    ctx.fillStyle=flag;
+    ctx.fill();
+    ctx.lineWidth = 0.5;
+    ctx.stroke();      
+}
+
 // Dessine toutes les bouées placées sur le canvas1
+// ----------------------------------
 function drawBoueesContexte1(){
     if ((bouees !== undefined) && (bouees.length>0)){
         for (var index=0; index<bouees.length; index++){
-            drawBoueeColor(bouees[index].cx,bouees[index].cy,bouees[index].color,bouees[index].flag,bouees[index].idfixe,ctx);
+            drawBoueeColorContexte1(bouees[index].cx,bouees[index].cy,bouees[index].color,bouees[index].flag,bouees[index].idfixe);                
         }    
     }
 }
