@@ -281,21 +281,24 @@ function drawBoueeColor(x,y,color,flag,idfixe,contxt){
     contxt.strokeStyle = "black";
     contxt.beginPath();
     if (idfixe>=0){
-        contxt.rect(x-3, y-3, 6, 6);   
+        contxt.rect(x-4, y-4, 8, 8);   
         contxt.fill(); 
+        contxt.stroke();
     }
     else{
-        contxt.ellipse(x, y, 4, 3, 0, 0, Math.PI * 2);
+        contxt.ellipse(x, y, 5, 4, 0, 0, Math.PI * 2);
         contxt.fill();   
-    }
-    ctx3.stroke();
-    
+        contxt.stroke();     
+    }   
+        
+    // Flag
+    contxt.beginPath();
     contxt.strokeStyle = flag;
     contxt.beginPath();   
-    contxt.moveTo(x, y-3);
+    contxt.moveTo(x, y-4); 
     contxt.lineTo(x, y-13);
     contxt.lineTo(x+5, y-10);
-    contxt.lineTo(x, y-7);
+    contxt.lineTo(x, y-7);            
     contxt.fillStyle=flag;
     contxt.fill();
     contxt.lineWidth = 0.5;
@@ -328,10 +331,10 @@ function drawCible(x,y){
     ctx.rotate(twd_radian - Math.PI / 2);   // R
     ctx.translate(-canvasw/2, -canvash/2-20);       // T2
     init_ecran_ZN(); 
-    init_ecran_Balises();
+    init_ecran_bouees();
     draw_Ecran_poly_navigation(); 
     draw_Ecran_ligne_concurrents();   
-    draw_Ecran_balises(ctx);
+    draw_Ecran_bouees_fixes(ctx);
     ctx.restore(); // restore to original stat    
     // Affiche la flèche des vents     
     ctx.beginPath();

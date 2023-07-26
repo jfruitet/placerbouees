@@ -186,12 +186,12 @@ button {
 }
   
   #canvas2 {
-  background-color: transparent;
-  opacity:1;
-  right: 0;
-  top: 0px;
-  z-index: 4;
-  position: absolute;
+    background-color: transparent;
+    opacity:1;
+    right: 0;
+    top: 0px;
+    z-index: 4;
+    position: absolute;
 }
 
 
