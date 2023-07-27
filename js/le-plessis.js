@@ -65,7 +65,7 @@ const geojsonZoneNav={"type":"FeatureCollection",
       "properties": {
         "name":"ZN",      
         "title": "ZN",
-        "description": "Zone de navigation réservée à l'ARBL",
+        "description": "Zone de navigation réservée au modélisme naval",
         "infobox": true,
         "fill": "#ffffee",
         "fill-opacity": "0.2",

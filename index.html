@@ -15,7 +15,7 @@
  
 <!-- Javascript ---------->
 <script src="js/myscript.js"></script>
-<script src="js/geo_utils.js"></script>
+<script src="js/geo_utils.js"></script> 
 
 <!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -25,7 +25,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
-     
+
 </head>
 <body>
  <div id="entete"></div>
@@ -39,12 +39,17 @@
  </noscript>
  
  <div class="corpstexte">  
-  
+ <!-- div id="gauche" --> 
   <h1>Placement de Bouées RC</h1>    
     <a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
     <p>Placement manuel de balises mobiles autonomes dans une zone de navigation de voile radiocommandée.</p>
+    <p>Sites disponibles :  &nbsp; <button id="liste" onclick="listePlansEau(); ">Lister</button> </p>
+    <ul id="mylist"></ul>
+ <!-- /div  -->
+ <div id="droite">
     <img src="images/parcours_regate-vrc_imagette.gif" alt="logo" style="max-width:100%;height:auto;">
  </div>
+</div>
 
 <div class="graphicLayout1">
 
@@ -69,7 +74,7 @@
  &nbsp; <button class="input" id="bdelete" onclick="boueesDelete(); ">Retirer</button>
  &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
  &nbsp; <button class="input" id="bvalider" onclick="boueesValider(); ">Valider</button>
- &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  &nbsp; &nbsp; &nbsp; 
+ &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  
 
 <div id="typebouee"> 
 <input type="radio" id="babord" name="franchissement" value="babord" /><label for="babord">Bâbord</label> 
@@ -98,7 +103,7 @@
 <script src="js/map.js"></script>
 <script src="js/canvas.js"></script>
 <script src="js/bouees.js" ></script>
-
+<script src="js/ajax.js"></script>  
 
 <div class="graphicLayout2">
 
@@ -110,6 +115,7 @@
     
 
 <script>
+document.getElementById('mylist').style.visibility="hidden";
 document.getElementById('bdelete').style.visibility="hidden";
 document.getElementById('breset').style.visibility="hidden";
 document.getElementById('bvalider').style.visibility="hidden";

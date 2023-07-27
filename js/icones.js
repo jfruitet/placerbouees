@@ -7,7 +7,7 @@ var myIconOptionsBlack = {
     iconUrl: 'images/marker-icon-black.png',
     shadowUrl: '',
     iconSize: [16, 24],
-    iconAnchor: [4,8],
+    iconAnchor: [6,24],  // centré horizontalement, au top verticalement
     popupAnchor: [0, -16],
     shadowSize: [16, 24],
     shadowAnchor: [4,8] 
@@ -27,7 +27,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-navy.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             //shadowSize: [16, 24],
@@ -38,7 +38,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-blue.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -49,7 +49,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-blue_tribord.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -60,7 +60,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-blue_babord.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -71,7 +71,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-green.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -82,7 +82,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-vertclair.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -93,7 +93,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-yellow.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -104,7 +104,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-yellow_tribord.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -115,7 +115,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-yellow_babord.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -126,7 +126,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-orange.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -137,7 +137,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-pink.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -148,7 +148,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-red.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -159,7 +159,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-purple.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -171,7 +171,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-purple_tribord.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],
@@ -182,7 +182,7 @@ var myMarkerOptionsBlack = {
             className:"", // pour éviter le cadre
             iconUrl: 'images/marker-icon-purple_babord.png',
             iconSize: [16, 24],
-            iconAnchor: [4,8],
+            iconAnchor: [6,24],  // centré horizontalement, au top verticalement 
             popupAnchor: [0, -16],
             shadowUrl: '',
             shadowSize: [16, 24],

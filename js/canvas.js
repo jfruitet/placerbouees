@@ -4,7 +4,7 @@
 
 // let rectangle = {x1:0,y1:0,x2:0,y2:0}; // le rectangle à tracer
 // let oksaisierectangle=0; // état de la saisie 0: aucun sommet; 1 : un sommet; 2: deux sommets 
-let url_serveur = 'http://localhost/placerbouees/php/sauverbouees.php'; 
+
 
 let saisir_encore=true; 
 let compteur=0; // Compteur de bouées, permet de d'activer babord ou tribord automatiquement 
@@ -519,58 +519,6 @@ function setSaisieToDisplayY(x,y,radian){
  
  
  
-
-// ----------------------- 
-function sauveBouees(){
-// envoie le fichier JSON des bouées au serveur pour l'enregistrer dans le dossier ./data
-    var myjsonboueesfixes='"boueesfixes":[';
-    var myjson='"boueesmobiles":[';
-    var compteurfixe=0;
-    var compteurmobile=0;
-    if ((bouees !== undefined) && (bouees.length>0)){
-        for (var index=0; index<bouees.length; index++){
-            if (bouees[index].idfixe>=0){
-                if (compteurfixe==0){ 
-                    myjsonboueesfixes = myjsonboueesfixes+'{"id":'+bouees[index].idfixe+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';                
-                }
-                else{
-                    myjsonboueesfixes = myjsonboueesfixes+',{"id":'+bouees[index].idfixe+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';
-                } 
-                compteurfixe++;
-            }
-            else{
-                if (compteurmobile==0){ 
-                   myjson = myjson+'{"id":'+compteurmobile+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';                
-                }
-                else{
-                    myjson = myjson+',{"id":'+compteurmobile+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';                  
-                }             
-                compteurmobile++;
-            }
-        } 
-        myjsonboueesfixes = myjsonboueesfixes+']';           
-        myjson = myjson+']';
-        
-        var mystrjson='{"twd":'+twd+',' + myjsonboueesfixes+','+myjson+'}';
-        // console.debug("Bouees Fixes JSON:"+myjsonboueesfixes+"\n");
-        // console.debug("Bouees JSON:"+myjson+"\n");
-        // console.debug("JSON:"+mystrjson+"\n");
-         
-        // POST avec fetch()
-        fetch(url_serveur, { // let url_serveur = 'http://localhost/placerbouees/php/sauverbouees.php';
-        method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            //body: JSON.stringify(myjson), // turn the JS object literal into a JSON string
-            body: mystrjson, // mystrjson est déjà une chaîne
-        })
-        .then(response => response.text())  // Le retour est aussi une chaîne
-        .then(response => console.debug(response))
-        .catch(error => console.debug("Erreur : "+error));
-    }
- }
-
 // -----------------------
 function init_ecran_bouees(){  
     // Les balises sont des bouées fixes stockées dans une table du script le-plessis.js
@@ -608,7 +556,17 @@ function draw_Ecran_bouees_fixes(context){
 function tranfertBouees(){
     sauveBouees(); // Envoie la liste des bouées vers le serveur PHP pour le stokage
     document.getElementById("transfert").style.visibility="hidden";
-    document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. "; 
+    document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. ";
+    document.getElementById("liste").style.visibility="true";
+    document.getElementById("consigne").innerHTML="Liste des plans d'eau : cliquez sur <b>\"Liste\"</b>. "; 
+     
+ }
+
+// ----------------------- 
+function listePlansEau(){
+    getListePlansEau(); // Récupère la liste des plans d'eau
+    document.getElementById("transfert").style.visibility="hidden";
+    document.getElementById("consigne").innerHTML="Liste des plans d'eau : cliquez sur <b>\"Liste\"</b>. "; 
  }
  
  
