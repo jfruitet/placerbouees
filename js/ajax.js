@@ -6,24 +6,25 @@ let myList = document.getElementById('mylist');
 let url_serveur = 'http://localhost/placerbouees/php/'; 
 let url_data = 'http://localhost/placerbouees/data/';
 
+
 let myInitGet = {
     method: "GET",
     headers: {"Content-Type": "application/json;charset=UTF-8"},
-    referrer: "about:client", //ou "" (pas de réferant) ou une url de l'origine
+    referrer: "about:client", //ou "" (pas de rÃ©ferant) ou une url de l'origine
     referrerPolicy: "no-referrer-when-downgrade", //ou no-referrer, origin, same-origin...
     mode: "cors", //ou same-origin, no-cors
     credentials: "same-origin", //ou omit, include
     cache: "default", //ou no-store, reload, no-cache, force-cache, ou only-if-cached
     redirect: "follow", //ou manual ou error
     integrity: "", //ou un hash comme "sha256-abcdef1234567890"
-    keepalive: false, //ou true pour que la requête survive à la page
-    signal: undefined //ou AbortController pour annuler la requête            
+    keepalive: false, //ou true pour que la requÃªte survive Ã  la page
+    signal: undefined //ou AbortController pour annuler la requÃªte            
 };
 
 
 
 /*************************************************
- * Charger les caractéristiques d'un plan d'eau
+ * Charger les caractÃ©ristiques d'un plan d'eau
  * **********************************************/
 /* 
 const zonenav_lat=[];
@@ -41,7 +42,7 @@ const zoneconc_lat = [];
 
 // ----------------------- 
 function sauveBouees(){
-// envoie le fichier JSON des bouées au serveur pour l'enregistrer dans le dossier ./data
+// envoie le fichier JSON des bouÃ©es au serveur pour l'enregistrer dans le dossier ./data
     var myjsonboueesfixes='"boueesfixes":[';
     var myjson='"boueesmobiles":[';
     var compteurfixe=0;
@@ -91,18 +92,18 @@ function ajax_post(url, mystrjson){
                 'Content-Type': 'application/json;charset=UTF-8',
             },
             //body: JSON.stringify(myjson), // turn the JS object literal into a JSON string
-            body: mystrjson, // mystrjson est déjà une chaîne
-            referrer: "about:client", //ou "" (pas de réferanr) ou une url de l'origine
+            body: mystrjson, // mystrjson est dÃ©jÃ  une chaÃ®ne
+            referrer: "about:client", //ou "" (pas de rÃ©feranr) ou une url de l'origine
             referrerPolicy: "no-referrer-when-downgrade", //ou no-referrer, origin, same-origin...
             mode: "cors", //ou same-origin, no-cors
             credentials: "same-origin", //ou omit, include
             cache: "default", //ou no-store, reload, no-cache, force-cache, ou only-if-cached
             redirect: "follow", //ou manual ou error
             integrity: "", //ou un hash comme "sha256-abcdef1234567890"
-            keepalive: false, //ou true pour que la requête survive à la page
-            signal: undefined //ou AbortController pour annuler la requête            
+            keepalive: false, //ou true pour que la requÃªte survive Ã  la page
+            signal: undefined //ou AbortController pour annuler la requÃªte            
         })
-        .then(response => response.text())  // Le retour est aussi une chaîne
+        .then(response => response.json())  // Le retour est aussi une chaÃ®ne
         .then(response => console.debug(response))
         .catch(error => console.debug("Erreur : "+error));
     }
@@ -111,25 +112,19 @@ function ajax_post(url, mystrjson){
     
 
 // ----------------------- 
-function ajax_get(url, mystr){ 
+function ajax_SetPlanEau(url, mystr){ 
     if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
         // POST avec fetch()
         fetch(url+"?"+mystr, myInitGet)
-        .then(response => response.text())  // Le retour est aussi une chaîne
-        .then(response => console.debug(response))
+        .then(response => response.text())  // Le retour est aussi une chaÃ®ne
+        .then(response => initPlanEau(response))  // tout le boulot se fait ici                
         .catch(error => console.debug("Erreur : "+error));
     }
 }
   
-/*
-      var linkText = document.createTextNode("my title text");
-      a.appendChild(linkText);
-      a.title = "my title text";
-      a.href = "http://example.com";
-      document.body.appendChild(a);
-*/      
+  
 // ----------------------- 
-function ajax_get_json(url, mystr){ 
+function ajax_getDisplaySites(url, mystr){ 
     if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
         // POST avec fetch()
         fetch(url+"?"+mystr, myInitGet)
@@ -138,8 +133,13 @@ function ajax_get_json(url, mystr){
         .then((data) => {
             for (const site of data.site) {
                 const listItem = document.createElement("li");
-                listItem.appendChild(document.createElement("strong")).textContent = site.id;
-                listItem.append(`  ${site.name}, `);
+                var bouton = document.createElement('button');
+                bouton.setAttribute('name', `${site.id}`);                
+                bouton.setAttribute('onclick', `getThatPlansEau(${site.id})`);
+                bouton.textContent = site.id;
+                listItem.appendChild(bouton);
+                // listItem.appendChild(document.createElement("strong")).textContent = site.id;
+                listItem.append(` ${site.name},  ${site.club}, `);
                 listItem.appendChild(
                     document.createElement("i"),
                 ).textContent = `${site.city} (${site.zipcode}) `;
@@ -158,17 +158,6 @@ function ajax_get_json(url, mystr){
 }
   
     
-// ----------------------- 
-function ajax_get_array(url, mystr){ 
-    if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
-        // POST avec fetch()
-        fetch(url+"?"+mystr, myInitGet)
-        //.then(response => response.array())  // Le retour est un tableau
-        .then(response => response.text())  // Le retour est aussi une chaîne
-        .then(response => console.debug(response))
-        .catch(error => console.debug("Erreur : "+error));
-    }
-}
     
 // ----------------------- 
 function getListePlansEau(){         
@@ -177,14 +166,52 @@ function getListePlansEau(){
     myList.innerHTML = "";
     myList.style.visibility="visible";    
     //ajax_get(url, myget);     
-    ajax_get_json(url, myget);
+    ajax_getDisplaySites(url, myget);
 }
 
     
 // ----------------------- 
-function getThatPlansEau(id_plan_eau){         
+function getThatPlansEau(id_plan_eau){  
+    console.debug("getThatPlansEau("+id_plan_eau+")"); 
     var url= url_serveur+'plans_eau.php';
     var myget="all=0&id="+id_plan_eau;
-    ajax_get(url, myget);     
+    ajax_SetPlanEau(url, myget);     
+}
+
+
+function initPlanEau(response) {
+    console.debug("Traitement de la rÃ©ponse\n"+ response);
+    // Traitement de la rÃ©ponse 
+    // {"id":1,"nom":"Le Plessis","ville":"Sainte-Luce-sur-Loire","zipcode":"44980","pays":"France","jsonfile":"leplessis.json"}
+    const objSite = JSON.parse(response);
+    console.debug("id: "+ objSite.id + " Nom: "+objSite.nom+" Longitude: "+objSite.lon+" Latitude: "+objSite.lat+" JSON: "+objSite.jsonfile+"\n");
+    nomDuSite=objSite.nom;
+    longitudeDuSite=objSite.lon;
+    latitudeDuSite=objSite.lat;
+    fichierACharger=objSite.jsonfile;       
+    // On peut lancer le chargement des donnÃ©es du site
+    getSite(); 
+}
+
+// ----------------------- 
+function ajax_GetSite(url, mystr){ 
+    if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
+        // GET avec fetch()
+        fetch(url+"?"+mystr, myInitGet)
+        .then(response => response.text())  // Le retour est aussi une chaÃ®ne
+        .then(response => setDataSite(response))  // tout le boulot se fait ici  dans le script  sitenavigation.js              
+        .catch(error => console.debug("Erreur : "+error));
+    }
+}
+
+// ------------------------
+function getSite() {
+    if ((fichierACharger!==undefined) && (fichierACharger.length>0)){
+        console.debug("Chargement du plan d'eau\n"+ nomDuSite);
+        console.debug("Fichier\n"+ fichierACharger);       
+        var url= url_serveur+'getsite.php';
+        var myfile="file="+fichierACharger;    
+        ajax_GetSite(url, myfile);
+    }        
 }
 

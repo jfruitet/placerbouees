@@ -343,7 +343,7 @@ function drawCible(x,y){
     init_ecran_bouees();
     draw_Ecran_poly_navigation(); 
     draw_Ecran_ligne_concurrents();   
-    draw_Ecran_bouees_fixes(ctx);
+    draw_Ecran_bouees_fixes();
     ctx.restore(); // restore to original stat    
     // Affiche la flèche des vents     
     ctx.beginPath();

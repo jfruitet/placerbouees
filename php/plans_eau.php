@@ -30,7 +30,8 @@ if (!empty($_GET['id'])) {
 if ($id>0)
 {
     // Charger le fichier pour récupérer l'info demandée
-    $reponse = json_encode(get_plans_eau($id));
+    //$reponse = json_encode(get_plans_eau($id));
+    $reponse = (get_plans_eau($id));
 }
 else if ($all != 0){
     // Afficher la liste des sites disponibles
@@ -42,10 +43,31 @@ else{
 echo $reponse;
 
  
+ /*
+	<site>
+		<id>1</id>
+		<name>Le Plessis</name>
+		<city>Sainte-Luce-sur-Loire</city>
+		<zipcode>44980</zipcode>
+		<country>France</country>
+		<lon>-1.47402</lon>
+		<lat>47.24338</lat>
+		<club>ARBL</club>
+		<url>https://www.arbl.fr</url>
+		<json>leplessis.json</json>
+	</site>
+ */
 //--------------------------
-function  get_plans_eau($id=0){
-    // Nom du fichier XML des sites de navigation de RoBoNav
-    // Nom du fichier XML des sites de navigation de RoBoNav
+function  get_plans_eau($index=0){
+    global $file;
+    global $data;    
+    if (($index>0) && file_exists(DATAPATH.$file)){
+        $index--; // index = id -1 
+        // afficher_selectionner($data);
+        if ($data=xml2array(DATAPATH.$file, $arr = array())){
+            return '{"id":'.$data['site'][$index]['id'].',"nom":"'.$data['site'][$index]['name'].'","ville":"'.$data['site'][$index]['city'].'","zipcode":"'.$data['site'][$index]['zipcode'].'","pays":"'.$data['site'][$index]['country'].'","lon":'.$data['site'][$index]['lon'].',"lat":'.$data['site'][$index]['lat'].',"jsonfile":"'.$data['site'][$index]['json'].'"}';            
+        }
+    } 
 }
 
 

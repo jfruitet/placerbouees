@@ -15,7 +15,8 @@
  
 <!-- Javascript ---------->
 <script src="js/myscript.js"></script>
-<script src="js/geo_utils.js"></script> 
+
+
 
 <!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -64,7 +65,8 @@
  </p>
 <b>TWD</b> : <input type="text" id="twd" name="twd" size="5">  
  <button class="input" onclick="setTWD(); affiche_fleche_TWD();">Soumettre</button>
- &nbsp;  <b>Zoom</b> <button class="input" id="zoomin" onclick="zoomIn(); ">+</button>  <button class="input" id="zoomout" onclick="zoomOut(); ">-</button>  
+ &nbsp;  <b>Zoom</b> <button class="input" id="zoomin" onclick="zoomIn(); ">+</button>  
+ <button class="input" id="zoomout" onclick="zoomOut(); ">-</button>  
  <button class="input" id="zoomout" onclick="zoomReset(); ">1</button>
 
 <!--  &nbsp; &nbsp; &nbsp; 
@@ -98,12 +100,15 @@
  </div>
 </div>
 
-<script src="js/le-plessis.js"></script>
+<!-- script src="js/le-plessis.js"></script -->
+<script src="js/ajax.js"></script>  
+<script src="js/sitenavigation.js"></script>
+<script src="js/geo_utils.js"></script> 
 <script src="js/icones.js"></script>
 <script src="js/map.js"></script>
 <script src="js/canvas.js"></script>
-<script src="js/bouees.js" ></script>
-<script src="js/ajax.js"></script>  
+<script src="js/bouees.js"></script>
+
 
 <div class="graphicLayout2">
 
@@ -115,7 +120,7 @@
     
 
 <script>
-document.getElementById('mylist').style.visibility="hidden";
+// document.getElementById('mylist').style.visibility="hidden";
 document.getElementById('bdelete').style.visibility="hidden";
 document.getElementById('breset').style.visibility="hidden";
 document.getElementById('bvalider').style.visibility="hidden";
@@ -124,13 +129,11 @@ document.getElementById('typebouee').style.visibility="hidden";
 // Chargement de la carte
  window.onload = function(){
         //console.log('Page chargée');
+        initMap(); // Affiche le fond de carte
         setTWD(); 
         affiche_fleche_TWD();
         affiche_legende();
-        drawAll();
-        // document.getElementById("rotation").style.display="inline";
-        document.getElementById("transfert").style.visibility="hidden";
-        displayMap();
+        getSite();
  }   
 </script>
 

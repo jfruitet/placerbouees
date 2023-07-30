@@ -11,6 +11,13 @@ Cette page web permet d'assigner des positions GPS à des balises mobiles autono
 Elle est un composant logiciel du projet RoBoNav mené depuis février 2023 avec l'ICAM de Nantes.
 
 ## Ecran
+### Partie supérieure
+Sélection d'un site de navigation et chargement des données.
+
+Les fichiers json des sites disponibles sont placés dans le dossier ./data/
+
+Pour chaque site j'utilise Umap pour créer les zones de navigation (polygone), la zone des concurrents et éventuellement la liste des bouées fixes, quoi qu'il soit plus simple encore pour les balises d'en relever les positions sur une carte GoogleMaps en mode terrain où elles apparaissent. 
+
 ### Partie droite 
 Affichage de la carte du plan d'eau du Plessis avec le périmètre de navigation , la zone des concurrents et les bouées ancrées (bouées fixes, à demeure).
 
@@ -47,7 +54,6 @@ Il y a quelques conditions au fonctionnement du serveur :
   3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source.
   
 ## Ce qui reste à faire
-- Importer un plan d'eau différent et les bouées fixes de celui-ci au format geoJSON...
 - Intégrer l'application au projet **RoBoNav* de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS
 
 ## Difficultés rencontrées
@@ -79,6 +85,10 @@ L'adaptation à une langue différente du français ne me paraît pas trop compl
 ./images
 ./data
   Fichiers de positionnement de bouées par direction du vent
+    leplessis.json
+    laminais.json
+    laplageverte.json
+    planeauduche.json
 ./doc
   Captures d'écran
 ```
@@ -91,6 +101,8 @@ GeoJSON https://geojson.io/
 JSON Editor OnLine https://jsoneditoronline.org/
 
 Leaflet https://leafletjs.com/
+
+Umap https://umap.openstreetmap.fr/fr/
 
 ## License
 Pour le code source : **MIT** *Free Software, Hell Yeah!* https://github.com/pandao/editor.md/blob/master/LICENSE

@@ -132,7 +132,7 @@ button {
   padding: 2px;
   clear: right;
   overflow: auto;
-  display: none;
+  display: block;
   width:100%;
   height: 230px;
 }

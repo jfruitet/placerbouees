@@ -1,14 +1,25 @@
 // JavaScript Document
 // Gestion de la cartographie
 // Carte de l'étang du Plessis           
+var osm;
+var osmHOT;
+var baseMaps;
+var overlayMaps;
+var targetSite;
 var map;
+
 var geojsonBouees='';
 var layerControl;
 var tmarkers=[]; // tableau des markers de bouees
 var mesboues=null;// La couche des markers de bouées
-var overlayMaps;
+
+var legend;
+var zonenav;
+var zoneconcurrents;
+var balises;
+let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.';
     
- const mySvgIconBalises = L.divIcon({
+const mySvgIconBalises = L.divIcon({
   html: `            
 <svg width="60" height="60" viewBox="0 0 100 100"
   version="1.1"
@@ -40,7 +51,7 @@ function resetMarkersBouees(){
             map.removeLayer(mesbouees);
             map.removeControl(layerControl);
             overlayMaps = {
-                    "Info": planeau,
+                    "Info": balises,
                     "Zone Nav.":zonenav, 
                     "Concurrents": zoneconcurrents, 
                     "Balises": balises
@@ -54,7 +65,7 @@ function resetMarkersBouees(){
 // ------------------------------
 function addBouees2Map(){
     
-    if ((bouees !== undefined) && (bouees.length>0)){
+    if ((map!==undefined) && (bouees !== undefined) && (bouees.length>0)){
         
         resetMarkersBouees();
         var myIcon;
@@ -132,28 +143,72 @@ function addBouees2Map(){
 // -------------------
 // Construction de la carte
 // ------------------------------   
+function initMap(){
+    //console.debug(" Lat: "+latitudeDuSite+" Lon: "+longitudeDuSite);
+    // Target's GPS coordinates. Coordonnées du centre du plan d'eau
+    if ((latitudeDuSite!==undefined) && (latitudeDuSite!=0) && (longitudeDuSite!==undefined) && (longitudeDuSite!=0)){   
+        targetSite = L.latLng(latitudeDuSite, longitudeDuSite);
+        // Add OSM tile layer to the Leaflet map.
+        osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            center:targetSite,
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        // Autre source de carte (ce sont des images de pixels géolocalisés)
+        osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            center:targetSite,
+            attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
+        });
+
+        // Deux couches de base disponibles
+        baseMaps = {
+            "OpenStreetMap": osm,
+            "<span style='color: navy'>OpenStreetMap.HOT</span>": osmHOT
+        };     
+        
+        // Set map's center to target with zoom 18.  
+        map = L.map('osm-map', {
+            center: targetSite,
+            zoom: 18,
+            layers: [osm]            
+        });    
+        
+        layerControl = L.control.layers(baseMaps).addTo(map);         
+    }
+}
+
+
 function displayMap(){
 
+    if (map!==undefined){
         // Ajout de la zone de navigation
-        zonenav = L.geoJSON(geojsonZoneNav, {
-            style: function (feature) {
-                return {color: feature.properties.color};
-            }
-        }).bindPopup(function (layer) {
-            return layer.feature.properties.description;
-        });
-
-        // Ajout de la zone de deambulation
-        zoneconcurrents = L.geoJSON(geojsonZoneConcurrents, {
-            style: function (feature) {
-                return {color: feature.properties.color};
-            }
-        }).bindPopup(function (layer) {
-            return layer.feature.properties.description;
-        });
-
-        // Ajout des balises
+        if (geojsonZoneNav !== undefined){
+            //zonenav = L.geoJSON(JSON.stringify(geojsonZoneNav), {
+            zonenav = L.geoJSON(geojsonZoneNav, {
+                style: function (feature) {
+                    return {color: feature.properties.color};
+                }
+            }).bindPopup(function (layer) {
+                return layer.feature.properties.description;
+            });
+            map.addLayer(zonenav);
+        }
         
+        // Ajout de la zone de deambulation
+        if (geojsonZoneConcurrents !== undefined){
+            //zoneconcurrents = L.geoJSON(JSON.stringify(geojsonZoneConcurrents), {
+            zoneconcurrents = L.geoJSON(geojsonZoneConcurrents, {
+                style: function (feature) {
+                    return {color: feature.properties.color};
+                }
+            }).bindPopup(function (layer) {
+                return layer.feature.properties.description;
+            });
+            map.addLayer(zoneconcurrents);
+        }
+        // Ajout des balises
         // mySvgIconBalises
         
         var geojsonMarkerOptions = {
@@ -162,54 +217,24 @@ function displayMap(){
             opacity: 1,
             fillOpacity: 0.8
         };
-       
-        balises = L.geoJSON(geojsonBalises, {
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, geojsonMarkerOptions);
-            },
-            style: function (feature) {
-                return {color: feature.properties.color};
-            }
-        }).bindPopup(function (layer) {
-            return layer.feature.properties.description;
-        });
-
-        var southWest = L.latLng('47.1592407805349', '-1.6131789921810773'), northEast = L.latLng('47.30430709877202', '-1.3532183711825794');
-        var bounds = L.latLngBounds(southWest, northEast);
-        // Target's GPS coordinates. Coordonnées du centre de l'écran du Plessis
-        var target = L.latLng('47.24338', '-1.47402');
         
-        // Add OSM tile layer to the Leaflet map.
-        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            center:target,
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        });
-    
-        // Autre source de carte (ce sont des images de pixels géolocalisés)
-        var osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
-        });
-
-        
-
-        // Set map's center to target with zoom 18.  
-        map = L.map('osm-map', {
-            center: target,
-            maxBounds: bounds, // set max bounds for the world map            
-            zoom: 18,
-            //layers: [osm, zonenav, zoneconcurrents, balises, mesboueesstatiques]
-            layers: [osm, zonenav, zoneconcurrents, balises]
+        if (geojsonBalises !== undefined){
+            //balises = L.geoJSON(JSON.stringify(geojsonBalises), {
+            balises = L.geoJSON(geojsonBalises, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                },
+                style: function (feature) {
+                    return {color: feature.properties.color};
+                }
+            }).bindPopup(function (layer) {
+                return layer.feature.properties.description;
             });
-
-        // Deux couches de base disponibles
-        baseMaps = {
-            "OpenStreetMap": osm,
-            "<span style='color: navy'>OpenStreetMap.HOT</span>": osmHOT
-        };
-        
+            map.addLayer(balises);
+        }
          
+
+
         // Place a marker on the same location.
         // Target's GPS coordinates. Coordonnées du centre de l'écran du Plessis
         // petite image d'une bouée joliment dessinée dont je suis très content :>))
@@ -241,39 +266,36 @@ function displayMap(){
   iconAnchor: [40, 0],
 });     
     
-        planeau = L.marker(target, { icon: svgIcon }).addTo(map)
-            .bindPopup('Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.');
+        baliseSite = L.marker(targetSite, { icon: svgIcon }).addTo(map)
+            .bindPopup(infoSite);
+
         // Couches qui se superposent avec les objets
- 
         overlayMaps = {
-            // "Modélisme": layerGroupZonesBalises
-            "Info": planeau,
+            "Info": balises,
             "Zone Nav.":zonenav, 
             "Concurrents": zoneconcurrents, 
             "Bouées ancrées": balises
-            // ,"Boués":mesboueesstatiques
-        }
+        }      
+             
+        map.removeControl(layerControl);    // L'ancien contrôle est remplacé
+        layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);  
 
-        // Layer control
-        layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
-        
-        
-/*Legend specific*/
-var legend = L.control({ position: "bottomleft" });
+        // Légende 
+        if (legend !== undefined){map.removeControl(legend);} 
+        legend = L.control({ position: "bottomleft" });
 
-legend.onAdd = function(map) {
-  var div = L.DomUtil.create("div", "legend");
-  div.innerHTML += "<h4>Légende</h4>";
-  div.innerHTML += '<i style="background: #0000aa"></i><span>ZN</span><br>';
-  div.innerHTML += '<i style="background: #aaaa33"></i><span>ZC</span><br>';
-  div.innerHTML += '<i class="icon" style="background-image: url(./images/dot.png);background-repeat: no-repeat;"></i><span>Bouées</span><br>'; 
-  div.innerHTML += '<i class="icon2" style="background-image: url(./images/marker-icon-small3.png);background-repeat: no-repeat;"></i><span>Balises</span><br>'; 
-  
-  return div;
-};
+        legend.onAdd = function(map) {
+            var div = L.DomUtil.create("div", "legend");
+            div.innerHTML += "<h4>Légende</h4>";
+            div.innerHTML += '<i style="background: #0000aa"></i><span>ZN</span><br>';
+            div.innerHTML += '<i style="background: #aaaa33"></i><span>ZC</span><br>';
+            div.innerHTML += '<i class="icon" style="background-image: url(./images/dot.png);background-repeat: no-repeat;"></i><span>Bouées</span><br>'; 
+            div.innerHTML += '<i class="icon2" style="background-image: url(./images/marker-icon-small3.png);background-repeat: no-repeat;"></i><span>Balises</span><br>'; 
+            return div;
+        };
 
-legend.addTo(map);
-        
+        legend.addTo(map);    
+    }        
 }
     
 

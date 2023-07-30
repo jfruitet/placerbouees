@@ -66,22 +66,22 @@ function rectangle_englobantZN(){
   delta_lon=lonmax-lonmin;
   //console.debug("geo_utils.js :: ligne 66 :: delta_lon:"+delta_lon+" delta_lat:"+delta_lat+"\n");
     
-  if (delta_lat<delta_lon){
-        coeff_homothetie = cw / delta_lon;
-        delta_lonlat=delta_lon;
+  if (Math.abs(delta_lat)<Math.abs(delta_lon)){
+        coeff_homothetie = cw / Math.abs(delta_lon);
+        delta_lonlat=Math.abs(delta_lon);
   }
   else{
-        coeff_homothetie = ch / delta_lat;
-        delta_lonlat=delta_lat;  
+        coeff_homothetie = ch / Math.abs(delta_lat);
+        delta_lonlat=Math.abs(delta_lat);  
   }
-//console.debug("geo_utils.js :: ligne 72 :: coeff_homothetie:"+coeff_homothetie+" delta_lonlat:"+delta_lonlat+"\n");
+  console.debug("geo_utils.js :: ligne 72 :: coeff_homothetie:"+coeff_homothetie+" delta_lonlat:"+delta_lonlat+"\n");
         
   milieu_lon= (lonmin + lonmax) /2.0;
   milieu_lat= (latmin + latmax) /2.0;
   pointsup={"lon":lonmax, "lat":latmax};
   pointinf={"lon":lonmin, "lat":latmin};
-  // console.debug("geo_utils.js :: Delta Lat : "+delta_lat+" Delta_lon : "+delta_lon+"\n");
-  // console.debug("PointSup:: Lon:"+pointsup.lon+" Lat:"+pointsup.lat+ "\nPointInf :: Lon:"+pointinf.lon+" Lat:"+pointinf.lat+"\n");
+  console.debug("geo_utils.js :: Delta Lat : "+delta_lat+" Delta_lon : "+delta_lon+"\n");
+  console.debug("PointSup:: Lon:"+pointsup.lon+" Lat:"+pointsup.lat+ "\nPointInf :: Lon:"+pointinf.lon+" Lat:"+pointinf.lat+"\n");
 }      
     
 

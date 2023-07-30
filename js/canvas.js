@@ -10,7 +10,6 @@ let saisir_encore=true;
 let compteur=0; // Compteur de bouées, permet de d'activer babord ou tribord automatiquement 
 // Balies : bouées fixes du plan d'eau
 let balisesEcran = []; // [{"x", "y", id":0,"name":"ARBL0","color":"green","fillcolor":"green"},...]
-let indexbalise = 0; //index dans le tableau des balises 
 
 // Saisie des emplacements de bouees de départ et des portes au vent et sous le vent
 let bouees = []; // [{"id":0,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green","flag":"green"}, ... {"id":5,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"yellow","flag":"green"}]
@@ -83,11 +82,11 @@ function affiche_fleche_TWD(){
     ctx2.font = "16pt Calibri";
     ctx2.fillStyle = "green";
     var msg="TWD "+ twd +"° : "+secteur_vent(twd);
-    ctx2.fillText(msg, 10, 24); 
+    ctx2.fillText(msg, 14, 24); 
     ctx2.font = "12pt Calibri";
     ctx2.fillStyle = "black";
-    ctx2.fillText("Direction d'où vient", 10, 48); 
-    ctx2.fillText("le vent", 10, 64);     
+    ctx2.fillText("Direction d'où vient", 14, 48); 
+    ctx2.fillText("le vent", 14, 64);     
 }
 
 //
@@ -136,16 +135,16 @@ function affiche_legende(){
     ctx4.font = "16pt Calibri";
     ctx4.beginPath(); 
     ctx4.fillStyle = "#0033aa";
-    ctx4.fillText("Légende", 10, 24); 
+    ctx4.fillText("Légende", 14, 24); 
     ctx4.font = "12pt Calibri";
-    ctx4.fillText("Bouées fixes", 10, 48);
-    ctx4.fillText("Balises mobiles", 10, 128);     
+    ctx4.fillText("Bouées fixes", 14, 48);
+    ctx4.fillText("Balises mobiles", 14, 128);     
     ctx4.font = "10pt Calibri";
-    ctx4.fillText("Balises ancrées", 10, 90);     
-    ctx4.fillText("Départ tribord", 10, 166); 
-    ctx4.fillText("Arrivée bâbord", 10, 204);
-    ctx4.fillText("Dog leg tribord", 10, 240);
-    ctx4.fillText("Porte bâbord", 10, 274);
+    ctx4.fillText("Balises ancrées", 14, 90);     
+    ctx4.fillText("Départ tribord", 14, 166); 
+    ctx4.fillText("Arrivée bâbord", 14, 204);
+    ctx4.fillText("Dog leg tribord", 14, 240);
+    ctx4.fillText("Porte bâbord", 14, 274);
        
     ctx4.stroke(); 
     // dot     
@@ -228,11 +227,13 @@ function zoomReset() {
 // cavasw est défini plus haut
 
 function get_Xecran_lon(lon){
-    return Math.round(zoom * canvasw * (1 - (lon-lonmax) / (lonmin-lonmax)));
+    // return Math.round(zoom * canvasw * (1 - (lon-lonmax) / (lonmin-lonmax)));
+    return ((lon-lonmax) * (cw*zoom) / (lonmin-lonmax));
 }  
    
 function get_Yecran_lat(lat){  
-    return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax)); 
+    //return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax)); 
+    return Math.round((lat-latmax) * (zoom*ch) / (latmin-latmax));
 }    
 
 
@@ -278,7 +279,7 @@ function drawAll(){
     document.getElementById("transfert").style.visibility="hidden";
     document.getElementById("breset").style.visibility="hidden";
     document.getElementById("bvalider").style.visibility="hidden";
-    //document.getElementById("zoomv").innerHTML=zoomfactor;
+    document.getElementById("zoomv").innerHTML=zoomfactor;
     //document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"";
     // Passer la main au canvas
     document.getElementById("canvas1").style.zIndex=2;
@@ -286,15 +287,17 @@ function drawAll(){
     document.getElementById("canvas3").hidden=true;
     init_ecran_ZN(); // tenir compte du zoom
     init_ecran_bouees(); // Toutes les bouées fixes sont placées dans un tableau
+
     clearCanvas();
     draw_scale(); 
     draw_Ecran_poly_navigation(); 
-    draw_Ecran_ligne_concurrents();   
+    draw_Ecran_ligne_concurrents();
+    
     if ((bouees !== undefined) && (bouees.length>0)){
         drawBoueesContexte1();
     }
-
-    draw_Ecran_bouees_fixes(ctx);
+    console.debug("draw_Ecran_bouees_fixes()"); 
+    draw_Ecran_bouees_fixes();
     
 }
 
@@ -337,8 +340,14 @@ function init_ecran_ZN(){
     rectangle_englobantZN(); // Pour les fonctions de changement de repère
     set_X_Ecran_polygone_navigation();  // table des X
     set_Y_Ecran_polygone_navigation();  // Table des Y
+    console.debug("canvas.js :: 341\n");
+    console.debug("Poly_xecran"+poly_xecran.toString());
+    console.debug("Poly_yecran"+poly_yecran.toString());
+    
     set_X_Ecran_ligne_concurrents();  // table des X
     set_Y_Ecran_ligne_concurrents();  // Table des Y   
+    
+    
 }
 
 
@@ -391,8 +400,8 @@ function draw_scale(){
 // Sur les latitudes la formule 
     var anglelon=lonmax-lonmin;
     var anglelat=latmax-latmin;
-    var dlon =  6378137 * anglelon * Math.PI / 180.0;
-    var dlat =  6356752 * anglelat * Math.PI / 180.0;  
+    var dlon =  Math.abs(6378137 * anglelon * Math.PI / 180.0);
+    var dlat =  Math.abs(6356752 * anglelat * Math.PI / 180.0);  
     var echellex=canvasw * zoom / dlon;
     var echelley=canvash * zoom / dlat;
     // console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
@@ -521,33 +530,33 @@ function setSaisieToDisplayY(x,y,radian){
  
 // -----------------------
 function init_ecran_bouees(){  
-    // Les balises sont des bouées fixes stockées dans une table du script le-plessis.js
+    // Les balises sont des bouées fixes stockées dans une table initialisée dans le script sitenavigation.js 
     if ((balisesTable!==undefined) && (balisesTable.length>0)){
+        
         for (var index=0; index<balisesTable.length; index++) {
             // console.debug(balisesObj.features[item]);                                 
-            balisesEcran[index]={"id":balisesTable[index].id, "x":get_Xecran_lon(balisesTable[index].lon), "y":get_Yecran_lat(balisesTable[index].lat),"name":balisesTable[index].name, "color":balisesTable[index].color, "fillcolor":balisesTable[index].fillcolor};
-            indexbalise++;
-        }                     
+            balisesEcran[index]=(JSON.parse('{"id":'+balisesTable[index].id+',"x":'+get_Xecran_lon(balisesTable[index].lon)+',"y":'+get_Yecran_lat(balisesTable[index].lat)+',"name":"'+balisesTable[index].name+'", "color":"'+balisesTable[index].color+'","fillcolor":"'+balisesTable[index].fillcolor+'"}'));
+        }     
     }   
 }
 
 // Trace une petitebouee circulaire dans le contexte passé en argument
 // Les coordonnées fournies sont celle du contexte du canvas1 
-function drawBoueesFixesColor(x,y,fillcolor,context){   
-    context.beginPath();
-    context.fillStyle=fillcolor;
-    context.strokeStyle = "black";
-    context.ellipse(x, y, 4, 4, 0, 0, Math.PI * 2);
-    context.fill();
-    context.stroke();       
+function drawBoueesFixesColor(x,y,fillcolor){   
+    ctx.beginPath();
+    ctx.fillStyle=fillcolor;
+    ctx.strokeStyle = "black";
+    ctx.ellipse(x, y, 4, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();       
 }
 
 // Dessine les balises sur le canvas ad hoc
 // -----------------------
-function draw_Ecran_bouees_fixes(context){
+function draw_Ecran_bouees_fixes(){
     if ((balisesEcran!==undefined) && (balisesEcran.length>0)){
         for (var index=0; index<balisesEcran.length; index++) {
-            drawBoueesFixesColor(balisesEcran[index].x,balisesEcran[index].y,balisesEcran[index].fillcolor,context);
+            drawBoueesFixesColor(balisesEcran[index].x,balisesEcran[index].y,balisesEcran[index].fillcolor);
         }
     }   
 }
