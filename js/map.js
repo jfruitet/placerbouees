@@ -17,7 +17,9 @@ var legend;
 var zonenav;
 var zoneconcurrents;
 var balises;
-let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.';
+var mesbouees;
+var baliseSite;
+
     
 const mySvgIconBalises = L.divIcon({
   html: `            
@@ -118,7 +120,8 @@ function addBouees2Map(){
                     myIcon = myIconRed; 
                 }
             }   
-   
+            console.log("maps:: 123 :: Lat:"+bouees[index].lat+" Lon: "+bouees[index].lon+"\n");
+            
             //geojsonb = geojsonb + ',"weight":1,"opacity":1,"fillOpacity":0.8},"geometry":{"coordinates":['+ bouees[index].lon +','+bouees[index].lat+'],"type":"Point"}} ';
             var latlng = L.latLng(bouees[index].lat,bouees[index].lon);
             tmarkers[index] = L.marker(latlng, {title: "Bouée N°"+bouees[index].id,clickable: true,draggable: false,icon: myIcon}).bindPopup(description + " ("+bouees[index].lon+","+bouees[index].lat+")");                       
@@ -143,7 +146,22 @@ function addBouees2Map(){
 // -------------------
 // Construction de la carte
 // ------------------------------   
+function resetMap(){
+    //console.debug("Reset Map\n");
+    // Supprimer les éléments actuels de la carte sauf le marker du site
+        if (layerControl !== undefined)  {map.removeControl(layerControl);}                   
+        if (legend !== undefined) {map.removeControl(legend);}
+        if (mesbouees !== undefined) { map.removeLayer(mesbouees);}
+        if (zonenav !== undefined) { map.removeLayer(zonenav);}
+        if (zoneconcurrents !== undefined) { map.removeLayer(zoneconcurrents);}
+        if (balises !== undefined) { map.removeLayer(balises);}
+        if (baliseSite !== undefined) { baliseSite.removeFrom(map);}
+}
+
+
+
 function initMap(){
+    //console.debug("Init Map\n");
     //console.debug(" Lat: "+latitudeDuSite+" Lon: "+longitudeDuSite);
     // Target's GPS coordinates. Coordonnées du centre du plan d'eau
     if ((latitudeDuSite!==undefined) && (latitudeDuSite!=0) && (longitudeDuSite!==undefined) && (longitudeDuSite!=0)){   
@@ -168,14 +186,16 @@ function initMap(){
             "<span style='color: navy'>OpenStreetMap.HOT</span>": osmHOT
         };     
         
-        // Set map's center to target with zoom 18.  
-        map = L.map('osm-map', {
-            center: targetSite,
-            zoom: 18,
-            layers: [osm]            
-        });    
-        
-        layerControl = L.control.layers(baseMaps).addTo(map);         
+       // Set map's center to target with zoom 18.  
+        if (map===undefined){
+            map = L.map('osm-map', {
+                center: targetSite,
+                zoom: 18,
+                layers: [osm]            
+            });    
+            
+            layerControl = L.control.layers(baseMaps).addTo(map);
+        }                     
     }
 }
 
@@ -271,7 +291,7 @@ function displayMap(){
 
         // Couches qui se superposent avec les objets
         overlayMaps = {
-            "Info": balises,
+            "Info": baliseSite,
             "Zone Nav.":zonenav, 
             "Concurrents": zoneconcurrents, 
             "Bouées ancrées": balises
@@ -294,7 +314,8 @@ function displayMap(){
             return div;
         };
 
-        legend.addTo(map);    
+        legend.addTo(map);  
+        map.flyTo(targetSite);  
     }        
 }
     

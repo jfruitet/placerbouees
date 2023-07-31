@@ -65,7 +65,7 @@ function  get_plans_eau($index=0){
         $index--; // index = id -1 
         // afficher_selectionner($data);
         if ($data=xml2array(DATAPATH.$file, $arr = array())){
-            return '{"id":'.$data['site'][$index]['id'].',"nom":"'.$data['site'][$index]['name'].'","ville":"'.$data['site'][$index]['city'].'","zipcode":"'.$data['site'][$index]['zipcode'].'","pays":"'.$data['site'][$index]['country'].'","lon":'.$data['site'][$index]['lon'].',"lat":'.$data['site'][$index]['lat'].',"jsonfile":"'.$data['site'][$index]['json'].'"}';            
+            return '{"id":'.$data['site'][$index]['id'].',"nom":"'.$data['site'][$index]['name'].'","ville":"'.$data['site'][$index]['city'].'","zipcode":"'.$data['site'][$index]['zipcode'].'","pays":"'.$data['site'][$index]['country'].'","lon":'.$data['site'][$index]['lon'].',"lat":'.$data['site'][$index]['lat'].',"club":"'.$data['site'][$index]['club'].'","url":"'.$data['site'][$index]['url'].'","jsonfile":"'.$data['site'][$index]['json'].'"}';            
         }
     } 
 }

@@ -120,7 +120,7 @@ function drawReticule(event){
             bouees[index].cy=cy;           
             bouees[index].lon=get_lon_Xecran(cx); // Attention de ne pas inverser l'ordre des changements de repères
             bouees[index].lat=get_lat_Yecran(cy);
-            // console.debug("Index:"+index+" X:"+x+" Y:"+y+"  --> Cx:"+cx+" Cy:"+cy+"  --> Lon:"+bouees[index].lon+" Lat:"+bouees[index].lat+"\n");
+            //console.debug("Index:"+index+" X:"+bouees[index].x+" Y:"+bouees[index].y+"  --> Cx:"+cx+" Cy:"+cy+"  --> Lon:"+bouees[index].lon+" Lat:"+bouees[index].lat+"\n");
         }    
         
         // Imprimer les coordonnées

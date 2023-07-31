@@ -228,7 +228,7 @@ function zoomReset() {
 
 function get_Xecran_lon(lon){
     // return Math.round(zoom * canvasw * (1 - (lon-lonmax) / (lonmin-lonmax)));
-    return ((lon-lonmax) * (cw*zoom) / (lonmin-lonmax));
+    return Math.round((lon-lonmax) * (cw*zoom) / (lonmin-lonmax));
 }  
    
 function get_Yecran_lat(lat){  
@@ -241,6 +241,7 @@ function get_Yecran_lat(lat){
 // et hop!
 function set_X_Ecran_polygone_navigation(){
   var index=0;
+  poly_xecran.length=0;
   while (index<zonenav_lon.length){
     poly_xecran[index]=get_Xecran_lon(zonenav_lon[index]);
     index++;
@@ -249,6 +250,7 @@ function set_X_Ecran_polygone_navigation(){
 
 function set_Y_Ecran_polygone_navigation(){
   var index=0;
+  poly_yecran.length=0;
   while (index<zonenav_lat.length){
     poly_yecran[index]=get_Yecran_lat(zonenav_lat[index]);
     index++;
@@ -257,6 +259,7 @@ function set_Y_Ecran_polygone_navigation(){
 
 function set_X_Ecran_ligne_concurrents(){
   var index=0;
+  ligne_xecran.length=0;
   while (index<zoneconc_lon.length){
     ligne_xecran[index]=get_Xecran_lon(zoneconc_lon[index]);
     index++;
@@ -265,6 +268,7 @@ function set_X_Ecran_ligne_concurrents(){
 
 function set_Y_Ecran_ligne_concurrents(){
   var index=0;
+  ligne_yecran.length=0;
   while (index<zonenav_lat.length){
     ligne_yecran[index]=get_Yecran_lat(zoneconc_lat[index]);
     index++;
@@ -296,7 +300,7 @@ function drawAll(){
     if ((bouees !== undefined) && (bouees.length>0)){
         drawBoueesContexte1();
     }
-    console.debug("draw_Ecran_bouees_fixes()"); 
+    //console.debug("draw_Ecran_bouees_fixes()"); 
     draw_Ecran_bouees_fixes();
     
 }
@@ -340,9 +344,9 @@ function init_ecran_ZN(){
     rectangle_englobantZN(); // Pour les fonctions de changement de repère
     set_X_Ecran_polygone_navigation();  // table des X
     set_Y_Ecran_polygone_navigation();  // Table des Y
-    console.debug("canvas.js :: 341\n");
-    console.debug("Poly_xecran"+poly_xecran.toString());
-    console.debug("Poly_yecran"+poly_yecran.toString());
+    //console.debug("canvas.js :: 341\n");
+    //console.debug("Poly_xecran "+poly_xecran.toString());
+    //console.debug("Poly_yecran "+poly_yecran.toString());
     
     set_X_Ecran_ligne_concurrents();  // table des X
     set_Y_Ecran_ligne_concurrents();  // Table des Y   
@@ -360,12 +364,11 @@ function init_ecran_ZN(){
 // Ne pas oublier que la définition sur la grille du canevas est très grossière par rapport
 // à la grille du monde réel 
 function get_lon_Xecran(x){
-    //lon = lonmin -  x  * (lonmin-lonmax) / (zoom*canvasw)
-    return (lonmin -  x  * (lonmin-lonmax) / (zoom*canvasw));
+    return (x * (lonmin-lonmax) / (zoom*canvasw) + lonmax*1.0);
 } 
  
 function get_lat_Yecran(y){
-    return (y * (latmin-latmax) / (zoom * canvash) + latmax);
+    return (y * (latmin-latmax) / (zoom*canvash) + latmax*1.0);
 } 
 
 
@@ -531,8 +534,9 @@ function setSaisieToDisplayY(x,y,radian){
 // -----------------------
 function init_ecran_bouees(){  
     // Les balises sont des bouées fixes stockées dans une table initialisée dans le script sitenavigation.js 
+    
     if ((balisesTable!==undefined) && (balisesTable.length>0)){
-        
+        balisesEcran.length=0;
         for (var index=0; index<balisesTable.length; index++) {
             // console.debug(balisesObj.features[item]);                                 
             balisesEcran[index]=(JSON.parse('{"id":'+balisesTable[index].id+',"x":'+get_Xecran_lon(balisesTable[index].lon)+',"y":'+get_Yecran_lat(balisesTable[index].lat)+',"name":"'+balisesTable[index].name+'", "color":"'+balisesTable[index].color+'","fillcolor":"'+balisesTable[index].fillcolor+'"}'));

@@ -16,8 +16,6 @@
 <!-- Javascript ---------->
 <script src="js/myscript.js"></script>
 
-
-
 <!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -31,20 +29,20 @@
 <body>
  <div id="entete"></div>
  <script>
-    document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Informations</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+    document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
  </script>
  <noscript>
 <div class="menu"><h3>Placement de Bouées RC</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
-<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/Carto_LePlessis#README'">GitHub JF</button></span>
+<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/placerbouees#README'">GitHub JF</button></span>
   </div>
  </noscript>
  
  <div class="corpstexte">  
  <!-- div id="gauche" --> 
-  <h1>Placement de Bouées RC</h1>    
-    <a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
-    <p>Placement manuel de balises mobiles autonomes dans une zone de navigation de voile radiocommandée.</p>
-    <p>Sites disponibles :  &nbsp; <button id="liste" onclick="listePlansEau(); ">Lister</button> </p>
+  <h2>Placement de Bouées radio commandées</h2>    
+<a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
+<p> <button id="liste" onclick="listePlansEau(); ">Lister</button>  les sites disponibles pour l'assignation<br />
+de positions géoréférencées pour des bouées mobiles autonomes. 
     <ul id="mylist"></ul>
  <!-- /div  -->
  <div id="droite">
@@ -101,11 +99,12 @@
 </div>
 
 <!-- script src="js/le-plessis.js"></script -->
+<script src="js/map.js"></script>
 <script src="js/ajax.js"></script>  
 <script src="js/sitenavigation.js"></script>
 <script src="js/geo_utils.js"></script> 
 <script src="js/icones.js"></script>
-<script src="js/map.js"></script>
+
 <script src="js/canvas.js"></script>
 <script src="js/bouees.js"></script>
 

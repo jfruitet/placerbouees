@@ -1,0 +1,301 @@
+{
+    "name":"La Minais",
+    "geojsonZoneConcurrents": {
+        "type": "FeatureCollection",
+        "features": 
+        [ 
+            {
+                "type": "Feature",
+                "properties": 
+                {
+                    "name":"ZCS",
+                    "title": "Zone Concurrents Sud",
+                    "description": "Zone de déplacement des concurrents",
+                    "infobox": true,
+                    "weight": "3",
+                    "color": "#aaaa33",
+                    "fill": "#ffffee"              
+                },     
+                "geometry": {
+                    "coordinates": 
+                    [
+                        [
+                        -1.4655874211343018,
+                        47.25504152740325
+                        ],
+                        [
+                        -1.465660584557412,
+                            47.25519050317004
+                        ],
+                        [
+                        -1.4655167805878477,
+                        47.25536516388027
+                        ],
+                        [
+                            -1.4655924668876708,
+                        47.255510714031885
+                        ]
+                    ],
+                    "type": "LineString"
+                }
+            },
+            {
+                    "type": "Feature",
+                    "properties": 
+                    {
+                        "name":"ZCO",
+                        "title": "Zone Concurrents Ouest",
+                        "description": "Zone de déplacement des concurrents",
+                        "infobox": true,
+                        "color": "#aaaa33",
+                        "fill": "#ffffee"
+                    },                               
+                    "geometry": 
+                    {
+                        "coordinates": 
+                        [
+                            [
+                            -1.4655420093552323,
+                            47.254928511032745
+                            ],
+                            [
+                                -1.4650752771713087,
+                                47.25499186872909
+                                ],
+                            [
+                                -1.4644344664976074,
+                                47.25514084463558
+                        ]
+                    ],
+                    "type": "LineString"
+                }
+            }                        
+        ]
+    },    
+    "geojsonZoneNav": 
+    {
+        "type":"FeatureCollection",
+        "features": [
+                        {
+                            "type": "Feature",
+                            "properties": 
+                            { 
+                                "name":"ZNLaMinais",      
+                                "title": "Z.Nav de La Minais",
+                                "description": "Zone de navigation de La Minais pour les régates de voiliers radiocommandés",        
+                                "infobox": true,
+                                "color": "#7777ff",             
+                                "opacity": "0.3",
+                                "fill-opacity": "0.2",  
+                                "weight": "1",
+                                "fillColor": "#ffffee",
+                                "fill": "#ffffee" 
+                            },
+                            "geometry": 
+                            {
+                                "coordinates": 
+                                [
+                                    [
+                                        [
+                                            -1.465529394954899,
+                                            47.254952484214584
+                                        ],
+                                        [
+                                            -1.4650828457844511,
+                                            47.25500899240828
+                                        ],
+                                        [
+                                            -1.4644723096309917,
+                                            47.25516139299404
+                                        ],
+                                        [
+                                            -1.4646514338741952,
+                                            47.25526927179544
+                                        ],
+                                        [
+                                            -1.4648204666114282,
+                                            47.25552270049525
+                                        ],
+                                        [
+                                            -1.4650828457844511,
+                                            47.25567681194963
+                                        ],
+                                        [
+                                            -1.4652468327683152,
+                                            47.25564770204238
+                                        ],
+                                        [
+                                            -1.4653073818080031,
+                                            47.255562084576525
+                                        ],
+                                        [
+                                            -1.465557146598428,
+                                            47.255505576972524
+                                        ],
+                                        [
+                                            -1.465483983175318,
+                                            47.25536687623534
+                                        ],
+                                        [
+                                            -1.4656151727614315,
+                                            47.25519735261912
+                                        ],
+                                        [
+                                            -1.465529394954899,
+                                            47.254952484214584
+                                        ]
+                                    ]
+                                ],
+                                "type": "Polygon"
+                            }
+                        }
+                    ]
+    },
+    "geojsonBalises":
+    {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "geometry": {
+                    "coordinates": 
+                        [
+                            -1.465167106099,    
+                            47.2556917720
+                        ],
+                        "type": "Point"
+                },
+                "id": 1,
+                "properties": 
+                {
+                    "description": "Passerelle",
+                    "title": "Passerelle",
+                    "name": "Passerelle",
+                    "color": "#000000",
+                    "fillColor": "#000000",
+                    "fillOpacity": 0.8
+                },
+                "type": "Feature"
+            },
+            {
+                "geometry": {
+                    "coordinates": 
+                        [
+                            -1.46535939232,
+                            47.25505578201
+                        ],
+                "type": "Point"
+            },
+                "id": 2,
+                "properties": 
+                {
+                    "description": "ARBL01 - Départ 1",
+                    "title": "ARBL01",
+                    "name": "ARBL01",
+                    "color": "#ff00ff",
+                    "fillColor": "#ff00ff",
+                    "fillOpacity": 0.8
+                },
+                "type": "Feature"
+            },
+            {
+                "geometry": {
+                    "coordinates": 
+                        [
+                          -1.46545266532,
+                          47.25514128185
+        ],
+        "type": "Point"
+      },
+      "id": 3,
+      "properties": {
+        "description": "ARBL02",
+        "title": "ARBL02",
+        "name": "ARBL02",
+        "color": "#00ff33",
+        "fillColor": "#00ff33",
+        "weight": 1,
+        "opacity": 1,
+        "fillOpacity": 0.8
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1.465394420536673,
+          47.25541082713335
+          
+        ],
+        "type": "Point"
+      },
+      "id": 4,
+      "properties": {
+        "description": "ARBL03 - Nord Ouest",
+        "title": "ARBL03",
+        "name": "ARBL03",
+        "color": "#aaff00",
+        "fillColor": "#aaff00",
+        "fillOpacity": 0.8
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1.4651264743561767,
+          47.255542120743165
+        ],
+        "type": "Point"
+      },
+      "id": 5,
+      "properties": {
+        "description": "ARBL04 - Nord",
+        "title": "ARBL04",
+        "name": "ARBL04",
+        "color": "#0000ff",
+        "fillColor": "#0000ff",
+        "fillOpacity": 0.8
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -1.4652275722960082,
+          47.255286225741166
+        ],
+        "type": "Point"
+      },
+      "id": 6,
+      "properties": {
+        "description": "ARBL06 - Centre",
+        "title": "ARBL05",
+        "name": "ARBL05",
+        "color": "#ff0000",
+        "fillColor": "#ff0000",
+        "fillOpacity": 0.8
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+            -1.4648106706985373,
+            47.255177714029486 
+        ],
+        "type": "Point"
+      },
+      "id": 7,
+      "properties": {
+        "description": "ARBL05 - Est",
+        "title": "ARBL05",
+        "name": "ARBL5",
+        "color": "#ccaa33",
+        "fillColor": "#aaff33",
+        "fillOpacity": 0.8
+      },
+      "type": "Feature"
+    }
+        ]
+    }
+}

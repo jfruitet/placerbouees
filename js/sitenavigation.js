@@ -11,6 +11,7 @@ let nomDuSite='Le Plessis';
 let longitudeDuSite=-1.47402;
 let latitudeDuSite=47.24338;
 let fichierACharger='leplessis.json';        
+let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.';
 
 let zonenav_lat=[];
 //47.243830107759834,47.24306984068747,47.24323699253995,47.24364139000113,47.24402062214875,47.24396131113892,47.243830107759834
@@ -366,6 +367,7 @@ function setStyleColor(feature) {
 // -----------------------
 function setDataSite(response){
     if (response !== undefined){
+        resetMap(); // Supprimer les éléments actuels de la carte
         //console.debug("Chargement des données pour le site \n"+ response);
         const objSite = JSON.parse(response);
         geojsonZoneConcurrents = objSite.geojsonZoneConcurrents;
@@ -380,6 +382,8 @@ function setDataSite(response){
         //console.debug(geojsonZoneConcurrentsArray);
         var ZCCoordinates = Object.entries(geojsonZoneConcurrents.features[0].geometry.coordinates);
         // Pas évident de parcourir ce tableau d'objet !:>((
+        zoneconc_lon.length=0;
+        zoneconc_lat.length=0;
         for (var i=0; i<ZCCoordinates.length; i++ ){
             // console.debug("index,Lon,Lat : "+ZCCoordinates[i]+"\n");  
             // index,Lon,Lat : 6,-1.4733401027220054,47.24410975659259          
@@ -395,6 +399,8 @@ function setDataSite(response){
 
         var ZNCoordinates = Object.entries(geojsonZoneNav.features[0].geometry.coordinates[0]);
         // Pas évident de parcourir ce tableau d'objet !:>((
+        zonenav_lon.length=0;
+        zonenav_lat.length=0;
         for (var i=0; i<ZNCoordinates.length; i++ ){
             //console.debug("index,Lon,Lat : "+ZNCoordinates[i]+"\n");  
             // index,Lon,Lat : 6,-1.4733401027220054,47.24410975659259          
@@ -407,15 +413,8 @@ function setDataSite(response){
             zonenav_lon[ZNCoordinates[i][0]]=latlon[0];
             zonenav_lat[ZNCoordinates[i][0]]=latlon[1];
         }    
-        console.debug("Zone_nav_lon : \n"+zonenav_lon.toString());
-        console.debug("Zone_nav_lat : \n"+zonenav_lat.toString());
-        
-        /*
-let balisesTable = [];
-/*
-[{"id":1, "name":"Ponton", "lon":-1.4745214367317487, "lat":47.24395956032603, "color":"#000000", "fillcolor":"#000000"},
-{"id":2, "name":"ARBL01", "lon":-1.4743960142401136, "lat":47.243888635331786, "color":"#0000aa", "fillcolor":"#0033aa"},       
-        */
+        //console.debug("Zone_nav_lon : \n"+zonenav_lon.toString());
+        //console.debug("Zone_nav_lat : \n"+zonenav_lat.toString());
         //console.debug(afficherProps(geojsonBalises, "features"));
         
         var BalisesInfos = Object.entries(geojsonBalises.features);
@@ -424,6 +423,10 @@ let balisesTable = [];
         
         //console.debug("Keys\n"+ keysBalisesInfo + "\n"); 
         //console.debug(parcoursRecursifObjet(geojsonBalises.features));
+        tcoordinates.length=0;
+        tid.length=0;
+        tproperties.length=0;
+        strproperty="";
         for (var i=0; i<BalisesInfos.length; i++) {
             initRecursifBalise(BalisesInfos[i]);
         }
@@ -431,7 +434,7 @@ let balisesTable = [];
         // reconstruire un tableau d'objet à paertir d'une chaîne... Il y a peut-être plus simple ?
         balisesTable.length=0;
         for (var i=0; i<tid.length; i++) {
-             balisesTable.push(JSON.parse('{'+tid[i]+','+tcoordinates[i]+','+tproperties[i]+'}'));    
+             balisesTable[i]=(JSON.parse('{'+tid[i]+','+tcoordinates[i]+','+tproperties[i]+'}'));    
         }                
         //console.debug(balisesTable.toString());
         
@@ -440,8 +443,12 @@ let balisesTable = [];
        
         // document.getElementById("rotation").style.display="inline";
         document.getElementById("transfert").style.visibility="hidden";
-        
-        displayMap(); // Afficher la carte      
+        initMap();
+        displayMap(); // Afficher la carte  
+          
+        // En cas de changement de site ilfaut réinitialiser la collecte des balises
+        nbouees=0;
+        bouees.length=0;  
         drawAll();      // Afficher le canvas
 
     }          
@@ -461,6 +468,9 @@ function initRecursifBalise(obj){
             }        
             else if (`${key}`=="coordinates"){
                 var lonlat= value.toString().split(',');
+                //console.debug("lonlat "+lonlat);
+                //console.debug("lon "+lonlat[0]);
+                //console.debug("lat "+lonlat[1]);
                 tcoordinates.push('"lon":'+lonlat[0]+ ',"lat":'+lonlat[1]+" ");
             }
             else if (`${key}`=="name"){

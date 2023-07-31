@@ -24,7 +24,7 @@ function masqueTexte() {
         for (var i = 0; i < x.length; i++) {
             x[i].style.display = "none";
         }
-        document.getElementById("masquer").innerHTML="Informations";
+        document.getElementById("masquer").innerHTML="Sites";
     }
     else{
         for (var i = 0; i < x.length; i++) {

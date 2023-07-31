@@ -10,6 +10,7 @@
                     "title": "Zone Concurrents",
                     "description": "Zone de déplacement des concurrents",
                     "infobox": true,
+                    "weight": "3",
                     "color": "#aaaa33",
                     "fill": "#ffffee"              
                 },     
@@ -55,13 +56,16 @@
             {
                 "type": "Feature",
                 "properties": {
-                    "name":"ZN",      
-                    "title": "ZN",
+                    "name":"ZNLePlessis",      
+                    "title": "Z. Nav. du Plessis",
                     "description": "Zone de navigation réservée au modélisme naval",
-                    "color": "#0000aa",
-                    "infobox": true,                 
-                    "fill": "#ffffee",
-                    "fill-opacity": "0.2"       
+                    "infobox": true,
+                    "color": "#7777ff",             
+                    "opacity": "0.3",
+                    "fill-opacity": "0.2",  
+                    "weight": "1",
+                    "fillColor": "#ffffee",
+                    "fill": "#ffffee"           
                 },
                 "geometry": {
                     "coordinates": [
@@ -137,8 +141,8 @@
         "description": "ARBL01 - Départ Nord",
         "title": "ARBL01",
         "name": "ARBL01",
-        "color": "#0000aa",
-        "fillColor": "#0033aa",
+        "color": "#ff00aa",
+        "fillColor": "#ff00aa",
         "fillOpacity": 0.8
       },
       "type": "Feature"
@@ -156,7 +160,7 @@
         "description": "ARBL02 - Départ Ouest",
         "title": "ARBL02",
         "name": "ARBL02",
-        "color": "#0000ff",
+        "color": "#00aaff",
         "fillColor": "#00aaff",
         "fillOpacity": 0.8
       },
@@ -175,7 +179,7 @@
         "description": "ARBL03 - Départ Est",
         "title": "ARBL03",
         "name": "ARBL03",
-        "color": "#00aa00",
+        "color": "#00aa33",
         "fillColor": "#00aa33",
         "weight": 1,
         "opacity": 1,
@@ -196,8 +200,8 @@
         "description": "ARBL04 - Sud Est",
         "title": "ARBL04",
         "name": "ARBL04",
-        "color": "#00ff00",
-        "fillColor": "#aaff00",
+        "color": "#00ffff",
+        "fillColor": "#00ffff",
         "fillOpacity": 0.8
       },
       "type": "Feature"
@@ -216,7 +220,7 @@
         "title": "ARBL05",
         "name": "ARBL05",
         "color": "#0000ff",
-        "fillColor": "#aa0000",
+        "fillColor": "#0000ff",
         "fillOpacity": 0.8
       },
       "type": "Feature"
@@ -234,7 +238,7 @@
         "description": "ARBL06 - Nord",
         "title": "ARBL06",
         "name": "ARBL06",
-        "color": "#ff0000",
+        "color": "#ffaa00",
         "fillColor": "#ffaa00",
         "fillOpacity": 0.8
       },
@@ -253,7 +257,7 @@
         "description": "ARBL07 - Centre",
         "title": "ARBL07",
         "name": "ARBL07",
-        "color": "#ccaa00",
+        "color": "#aaff00",
         "fillColor": "#aaff00",
         "fillOpacity": 0.8
       },
@@ -272,7 +276,7 @@
         "description": "ARBL08 - Ouest",
         "title": "ARBL08",
         "name": "ARBL08",
-        "color": "#ffff00",
+        "color": "#ffffaa",
         "fillColor": "#ffffaa",
         "fillOpacity": 0.8
       },
@@ -291,7 +295,7 @@
                     "description": "ARBL09 - Est",
                     "title": "ARBL09",
                     "name": "ARBL09",
-                    "color": "#00aaaa",
+                    "color": "#00ffcc",
                     "fillColor": "#00ffcc",
                     "fillOpacity": 0.8
                 },

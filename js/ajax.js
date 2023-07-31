@@ -26,19 +26,6 @@ let myInitGet = {
 /*************************************************
  * Charger les caractéristiques d'un plan d'eau
  * **********************************************/
-/* 
-const zonenav_lat=[];
-//47.243830107759834,47.24306984068747,47.24323699253995,47.24364139000113,47.24402062214875,47.24396131113892,47.243830107759834
-const zonenav_lon=[];
-//-1.4746555619712751,-1.4733794850961033,-1.4732841764495106,-1.4733636003215622,-1.4737871943051744,-1.4743378664837508,-1.4746555619712751             
-
-const zoneconc_lon= [];
-//-1.4747445028388313,-1.4744189545636743,-1.4741350461847276,-1.4739079194809506,-1.4736921491121393,-1.4734763787433565,-1.4733401027220054
-const zoneconc_lat = [];
-//47.2439195874486,47.24402752137087,47.2440943374981,47.244138024920545,47.24416372338749,47.24415601384845,47.24410975659259
-*/
-
-
 
 // ----------------------- 
 function sauveBouees(){
@@ -172,7 +159,7 @@ function getListePlansEau(){
     
 // ----------------------- 
 function getThatPlansEau(id_plan_eau){  
-    console.debug("getThatPlansEau("+id_plan_eau+")"); 
+    //console.debug("getThatPlansEau("+id_plan_eau+")"); 
     var url= url_serveur+'plans_eau.php';
     var myget="all=0&id="+id_plan_eau;
     ajax_SetPlanEau(url, myget);     
@@ -180,15 +167,17 @@ function getThatPlansEau(id_plan_eau){
 
 
 function initPlanEau(response) {
-    console.debug("Traitement de la réponse\n"+ response);
+    // console.debug("Traitement de la réponse\n"+ response);
     // Traitement de la réponse 
     // {"id":1,"nom":"Le Plessis","ville":"Sainte-Luce-sur-Loire","zipcode":"44980","pays":"France","jsonfile":"leplessis.json"}
     const objSite = JSON.parse(response);
-    console.debug("id: "+ objSite.id + " Nom: "+objSite.nom+" Longitude: "+objSite.lon+" Latitude: "+objSite.lat+" JSON: "+objSite.jsonfile+"\n");
+    //console.debug("id: "+ objSite.id + " Nom: "+objSite.nom+" Longitude: "+objSite.lon+" Latitude: "+objSite.lat+" JSON: "+objSite.jsonfile+"\n");
     nomDuSite=objSite.nom;
     longitudeDuSite=objSite.lon;
     latitudeDuSite=objSite.lat;
-    fichierACharger=objSite.jsonfile;       
+    fichierACharger=objSite.jsonfile;      
+    infoSite='Plan d\'eau : '+objSite.nom+', '+objSite.zipcode+' '+objSite.ville+'.<br>Club de radiomodélisme <a target="_blank" href="'+objSite.url+'">'+objSite.club+'</a>.';
+    document.getElementById("mapinfo").innerHTML=infoSite;
     // On peut lancer le chargement des données du site
     getSite(); 
 }
@@ -207,8 +196,8 @@ function ajax_GetSite(url, mystr){
 // ------------------------
 function getSite() {
     if ((fichierACharger!==undefined) && (fichierACharger.length>0)){
-        console.debug("Chargement du plan d'eau\n"+ nomDuSite);
-        console.debug("Fichier\n"+ fichierACharger);       
+        //console.debug("Chargement du plan d'eau\n"+ nomDuSite);
+        //console.debug("Fichier\n"+ fichierACharger);       
         var url= url_serveur+'getsite.php';
         var myfile="file="+fichierACharger;    
         ajax_GetSite(url, myfile);
