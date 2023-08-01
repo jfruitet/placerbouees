@@ -48,5 +48,30 @@
 		<url>https://www.capsn.org/</url>
 		<json>planeauduchene.json</json>
 	</site>	
+	<site>
+		<id>5</id>
+		<name>Plan d'eau de l'Emprunt</name>
+		<city>Trignac</city>
+		<zipcode>44570</zipcode>
+		<country>France</country>
+		<lon>-2.184745</lon>
+		<lat>47.313416</lat>
+		<club>MFTrignac</club>
+		<url>https://miniflottetrignac.fr/</url>
+		<json>lemprunt.json</json>
+	</site>	
+    	<site>
+		<id>6</id>
+		<name>Etang du Bois Joalland</name>
+		<city>Saint Nazaire</city>
+		<zipcode>44600</zipcode>
+		<country>France</country>
+		<lon>-2.255556</lon>
+		<lat>47.279069</lat>
+		<club>SNOS</club>
+		<url>https://www.snos-voile.com/</url>
+		<json>boisjoalland.json</json>
+	</site>	
+
 </sites>
 
