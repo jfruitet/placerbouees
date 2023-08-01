@@ -7,12 +7,6 @@ var strproperty="";
 var tproperties=[];
 var tcoordinates=[];
 
-let nomDuSite='Le Plessis';
-let longitudeDuSite=-1.47402;
-let latitudeDuSite=47.24338;
-let fichierACharger='leplessis.json';        
-let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.';
-
 let zonenav_lat=[];
 //47.243830107759834,47.24306984068747,47.24323699253995,47.24364139000113,47.24402062214875,47.24396131113892,47.243830107759834
 let zonenav_lon=[];
@@ -446,11 +440,12 @@ function setDataSite(response){
         initMap();
         displayMap(); // Afficher la carte  
           
-        // En cas de changement de site ilfaut réinitialiser la collecte des balises
+        // En cas de changement de site il faut réinitialiser la collecte des balises
         nbouees=0;
         bouees.length=0;  
+        // Puisque le site est chargé on peut sauvegarder les cookies 
+        setCookies(); // nomDuSite, longitudeDuSite, latitudeDuSite, fichierACharger     
         drawAll();      // Afficher le canvas
-
     }          
 }
 

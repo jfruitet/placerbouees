@@ -17,6 +17,14 @@ let ch = 500; // A vrai dire on devrait pouvoir identifier ça à la largeur du 
 
 const windsector=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","N"];
 
+
+let nomDuSite='Le Plessis';
+let longitudeDuSite=-1.47402;
+let latitudeDuSite=47.24338;
+let fichierACharger='leplessis.json';        
+let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.';
+
+
 function masqueTexte() {
     masque=!masque;
     var x = document.getElementsByClassName("corpstexte");
@@ -98,4 +106,76 @@ function removeEvent(obj,event,fct){
 /* Pour supprimer la fonction à l'événement */
 // removeEvent(composant,"mouseout",function(){... à retirer... ;});
 
+/************************
+ * Cookies
+ * **********************/
+ 
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
 
+ 
+// retourne la valeur du cookie spécifié
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+/*
+
+let nomDuSite='Le Plessis';
+let longitudeDuSite=-1.47402;
+let latitudeDuSite=47.24338;
+let fichierACharger='leplessis.json';        
+let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiomodélisme <a target="_blank" href="https://arbl.fr/">ARBL</a>.';
+
+*/
+
+// verifie les cookies utiles
+function checkCookies() {
+  let nomsite = getCookie("nomsite");
+  if (nomsite != "" && nomsite !=null) {
+        nomDuSite=nomsite;
+  } 
+  let londusite = getCookie("londusite");
+  if (londusite != "" && londusite !=null) {
+        longitudeDuSite=londusite;
+  } 
+  let latdusite = getCookie("latdusite");
+  if (latdusite != "" && latdusite !=null) {
+        latitudeDuSite=latdusite;
+  } 
+  let fichieracharger= getCookie("fichieracharger");
+  if (fichieracharger != "" && fichieracharger !=null) {
+        fichierACharger=fichieracharger;
+  } 
+}
+  
+// positionne les cookies utiles
+function setCookies(){  
+    if (nomDuSite != "" && nomDuSite != null) {
+        setCookie("nomsite", nomDuSite, 30); // 30 jours
+    }
+    if (longitudeDuSite != "" && longitudeDuSite != null) {
+        setCookie("londusite", longitudeDuSite, 30); // 30 jours
+    }
+    if (latitudeDuSite != "" && latitudeDuSite != null) {
+        setCookie("latdusite", latitudeDuSite, 30); // 30 jours
+    }
+    if (fichierACharger != "" && fichierACharger != null) {
+        setCookie("fichieracharger", fichierACharger, 30); // 30 jours
+    }
+} 

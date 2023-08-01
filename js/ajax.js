@@ -2,9 +2,9 @@
 // ajax.js
 // la communication avec les serveurs
 
-let myList = document.getElementById('mylist');
-let url_serveur = 'http://localhost/placerbouees/php/'; 
-let url_data = 'http://localhost/placerbouees/data/';
+let myList = document.getElementById('mylist'); // La liste des sites à charger
+let url_serveur = 'http://localhost/placerbouees/php/';     // Les scripts des serveurs
+let url_data = 'http://localhost/placerbouees/data/';   // les fichiers de configuration des plans d'eau
 
 
 let myInitGet = {
@@ -83,7 +83,7 @@ function ajax_post(url, mystrjson){
             referrer: "about:client", //ou "" (pas de réferanr) ou une url de l'origine
             referrerPolicy: "no-referrer-when-downgrade", //ou no-referrer, origin, same-origin...
             mode: "cors", //ou same-origin, no-cors
-            credentials: "same-origin", //ou omit, include
+            credentials: "include", //ou same-origin ou omit, include
             cache: "default", //ou no-store, reload, no-cache, force-cache, ou only-if-cached
             redirect: "follow", //ou manual ou error
             integrity: "", //ou un hash comme "sha256-abcdef1234567890"
@@ -109,6 +109,43 @@ function ajax_SetPlanEau(url, mystr){
     }
 }
   
+    
+// ----------------------- 
+// Essai de création d'un tableau avec ascenseur
+function ajax_getDisplaySitesAsTable(url, mystr){ 
+    if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
+        // POST avec fetch()
+        fetch(url+"?"+mystr, myInitGet)
+        .then(response => response.json()) 
+        // .then(response => console.debug(response))
+        .then((data) => {
+            for (const site of data.site) {
+                const listItem = document.createElement("li");
+                var bouton = document.createElement('button');
+                bouton.setAttribute('name', `${site.id}`);                
+                bouton.setAttribute('onclick', `getThatPlansEau(${site.id})`);
+                bouton.textContent = site.id;
+                listItem.appendChild(bouton);
+                // listItem.appendChild(document.createElement("strong")).textContent = site.id;
+                listItem.append(` ${site.name},  ${site.club}, `);
+                listItem.appendChild(
+                    document.createElement("i"),
+                ).textContent = `${site.city} (${site.zipcode}) `;
+                var a = document.createElement('a');
+                a.setAttribute('href',url_data+`${site.json}`);
+                a.setAttribute('target','_blank');
+                a.innerHTML = `${site.json}`;
+                // apend the anchor to the dom element
+                a.title = `${site.json}`;
+                listItem.appendChild(a);
+                myList.appendChild(listItem);
+            }
+        })            
+        .catch(error => console.debug("Erreur : "+error));
+    }
+}
+  
+
   
 // ----------------------- 
 function ajax_getDisplaySites(url, mystr){ 
