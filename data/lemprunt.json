@@ -1,0 +1,134 @@
+{
+  "name": "Plan d'eau de l'Emprunt",
+  "geojsonZoneConcurrents": 
+  {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "ZC",
+          "title": "Zone Concurrents",
+          "description": "Zone de déplacement des concurrents",
+          "infobox": true,
+          "weight": "3",
+          "color": "#aaaa33",
+          "fill": "#ffffee"
+        },
+        "geometry": {
+            "coordinates": [
+            [
+            -2.1858222031422088,
+            47.313223605621175
+            ],
+            [
+            -2.18421482028981,
+            47.31289825482412
+            ],
+            [
+            -2.1839378198477846,
+            47.313506632734175
+            ]
+        ],
+        "type": "LineString"
+      }
+      }        
+    ]
+  },
+  "geojsonZoneNav": 
+  {
+    "type": "FeatureCollection",
+    "features": 
+    [
+      {
+        "type": "Feature",
+        "properties": {
+          "name": "ZN de l'Emprunt",
+          "title": "Z. Nav. de l'Emprunt",
+          "description": "Zone de navigation Voile RC",
+          "infobox": true,
+          "color": "#7777ff",
+          "opacity": "0.3",
+          "fill-opacity": "0.2",
+          "weight": "1",
+          "fillColor": "#ffffee",
+          "fill": "#ffffee"
+        },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -2.18432015848677,
+              47.312967028330405
+            ],
+            [
+              -2.184027552385203,
+              47.31353308378888
+            ],
+            [
+              -2.1848780607869287,
+              47.3137129506093
+            ],
+            [
+              -2.1862942743198346,
+              47.31384785032279
+            ],
+            [
+              -2.18575197767791,
+              47.31325534705502
+            ],
+            [
+              -2.18432015848677,
+              47.312967028330405
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+      }       
+    ]
+  },      
+  "geojsonBalises": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "id": 1,
+        "type": "Feature",
+        "properties": {
+          "description": "Ponton",
+          "title": "Ponton",
+          "name": "Ponton",
+          "color": "#000000",
+          "fillColor": "#000000",
+          "fillOpacity": 0.8
+        },
+        "geometry": {
+          "coordinates": [
+            -2.184708081947292,
+            47.313055832826166
+          ],
+          "type": "Point"
+        }
+    },
+    {
+        "id":2,
+        "type": "Feature",
+        "properties": {
+          "description": "MFT01",
+          "title": "MFT01",
+          "name": "MFT01",
+          "color": "#ff00e9",
+          "fillColor": "#ff00e9",
+          "fillOpacity": 0.8
+        },
+        "geometry": {
+            "coordinates": [
+                -2.1851178682240686,
+                47.313189812504305
+            ],
+            "type": "Point"
+        }
+    }
+    ]
+  }
+}

@@ -6,19 +6,20 @@ const zonenav_lon=[-1.4746555619712751,-1.4733794850961033,-1.4732841764495106,-
 
 const zoneconc_lon= [-1.4747445028388313,-1.4744189545636743,-1.4741350461847276,-1.4739079194809506,-1.4736921491121393,-1.4734763787433565,-1.4733401027220054];
 const zoneconc_lat = [47.2439195874486,47.24402752137087,47.2440943374981,47.244138024920545,47.24416372338749,47.24415601384845,47.24410975659259];
- 
-var geojsonZoneConcurents={
-  "type": "FeatureCollection",
+
+// Objet Javascript et non pas string geojson 
+const geojsonZoneConcurrents={"type": "FeatureCollection",
   "features": [
     {
-      "type": "Feature",
+      "type": "Feature",    
       "properties": {
-        "title": "ZC",
-        "description": "Zone de déplacement des concurrents"      
-      },
-      "infobox": true,
-      "color": "#ffffee",
-      "stroke-color": "#ffffee",      
+        "name":"ZC",
+        "title": "Zone Concurrents",
+        "description": "Zone de déplacement des concurrents",
+        "infobox": true,
+        "color": "#aaaa33",
+        "fill": "#ffffee"              
+      },     
       "geometry": {
         "coordinates": [
           [
@@ -54,21 +55,22 @@ var geojsonZoneConcurents={
       }
     }
   ]
-};
+}
 
-var geojsonZoneNav={
-  "type": "FeatureCollection",
+// Objet Javascript et non pas string geojson
+const geojsonZoneNav={"type":"FeatureCollection",
   "features": [
     {
       "type": "Feature",
       "properties": {
-        "title": "Zone de navigation",
-        "description": "Zone interdite aux pêcheurs"
+        "name":"ZN",      
+        "title": "ZN",
+        "description": "Zone de navigation réservée au modélisme naval",
+        "infobox": true,
+        "fill": "#ffffee",
+        "fill-opacity": "0.2",
+        "color": "#0000aa"       
       },
-      "infobox": true,
-      "fill": "#ffffee",
-      "fill-opacity": "0.2",
-      "stroke-color": "#0000aa",
       "geometry": {
         "coordinates": [
           [
@@ -106,9 +108,25 @@ var geojsonZoneNav={
       }
      }
     ]
-};
+}
 
-var geojsonBalises={
+// Repris "à la main" du fichier geojsonBalises
+// Le chargement dynamique du fichier des balises geojson dans la partie dessin est problématique pour des motifs que je n'arrive pas à cerner;
+// Un premier chargement fonctionne mais pas les rechargements suivants.
+const balisesTable = [{"id":1, "name":"Ponton", "lon":-1.4745214367317487, "lat":47.24395956032603, "color":"#000000", "fillcolor":"#000000"},
+{"id":2, "name":"ARBL01", "lon":-1.4743960142401136, "lat":47.243888635331786, "color":"#0000aa", "fillcolor":"#0033aa"},
+{"id":3, "name":"ARBL02", "lon":-1.4745009820620112, "lat":47.24378322913367, "color":"#0000ff", "fillcolor":"#00aaff"},
+{"id":4, "name":"ARBL03", "lon":-1.4743325961802896, "lat":47.24381885942171, "color":"#00aa00", "fillcolor":"#00aa33"},
+{"id":5, "name":"ARBL04", "lon":-1.473437527604915, "lat":47.24324818948409, "color":"#00ff00", "fillcolor":"#aaff00"},
+{"id":6, "name":"ARBL05", "lon":-1.473739759025733, "lat":47.24383827416719, "color":"#0000ff", "fillcolor":"#aa0000"},
+{"id":7, "name":"ARBL06", "lon":-1.4739887654452843, "lat":47.24395058704869, "color":"#ff0000", "fillcolor":"#ffaa00"},
+{"id":8, "name":"ARBL07", "lon":-1.4739376244419304, "lat":47.243720925304075, "color":"#ccaa00", "fillcolor":"#aaff00"},
+{"id":9, "name":"ARBL08", "lon":-1.4740416993153929, "lat":47.24356182462, "color":"#ffff00", "fillcolor":"#ffffaa"},
+{"id":10, "name":"ARBL09", "lon":-1.4736141033273782, "lat":47.24355121140542, "color":"#00aaaa", "fillcolor":"#00ffcc"}];
+
+
+// Objet Javascript et non pas string geojson
+const geojsonBalises={
   "type": "FeatureCollection",
   "features": [
     {
@@ -121,19 +139,12 @@ var geojsonBalises={
       },
       "id": 1,
       "properties": {
-        "description": "R&eacute;serv&eacute; au radio mod&eacute;lisme",
+        "description": "Ponton réservé au radio modélisme",
         "title": "Ponton",
         "name": "Ponton",
-        "marker-color": "#000000",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-black.png",
-        "size":15,      
         "color": "#000000",
         "fillColor": "#000000",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "Ponton r&eacute;serv&eacute; au radio mod&eacute;lisme !"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -147,19 +158,12 @@ var geojsonBalises={
       },
       "id": 2,
       "properties": {
-        "description": "D&eacute;part Nord",
+        "description": "ARBL01 - Départ Nord",
         "title": "ARBL01",
-        "name": "ARBL01",        
-        "marker-color": "#0000aa",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-navy.png",    
-        "size":15,      
-        "color": "#0000aa",            
+        "name": "ARBL01",
+        "color": "#0000aa",
         "fillColor": "#0033aa",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL01 - D&eacute;part Nord"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -173,19 +177,12 @@ var geojsonBalises={
       },
       "id": 3,
       "properties": {
-        "description": "D&eacute;part Ouest",
+        "description": "ARBL02 - Départ Ouest",
         "title": "ARBL02",
-        "name": "ARBL02",         
-        "marker-color": "#0000ff",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-green.png",            
-        "size":15,      
+        "name": "ARBL02",
         "color": "#0000ff",
         "fillColor": "#00aaff",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL02 - D&eacute;part Ouest"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -199,19 +196,14 @@ var geojsonBalises={
       },
       "id": 4,
       "properties": {
-        "description": "D&eacute;part Est",
+        "description": "ARBL03 - Départ Est",
         "title": "ARBL03",
-        "name": "ARBL03",         
-        "marker-color": "#00aa00",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-red.png",            
-        "size":15,      
-        "color": "#00aa00",        
+        "name": "ARBL03",
+        "color": "#00aa00",
         "fillColor": "#00aa33",
         "weight": 1,
         "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL03 - D&eacute;part Est"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -225,19 +217,12 @@ var geojsonBalises={
       },
       "id": 5,
       "properties": {
-        "description": "Sud Est",
+        "description": "ARBL04 - Sud Est",
         "title": "ARBL04",
-        "name": "ARBL04",         
-        "marker-color": "#00ff00",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-blue.png",            
-        "size":15,      
-        "color": "#00ff00",        
+        "name": "ARBL04",
+        "color": "#00ff00",
         "fillColor": "#aaff00",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL04 - Sud Est"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -251,19 +236,12 @@ var geojsonBalises={
       },
       "id": 6,
       "properties": {
-        "description": "Nord Est",
+        "description": "ARBL05 - Nord Est",
         "title": "ARBL05",
-        "name": "ARBL05",         
-        "marker-color": "#aa0000",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-pink.png",            
-        "size":15,      
-        "color": "#0000ff",        
+        "name": "ARBL05",
+        "color": "#0000ff",
         "fillColor": "#aa0000",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL05 - Nord Est"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -277,19 +255,12 @@ var geojsonBalises={
       },
       "id": 7,
       "properties": {
-        "description": "Nord",
+        "description": "ARBL06 - Nord",
         "title": "ARBL06",
-        "name": "ARBL06",         
-        "marker-color": "#ff0000",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-yellow.png",            
-        "size":15,      
-        "color": "#ff0000",        
+        "name": "ARBL06",
+        "color": "#ff0000",
         "fillColor": "#ffaa00",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL06 - Nord"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -303,19 +274,12 @@ var geojsonBalises={
       },
       "id": 8,
       "properties": {
-        "description": "Centre",
+        "description": "ARBL07 - Centre",
         "title": "ARBL07",
-        "name": "ARBL07",         
-        "marker-color": "#aaaa00",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-orange.png",            
-        "size":15,      
-        "color": "#aaaa00",        
+        "name": "ARBL07",
+        "color": "#ccaa00",
         "fillColor": "#aaff00",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL07 - Centre"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -329,19 +293,12 @@ var geojsonBalises={
       },
       "id": 9,
       "properties": {
-        "description": "Ouest",
+        "description": "ARBL08 - Ouest",
         "title": "ARBL08",
-        "name": "ARBL08",         
-        "marker-color": "#ffff00",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-vertclair.png",            
-        "size":15,      
-        "color": "#ffff00",        
+        "name": "ARBL08",
+        "color": "#ffff00",
         "fillColor": "#ffffaa",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL08 - Ouest"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     },
@@ -355,24 +312,18 @@ var geojsonBalises={
       },
       "id": 10,
       "properties": {
-        "description": "Est",
+        "description": "ARBL09 - Est",
         "title": "ARBL09",
-        "name": "ARBL09",         
-        "marker-color": "#00aaaa",
-        "marker-size": "little",
-        "marker-symbol": "../images/marker-icon-purple.png",            
-        "size":15,      
-        "color": "#00aaaa",        
+        "name": "ARBL09",
+        "color": "#00aaaa",
         "fillColor": "#00ffcc",
-        "weight": 1,
-        "opacity": 1,
-        "fillOpacity": 0.8,
-        "popupContent": "ARBL10 - Est"
+        "fillOpacity": 0.8
       },
       "type": "Feature"
     }
   ]
-};
+}
+
 
 function popupInfo(feature, layer) {
     // does this feature have a property named popupContent?
@@ -380,14 +331,6 @@ function popupInfo(feature, layer) {
         layer.bindPopup(feature.properties.popupContent);
     }
 }
-
-/*
-function setStyleColor(feature) {
-    if (feature.properties && feature.properties.color && feature.properties.fillcolor) {
-        style: '{"marker-color":'+feature.properties.color+', "fillcolor": '+feature.properties.fillcolor+'}';        
-    }
-}
-*/
 // Ne fonctionne pas
 function setStyleColor(feature) {
     if (feature.properties && feature.properties.color && feature.properties.fillcolor) 

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sites>
+	<site>
+		<id>1</id>
+		<name>Le Plessis</name>
+		<city>Sainte-Luce-sur-Loire</city>
+		<zipcode>44980</zipcode>
+		<country>France</country>
+		<lon>-1.47402</lon>
+		<lat>47.24338</lat>
+		<club>ARBL</club>
+        <email>bureau-arbl@laposte.net</email>
+		<url>https://www.arbl.fr</url>
+		<json>leplessis.json</json>
+	</site>
+	<site>
+		<id>2</id>
+		<name>La Minais</name>
+		<city>Sainte-Luce-sur-Loire</city>
+		<zipcode>44980</zipcode>
+		<country>France</country>
+		<lon>-1.46507</lon>
+		<lat>47.25533</lat>
+		<club>ARBL</club>
+        <email>bureau-arbl@laposte.net</email>
+		<url>https://www.arbl.fr</url>
+		<json>laminais.json</json>
+	</site>
+	<site>
+		<id>3</id>
+		<name>La Plage Verte</name>
+		<city>Sucée-sur-Erdre</city>
+		<zipcode>44240</zipcode>
+		<country>France</country>
+		<lon>-1.518302</lon>
+		<lat>47.3401461</lat>
+		<club>AMSEG</club>
+        <email></email>
+		<url>https://modelismesuceen.fr/</url>
+		<json>laplageverte.json</json>
+	</site>
+	<site>
+		<id>4</id>
+		<name>Plan d'eau du Chêne</name>
+		<city>Saint-Julien-de-Concelles</city>
+		<zipcode>44450</zipcode>
+		<country>France</country>
+		<lon>-1.36899</lon>
+		<lat>47.25326</lat>
+		<club>CAP Sport et Nature</club>
+        <email></email>
+		<url>https://www.capsn.org/voile-radiocommandee/</url>
+		<json>planeauduchene.json</json>
+	</site>	
+	<site>
+		<id>5</id>
+		<name>Plan d'eau de l'Emprunt</name>
+		<city>Trignac</city>
+		<zipcode>44570</zipcode>
+		<country>France</country>
+		<lon>-2.184745</lon>
+		<lat>47.313416</lat>
+		<club>Mini-Flotte Trignac</club>
+        <email>miniflotte@miniflottetrignac.fr</email>
+		<url>https://miniflottetrignac.fr/</url>
+		<json>lemprunt.json</json>
+	</site>	
+    	<site>
+		<id>6</id>
+		<name>Etang du Bois Joalland</name>
+		<city>Saint Nazaire</city>
+		<zipcode>44600</zipcode>
+		<country>France</country>
+		<lon>-2.255556</lon>
+		<lat>47.279069</lat>
+		<club>SNOS</club>
+        <email>contactsnosvoile@gmail.com</email>
+		<url>https://www.snos-voile.com/</url>
+		<json>boisjoalland.json</json>
+	</site>	
+
+</sites>
+

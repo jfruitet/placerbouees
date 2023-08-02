@@ -1,0 +1,1 @@
+{"twd":60,"boueesfixes":[{"id":9,"lon":-1.4740406255191787,"lat":47.243562087902475,"color":"yellow","fillcolor":"green"}],"boueesmobiles":[{"id":0,"lon":-1.4741019592275302,"lat":47.24362553309908,"color":"yellow","fillcolor":"red"}]}

@@ -1,14 +1,20 @@
 // JavaScript Document
 // Zone de dessin
+// Version sans rectangle ni calcule d'intériorité
 
- let rectangle = {x1:0,y1:0,x2:0,y2:0}; // le rectangle à tracer
- let oksaisierectangle=0; // état de la saisie 0: aucun sommet; 1 : un sommet; 2: deux sommets 
- let saisir_encore=true; 
- 
-  // Saisie des emplacements de bouees de départ et des portes au vent et sous le vent
- let bouees = []; // [{"id":0,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green","flag":"green"}, ... {"id":5,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"yellow","flag":"green"}]
- let nbouees=0; // indice dans le tableau bouees 
- let MAXBOUEE=10; // A priori par paires perpendiculaires à la direction du vent
+// let rectangle = {x1:0,y1:0,x2:0,y2:0}; // le rectangle à tracer
+// let oksaisierectangle=0; // état de la saisie 0: aucun sommet; 1 : un sommet; 2: deux sommets 
+
+
+let saisir_encore=true; 
+let compteur=0; // Compteur de bouées, permet de d'activer babord ou tribord automatiquement 
+// Balies : bouées fixes du plan d'eau
+let balisesEcran = []; // [{"x", "y", id":0,"name":"ARBL0","color":"green","fillcolor":"green"},...]
+
+// Saisie des emplacements de bouees de départ et des portes au vent et sous le vent
+let bouees = []; // [{"id":0,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green","flag":"green"}, ... {"id":5,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"yellow","flag":"green"}]
+let nbouees=0; // indice dans le tableau bouees 
+let MAXBOUEE=20; // A priori par paires perpendiculaires à la direction du vent
 
 let babord=false;
 let depart=false;
@@ -20,7 +26,7 @@ const ctx = canvas.getContext("2d");
 canvas.height=canvas.width;
 canvasw=canvas.width;
 canvash=canvas.height;
-// console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
+//console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
 
 const canvas2 = document.getElementById("canvas2");
 const ctx2 = canvas2.getContext("2d");
@@ -30,26 +36,9 @@ const canvas3 = document.getElementById("canvas3");
 const ctx3 = canvas3.getContext("2d");
 canvas3.height=canvas3.width;
 
- /*   
-ctx.save(); // save state
-ctx.transform(1, 0, 0, -1, 0, canvasw); // scale h, skew h, skew v, scale v, move h, move v  
+const canvas4 = document.getElementById("canvas4");
+const ctx4 = canvas4.getContext("2d");
 
-const xArray = [50,60,70,80,90,100,110,120,130,140,150];
-const yArray = [7,8,8,9,9,9,10,11,14,14,15];
-
-ctx.fillStyle = "red";
-
-
-for (let i = 0; i < xArray.length-1; i++) {
-  let x = xArray[i]*canvasw/150;
-  let y = yArray[i]*canvasw/15;
-  ctx.beginPath();
-  ctx.ellipse(x, y, 3, 3, 0, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-ctx.restore(); // restore to original state
-*/
 
 // Secteurs du vent 
 function secteur_vent(twd){
@@ -65,15 +54,15 @@ function affiche_fleche_TWD(){
     // console.debug("twd "+twd);
     if (((twd>90) && (twd<=135)) || ((twd>225) && (twd<=270))){
         // console.debug("twd bas "+twd);
-        ctx2.translate(canvas2.width/2, 120);        
+        ctx2.translate(canvas2.width/2, 100);        
     }
     else if ((twd>135) && (twd<=225)){
         // console.debug("twd bas "+twd);
-        ctx2.translate(canvas2.width/2, 140);        
+        ctx2.translate(canvas2.width/2, 120);        
     }
     else{
         // console.debug("twd haut "+twd);
-        ctx2.translate(canvas2.width/2, 100);
+        ctx2.translate(canvas2.width/2, 90);
     }
     ctx2.rotate(Math.PI-twd_radian); // PI - twd_radian parce que j'ai construit la flèche horizontalement !:>((
     //ctx2.rotate(-twd_radian);
@@ -90,25 +79,100 @@ function affiche_fleche_TWD(){
     ctx2.stroke();  
     ctx2.restore(); // restore to original stat  
 
-    ctx2.font = "32pt Calibri";
+    ctx2.font = "16pt Calibri";
     ctx2.fillStyle = "green";
     var msg="TWD "+ twd +"° : "+secteur_vent(twd);
-    ctx2.fillText(msg, 10, 50); 
-    ctx2.font = "20pt Calibri";
+    ctx2.fillText(msg, 14, 24); 
+    ctx2.font = "12pt Calibri";
     ctx2.fillStyle = "black";
-    ctx2.fillText("Direction d'où vient le vent", 5, 80);     
-    // ctx.drawImage(canvas2, canvas.width-100, 5);
-    
-    // ctx2.resetTransform();
+    ctx2.fillText("Direction d'où vient", 14, 48); 
+    ctx2.fillText("le vent", 14, 64);     
 }
 
+//
+function drawPetitDrapeau(x, y, flag)   { 
+    // Drapeau de la balise mobile 
+    ctx4.beginPath();    
+    ctx4.strokeStyle = flag;
+    ctx4.fillStyle = flag;
+    ctx4.moveTo(x, y-6);
+    ctx4.lineTo(x, y-24);
+    ctx4.lineTo(x+10, y-18);
+    ctx4.lineTo(x, y-16);
+    ctx4.fill();
+    ctx4.lineWidth = 2;
+    ctx4.stroke();       
+}
 
-function setMouseXPos(xmousecoord){  // retourne ue position dans le canvas en fonction de la position de la souris 
-    return Math.round(xmousecoord * (canvasw*zoom) / cw);
+//
+function drawPetiteBalise(x, y, fillcolor, flag){
+    // Corps de la balise mobile        
+ 
+    ctx4.beginPath();
+    ctx4.fillStyle = fillcolor; 
+    ctx4.strokeStyle = "black"; 
+    ctx4.ellipse(x, y, 8, 6, 0, 0, Math.PI * 2);
+    ctx4.fill();  
+    ctx4.stroke(); 
+    drawPetitDrapeau(x, y, flag);
+}
+
+//
+function drawPetiteBaliseAncree(x, y, fillcolor, flag){
+    // Corps de la balise ancrée        
+    ctx4.beginPath();
+    ctx4.fillStyle = fillcolor; 
+    ctx4.strokeStyle = "black"; 
+    ctx4.rect(x-5, y-5, 10, 10);
+    ctx4.fill();  
+    ctx4.stroke(); 
+    drawPetitDrapeau(x, y, flag);
+}
+
+// Affiche la légende dans le canvas4
+function affiche_legende(){
+    ctx4.clearRect(0, 0, canvas4.width, canvas4.height);
+    ctx4.font = "16pt Calibri";
+    ctx4.beginPath(); 
+    ctx4.fillStyle = "#0033aa";
+    ctx4.fillText("Légende", 14, 24); 
+    ctx4.font = "12pt Calibri";
+    ctx4.fillText("Bouées fixes", 14, 48);
+    ctx4.fillText("Balises mobiles", 14, 128);     
+    ctx4.font = "10pt Calibri";
+    ctx4.fillText("Balises ancrées", 14, 90);     
+    ctx4.fillText("Départ tribord", 14, 166); 
+    ctx4.fillText("Arrivée bâbord", 14, 204);
+    ctx4.fillText("Dog leg tribord", 14, 240);
+    ctx4.fillText("Porte bâbord", 14, 274);
+       
+    ctx4.stroke(); 
+    // dot     
+    var x=120;
+    var y=42;  
+    ctx4.beginPath();    
+    ctx4.fillStyle = "#0033aa";   
+    ctx4.ellipse(x, y, 6, 6, 0, 0, Math.PI * 2);
+    ctx4.fill();   
+    ctx4.stroke();  
+    drawPetiteBaliseAncree(120, 88, "yellow", "red");    
+    drawPetiteBalise(120, 164, "yellow", "green");
+    drawPetiteBalise(120, 202, "blue", "red");
+    drawPetiteBalise(120, 238, "black", "green");
+    drawPetiteBalise(120, 272, "purple", "red");    
+}
+
+/******************************************
+ *  Mouse To Canvas
+ * ****************************************/
+function setMouseXPos(xmousecoord){  // retourne une position dans le canvas en fonction de la position de la souris 
+    //return Math.round(xmousecoord * (canvasw*zoom) / cw);
+    return Math.round(xmousecoord * (canvasw) / cw);
 }
 
 function setMouseYPos(ymousecoord){
-    return Math.round(ymousecoord * (canvash*zoom) / ch);
+    //return Math.round(ymousecoord * (canvash*zoom) / ch);
+    return Math.round(ymousecoord * (canvash) / ch);
 }
 
 function affiche_dot(){
@@ -138,18 +202,24 @@ function clearCanvas(){
 function zoomOut() {
     zoom-=0.1;
     zoomfactor--;
+    //nbouees=0;
+    //bouees.lenth=0;
     drawAll();
 }
 
 function zoomIn() {
   zoom+=0.1;
   zoomfactor++;
+  //nbouees=0;
+  //bouees.lenth=0;
   drawAll();
 }
 
 function zoomReset() {
   zoom=1;
   zoomfactor=1;
+  //nbouees=0;
+  //bouees.lenth=0;  
   drawAll();
 }
   
@@ -157,16 +227,21 @@ function zoomReset() {
 // cavasw est défini plus haut
 
 function get_Xecran_lon(lon){
-    return Math.round(zoom * canvasw * (1 - (lon-lonmax) / (lonmin-lonmax)));
+    // return Math.round(zoom * canvasw * (1 - (lon-lonmax) / (lonmin-lonmax)));
+    return Math.round((lon-lonmax) * (cw*zoom) / (lonmin-lonmax));
 }  
    
 function get_Yecran_lat(lat){  
-    return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax)); 
+    //return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax)); 
+    return Math.round((lat-latmax) * (zoom*ch) / (latmin-latmax));
 }    
+
+
 
 // et hop!
 function set_X_Ecran_polygone_navigation(){
   var index=0;
+  poly_xecran.length=0;
   while (index<zonenav_lon.length){
     poly_xecran[index]=get_Xecran_lon(zonenav_lon[index]);
     index++;
@@ -175,6 +250,7 @@ function set_X_Ecran_polygone_navigation(){
 
 function set_Y_Ecran_polygone_navigation(){
   var index=0;
+  poly_yecran.length=0;
   while (index<zonenav_lat.length){
     poly_yecran[index]=get_Yecran_lat(zonenav_lat[index]);
     index++;
@@ -183,6 +259,7 @@ function set_Y_Ecran_polygone_navigation(){
 
 function set_X_Ecran_ligne_concurrents(){
   var index=0;
+  ligne_xecran.length=0;
   while (index<zoneconc_lon.length){
     ligne_xecran[index]=get_Xecran_lon(zoneconc_lon[index]);
     index++;
@@ -191,6 +268,7 @@ function set_X_Ecran_ligne_concurrents(){
 
 function set_Y_Ecran_ligne_concurrents(){
   var index=0;
+  ligne_yecran.length=0;
   while (index<zonenav_lat.length){
     ligne_yecran[index]=get_Yecran_lat(zoneconc_lat[index]);
     index++;
@@ -200,16 +278,32 @@ function set_Y_Ecran_ligne_concurrents(){
 // Comme son nom l'indique trace le contenu du canvas
 function drawAll(){    
     ctx3.clearRect(0, 0, canvas3.width, canvas3.height); // Pour le cas où il y aurait des scories
-    init_ecran_ZN(); 
+    document.getElementById("typebouee").style.visibility="hidden";
+    document.getElementById("bdelete").style.visibility="hidden";
+    document.getElementById("transfert").style.visibility="hidden";
+    document.getElementById("breset").style.visibility="hidden";
+    document.getElementById("bvalider").style.visibility="hidden";
+    document.getElementById("bannuler").style.visibility="hidden";
+    document.getElementById("zoomv").innerHTML=zoomfactor;
+    //document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"";
+    // Passer la main au canvas
+    document.getElementById("canvas1").style.zIndex=2;
+    //document.getElementById("canvas3").style.zIndex=0;    
+    document.getElementById("canvas3").hidden=true;
+    init_ecran_ZN(); // tenir compte du zoom
+    
+    init_ecran_bouees_fixes(); // Toutes les bouées fixes sont placées dans un tableau
+
     clearCanvas();
     draw_scale(); 
     draw_Ecran_poly_navigation(); 
     draw_Ecran_ligne_concurrents();
-    document.getElementById("zoomv").innerHTML=zoomfactor;
-    document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"";
-    // Passer la main au canvas
-    document.getElementById("canvas1").style.zIndex=2;
-    document.getElementById("canvas3").style.zIndex=0;    
+    //console.debug("draw_Ecran_bouees_fixes()"); 
+    draw_Ecran_bouees_fixes();
+
+    if ((bouees !== undefined) && (bouees.length>0)){
+        drawBoueesContexte1();
+    }   
 }
 
 function draw_Ecran_poly_navigation(){
@@ -251,8 +345,14 @@ function init_ecran_ZN(){
     rectangle_englobantZN(); // Pour les fonctions de changement de repère
     set_X_Ecran_polygone_navigation();  // table des X
     set_Y_Ecran_polygone_navigation();  // Table des Y
+    //console.debug("canvas.js :: 341\n");
+    //console.debug("Poly_xecran "+poly_xecran.toString());
+    //console.debug("Poly_yecran "+poly_yecran.toString());
+    
     set_X_Ecran_ligne_concurrents();  // table des X
     set_Y_Ecran_ligne_concurrents();  // Table des Y   
+    
+    
 }
 
 
@@ -265,13 +365,14 @@ function init_ecran_ZN(){
 // Ne pas oublier que la définition sur la grille du canevas est très grossière par rapport
 // à la grille du monde réel 
 function get_lon_Xecran(x){
-    //lon = lonmin -  x  * (lonmin-lonmax) / (zoom*canvasw)
-    return (lonmin -  x  * (lonmin-lonmax) / (zoom*canvasw));
+    return (x * (lonmin-lonmax) / (zoom*canvasw) + lonmax*1.0);
 } 
  
 function get_lat_Yecran(y){
-    return (y * (latmin-latmax) / (zoom * canvash) + latmax);
+    return (y * (latmin-latmax) / (zoom*canvash) + latmax*1.0);
 } 
+
+
 
 // Conversion des coordonnées d'un point cliqué à la souris en coordonnées géographiques lon, lat 
 // cw et ch sont définis plus haut
@@ -279,7 +380,6 @@ function get_lat_Yecran(y){
 // à la grille du monde réel 
 
 function get_lon_MouseXecran(x){
-    //lon = lonmin -  x  * (lonmin-lonmax) / cw
     return (lonmin -  x  * (lonmin-lonmax) / cw);
 } 
  
@@ -295,285 +395,6 @@ function screen2earth() {
   document.getElementById("lat").innerHTML = "<i>"+lat+"</i>";
 }
 
-/*************************************************
- * Saisie d'un rectangle de "parcours de régate"
- * ***********************************************/
- 
-
- 
- // storeRect() enregistre le coordonnées cliquées dans une structure
-function storeRect(){
-    xcoord= event.offsetX;
-    ycoord= event.offsetY;
-    var x = setMouseXPos(xcoord);
-    var y = setMouseYPos(ycoord);
-    // console.debug("StoreRect() :: X:"+x+" Y:"+y+"\n");
-    if (oksaisierectangle==0) {
-        rectangle.x1=x;
-        rectangle.y1=y;
-        drawCible(x,y);
-        oksaisierectangle=1;
-    }
-    else if (oksaisierectangle==1) {
-        rectangle.x2=x;
-        rectangle.y2=y;
-        drawCible(rectangle.x1,rectangle.y1);
-        drawCible(x,y);
-        oksaisierectangle=2;      
-    }
-    if (oksaisierectangle==2){
-        // Tracer le rectangle
-        drawRectangle();  
-        // await sleep(5000);
-        //console.debug("et la suite... placer les bouees");
-        placerBouees();             
-    }
- }
- 
- 
-  /*******************************************
-  *     Saisie des emplacements de bouées    *
-  ********************************************/
- 
- function boueesReset(){ // raz bouees[]
-    nbouees=0;
-    bouees.length=0;
-    saisir_encore=true;
-    drawAll();
-    document.getElementById("bvalider").style.visibility="hidden";
-    document.getElementById("transfert").style.visibility="hidden";
-    document.getElementById("breset").style.visibility="hidden";
-}
-
-// arrête la saisie des bouées
- function boueesValider(){
-    saisir_encore=false;
-    drawBouees();
-    document.getElementById("transfert").style.visibility="visible"; 
-    removeEvent(canvas3,"dblclick");
-    removeEvent(canvas3,"mouseover");      
- }
-
-
- // saisie des 6 boues du parcours
- function placerBouees(){
-    document.getElementById("consigne").innerHTML="Double clic pour placer une à une les 6 bouées dans le rectangle."; 
-    // document.getElementById("canvas3").addEventListener("dblclick", nouvelleBouee((nbouees>=0) && (nbouees<MAXBOUEE)));
-    removeEvent(canvas3,"click");
-    removeEvent(canvas3,"mouseover");
-    addEvent(canvas3,"dblclick",nouvelleBouee());   
-}
-
-
-// ---------------------
-function nouvelleBouee() {
-    if ((nbouees>=0) && (nbouees<MAXBOUEE) && saisir_encore==true)
-    {
-        document.getElementById("consigne").innerHTML = document.getElementById("consigne").innerHTML  + "Bouée N°:"+nbouees;
-        babord=document.getElementById("babord").checked;
-        var flag = "green";
-        if (babord) { flag="red";} else {flag="green";}
-        
-        depart=document.getElementById('depart').checked;
-        porte=document.getElementById('porte').checked;
-        arrivee=document.getElementById('arrivee').checked;
-        
-        xcoord= event.offsetX;
-        ycoord= event.offsetY;
-        var x = setMouseXPos(xcoord);
-        var y = setMouseYPos(ycoord);
-        //console.debug("nouvelleBouee() :: N°:"+nbouees+" X:"+x+" Y:"+y+"\n");
-        if ((x>=rectangle.x1) && (x<=rectangle.x2) && (y>=rectangle.x1) && (y<=rectangle.y2))
-        {
-            //if (nbouees % 2)
-            if (depart)
-            { 
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"red"}';
-                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"yellow","flag":flag};
-                drawBoueeColor(x,y,"yellow",flag, ctx3); 
-            }
-            else if (arrivee)
-            { 
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green"}';
-                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"blue","flag":flag};
-                drawBoueeColor(x,y,"blue",flag, ctx3); 
-            }
-            else if(porte)
-            {
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green"}';
-                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"purple","flag":flag};
-                drawBoueeColor(x,y,"purple",flag, ctx3); 
-            } 
-            else
-            {
-                //bouees[nbouees]='{"id":'+nbouees+',"x":'+x+',"y":'+y+',"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"green"}';
-                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":0,"cy":0,"lon":0.0,"lat":0.0,"color":"black","flag":flag};
-                drawBoueeColor(x,y,"black",flag, ctx3);  
-            }
-           nbouees++;            
-        }
-    }
-    else if (nbouees>0){ // afficher les bouées
-        /*
-        var msg="";
-        document.getElementById("consigne").innerHTML = "Bouées ";
-        for (var index=0; index<bouees.length; index++){
-            msg= msg + bouees[index] + " ";
-        }
-        */        
-        document.getElementById("consigne").innerHTML = "Les bouées sont placées. Cliquer sur \"Transférer\" ";
-        boueesValider();       
-    }
-    // Dessiner les bouées... 
-    drawBouees(ctx3);
-}
-
-// Dessine toutes les bouées placées sur le canvas
-function drawBouees(){
-    if ((bouees !== undefined) && (bouees.length>0)){
-        for (var index=0; index<bouees.length; index++){
-            drawBoueeColor(bouees[index].x,bouees[index].y,bouees[index].color,bouees[index].flag,ctx3);
-        }    
-    }
-}
- 
-// Trace une petitebouee circulaire
-function drawBoueeColor(x,y,color,flag ,contxt){   
-    contxt.fillStyle=color;
-    contxt.strokeStyle = color;
-    contxt.beginPath();
-    contxt.ellipse(x, y, 4, 3, 0, 0, Math.PI * 2);
-    contxt.fill();   
-    contxt.strokeStyle = flag;
-    contxt.beginPath();
-    contxt.moveTo(x+5, y+5);
-    contxt.lineTo(x-5, y-5);
-    contxt.moveTo(x+5, y-5);
-    contxt.lineTo(x-5, y+5);
-    contxt.lineWidth = 0.5;
-    contxt.stroke();   
-     
-}
-
- // Trace une petite cible
-function drawCible(x,y){
-    ctx3.clearRect(0, 0, canvas3.width, canvas3.height); 
-    ctx3.beginPath();
-    ctx3.moveTo(x+5, y+5);
-    ctx3.lineTo(x-5, y-5);
-    ctx3.moveTo(x+5, y-5);
-    ctx3.lineTo(x-5, y+5);
-    ctx3.lineWidth = 0.5;
-    ctx3.strokeStyle = "orange";
-    ctx3.stroke();   
-}
-
- 
- // dessine un rectangle de diagonale rectangle.x1, rectangle.y1, rectangle.x2, rectangle.y2
-function drawRectangle(){
-    if (rectangle.x2<rectangle.x1){
-        var aux=rectangle.x1;
-        rectangle.x1=rectangle.x2;
-        rectangle.x2=aux;
-    }
-    if (rectangle.y2<rectangle.y1){
-        var aux=rectangle.y1;
-        rectangle.y1=rectangle.y2;
-        rectangle.y2=aux;
-    }
-        
-    ctx3.rect(rectangle.x1, rectangle.y1, rectangle.x2-rectangle.x1, rectangle.y2-rectangle.y1);
-    ctx3.lineWidth = 0.5;
-    ctx3.strokeStyle = "pink";
-    ctx3.stroke(); 
-    //ctx3.restore(); // restore to original stat 
-}
-
-
-
- 
- // redessine le plan d'eau avec le vent "face au nord"
- // et traite les coordonnées saisies à la souris
- function ajouterBouees(){
-    zoomReset();
-    clearCanvas();
-    ctx.save(); // save state  
-    ctx.transform(1, 0, 0, 1, 0, 0); // Réinitialisation : scale h, skew h, skew v, scale v, move h, move v  
-    ctx.translate(canvasw/2, canvash/2+20);// T1
-    //ctx.rotate(Math.PI - twd_radian + Math.PI / 2.0); // PI - twd_radian parce que j'ai construit la flèche horizontalement !:>((
-    ctx.rotate(twd_radian - Math.PI / 2);   // R
-    ctx.translate(-canvasw/2, -canvash/2-20);       // T2
-    init_ecran_ZN(); 
-
-    draw_Ecran_poly_navigation(); 
-    draw_Ecran_ligne_concurrents();
-    ctx.restore(); // restore to original stat        
-    ctx.beginPath();
-    ctx.moveTo(canvasw/2, 0);
-    ctx.lineTo(canvasw/2,20);
-    ctx.lineTo(canvasw/2-3,20);
-    ctx.lineTo(canvasw/2,25);
-    ctx.lineTo(canvasw/2+3,20);
-    ctx.lineTo(canvasw/2,20);
-    //ctx.closePath();   
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "red";
-    ctx.stroke(); 
-    
-    document.getElementById("zoomv").innerHTML=zoomfactor;
-    document.getElementById("consigne").innerHTML="La figure globale est ramenée face au vent. Positionnez le rectangle de la régate.";
-    document.getElementById("typebouee").style.visibility="visible";
-    document.getElementById("breset").style.visibility="visible";
-    document.getElementById("bvalider").style.visibility="visible";
-    
-    // Placerle canvas3 au dessus des autres
-    document.getElementById("canvas1").style.zIndex=0;
-    document.getElementById("canvas3").style.zIndex=2;
-    
-    oksaisierectangle=0; 
-    document.getElementById("canvas3").onclick = function() {storeRect()};
-    
- }
- 
- 
- // Affiche les coordonnées quand on clique dans le Canvas
-function show_reticule(x,y) {
-  // On veut les coordonnées relatives au canvas
-    //ctx3.save(); // save state  
-    //ctx3.transform(1, 0, 0, 1, 0, 0); // Réinitialisation : scale h, skew h, skew v, scale v, move h, move v 
-
-    ctx3.clearRect(0, 0, canvas3.width, canvas3.height); 
-    ctx3.beginPath();
-    ctx3.moveTo(x, 0);
-    ctx3.lineTo(x, canvas3.height);
-    ctx3.moveTo(0,y);
-    ctx3.lineTo(canvas3.width,y);
-    ctx3.lineWidth = 0.5;
-    ctx3.strokeStyle = "pink";
-    ctx3.stroke(); 
-    //ctx3.restore(); // restore to original stat 
-}
-
-// Appelée qd la souris passe sur le canvas 3
-async function myMoveFunction(){
-// Affiche un réticule quand la souris se déplace
-  xcoord= event.offsetX;
-  ycoord= event.offsetY;
-  var x = xcoord; // setMouseXPos(xcoord);
-  var y = ycoord // setMouseYPos(ycoord);
-  show_reticule(x,y);
-  document.getElementById("coordx").innerHTML = x;
-  document.getElementById("coordy").innerHTML = y;
-  await sleep(200);
-    // Let's go reticule  
-}
-
-
-function drawReticule(){
-// Fonction destinée à récupérer les évènement souris sur le canvas3
-// Elle ne fait rien mais est indispensable !:>))
-    ;
-}
 
 function draw_scale(){
 // calcule et affiche l'échelle en mètres
@@ -583,8 +404,8 @@ function draw_scale(){
 // Sur les latitudes la formule 
     var anglelon=lonmax-lonmin;
     var anglelat=latmax-latmin;
-    var dlon =  6378137 * anglelon * Math.PI / 180.0;
-    var dlat =  6356752 * anglelat * Math.PI / 180.0;  
+    var dlon =  Math.abs(6378137 * anglelon * Math.PI / 180.0);
+    var dlat =  Math.abs(6356752 * anglelat * Math.PI / 180.0);  
     var echellex=canvasw * zoom / dlon;
     var echelley=canvash * zoom / dlat;
     // console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
@@ -614,8 +435,8 @@ function draw_scale(){
         ctx.moveTo(index*dw, maxh-1);
         ctx.lineTo(index*dw,maxh-5);
     }
-    ctx.lineWidth = 0.3;
-    ctx.strokeStyle = "black";
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = "Black";
     ctx.stroke(); 
     ctx.font = "9pt Calibri";
     ctx.fillStyle = "black";
@@ -624,30 +445,84 @@ function draw_scale(){
     ctx.restore(); // restore to original stat 
 }
 
+ 
+/** **************************************************
+ * Transfert des positions des bouées de l'écran d'affichage 
+ * vers l'écran de saisie
+ * ***************************************************/
+
+// Passer du canavas d'affichage vers le canvas de saisie
+/*
+    ctx.translate(-canvasw/2, -(canvash/2+20);// T1
+    ctx.rotate(Math.PI / 2 - twd_radian);   // R
+    ctx.translate(canvasw/2, canvash/2-20);       // T2
+
+
+    M = [sin(𝛼)   cos(𝛼)] 
+       [-cos(𝛼)  sin(𝛼)]
+       
+    ctx.translate(+canvasw/2, (canvash/2+20);   
+*/
+
+//---------------------------
+function fromDisplayToSaisieCoordLonLat(x, y){
+    // Appliquer les transformations inverses (T) ° (-R) ° (-T)
+    var cx=setDisplayToSaisieX(x,y,twd_radian); 
+    var cy=setDisplayToSaisieY(x,y,twd_radian);
+    return {"lon":get_lon_Xecran(cx),"lat":get_lat_Yecran(cy)};
+}
+
+
+function setDisplayToSaisieX(x,y, radian){
+// On applique une translation T1, une rotation R  de (twd_radian - PI/2) et une translation -T1   
+    var x0 = x - canvasw/2; // Translation T1
+    var y0 = y - (canvash/2+20);
+    var x1 = x0*Math.sin(radian) + y0*Math.cos(radian); // Rotation R
+    return Math.round(x1) + canvasw/2; // Translation -T1
+}
+ 
+
+function setDisplayToSaisieY(x,y,radian){
+// On applique une translation T, une rotation R  et une translation -T   
+    var x0 = x - canvasw/2; // Translation T1
+    var y0 = y - (canvash/2+20);
+    var y1 = - x0 * Math.cos(radian) + y0*Math.sin(radian);
+    return Math.round(y1) + (canvash/2+20);
+}
+ 
+
 
 /** **************************************************
  * Transfert des positions des bouées vers la carte  *
  * ***************************************************/
- 
-// A suivre
 
-// Repasser dans le repère du canavas d'origine avant la rotation + Translation
+// Repasser dans le repère du canavas d'origine 
 /*
+    ctx.translate(-canvasw/2, -canvash/2+20); 
     ctx.rotate(twd_radian - Math.PI / 2); --> Math.PI / 2 - twd_radian
     M = [sin(𝛼)   -cos(𝛼)] 
        [cos(𝛼)  sin(𝛼)]
-    ctx.translate(-canvasw/2, -canvash/2-20);   
+    ctx.translate(canvasw/2, canvash/2-20);   
 */
 
-function setCanvasX(x,y, radian){
-// On applique une translation -T1, une rotation inverse R  et une translation T2   
+//---------------------------
+function fromScreenToGeoCoord(x, y){
+    // Ne pas oublier d'appliquer les transformations inverses (-T) ° TR ° (T)
+    var cx=setSaisieToDisplayX(x,y,twd_radian); 
+    var cy=setSaisieToDisplayY(x,y,twd_radian);
+    return {"lon":get_lon_Xecran(cx),"lat":get_lat_Yecran(cy)};
+}
+
+
+function setSaisieToDisplayX(x,y, radian){
+// On applique une translation -T, une rotation inverse R  et une translation T   
     var x0 = x - canvasw/2; // Translation T1
     var y0 = y - (canvash/2+20);
     var x1 = x0*Math.sin(radian) - y0*Math.cos(radian); // Rotation R
     return Math.round(x1) + canvasw/2; // Translation T2
 }
  
-function setCanvasY(x,y,radian){
+function setSaisieToDisplayY(x,y,radian){
 // On applique une translation T1, une rotation R  et une translation T2   
     var x0 = x - canvasw/2; // Translation T1
     var y0 = y - (canvash/2+20);
@@ -655,43 +530,98 @@ function setCanvasY(x,y,radian){
     return Math.round(y1) + (canvash/2+20);
 }
  
+ 
+ 
+// -----------------------
+function init_ecran_bouees_fixes(){  
+    // Les balises sont des bouées fixes stockées dans une table initialisée dans le script sitenavigation.js 
+    
+    if ((balisesTable!==undefined) && (balisesTable.length>0)){
+        balisesEcran.length=0;
+        for (var index=0; index<balisesTable.length; index++) {
+            // console.debug(balisesObj.features[item]);                                 
+            balisesEcran[index]=(JSON.parse('{"id":'+balisesTable[index].id+',"x":'+get_Xecran_lon(balisesTable[index].lon)+',"y":'+get_Yecran_lat(balisesTable[index].lat)+',"name":"'+balisesTable[index].name+'", "color":"'+balisesTable[index].color+'","fillcolor":"'+balisesTable[index].fillcolor+'"}'));
+        }     
+    }   
+}
+
+// Trace une petitebouee circulaire dans le contexte passé en argument
+// Les coordonnées fournies sont celle du contexte du canvas1 
+function drawBoueesFixesColor(x,y,fillcolor){   
+    ctx.beginPath();
+    ctx.fillStyle=fillcolor;
+    ctx.strokeStyle = "black";
+    ctx.ellipse(x, y, 4, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.lineWidth = 0.5;
+    ctx.stroke();       
+}
+
+// Dessine les balises sur le canvas ad hoc
+// -----------------------
+function draw_Ecran_bouees_fixes(){
+    if ((balisesEcran!==undefined) && (balisesEcran.length>0)){
+        for (var index=0; index<balisesEcran.length; index++) {
+            drawBoueesFixesColor(balisesEcran[index].x,balisesEcran[index].y,balisesEcran[index].fillcolor);
+        }
+    }   
+}
 
 // ----------------------- 
 function tranfertBouees(){
-     if ((bouees !== undefined) && (bouees.length>0)){
-        var x;
-        var y;
-        for (var index=0; index<bouees.length; index++){
-            // Passer dans le repère d'origine du canvas
-            cx=setCanvasX(bouees[index].x,bouees[index].y,twd_radian); // Passer dans le repère d'origine du canvas
-            cy=setCanvasY(bouees[index].x,bouees[index].y,twd_radian);
-            bouees[index].cx=cx;
-            bouees[index].cy=cy;           
-            bouees[index].lon=get_lon_Xecran(cx); // Attention de ne pas inverser l'ordre des changements de repères
-            bouees[index].lat=get_lat_Yecran(cy);
-            // console.debug("Index:"+index+" X:"+x+" Y:"+y+"  --> Cx:"+cx+" Cy:"+cy+"  --> Lon:"+bouees[index].lon+" Lat:"+bouees[index].lat+"\n");
-        }    
-        
-        // Imprimer les coordonnées
-        for (var index=0; index<bouees.length; index++){
-            let txt = "";
-            for (let elt in bouees[index]) {
-                txt += bouees[index][elt] + ", ";
-            }
+    sauveBouees(); // Envoie la liste des bouées vers le serveur PHP pour le stokage
+    document.getElementById("transfert").style.visibility="hidden";
+    document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. ";
+    //document.getElementById("liste").style.visibility="true"; // Supprimé de l'interface
+    document.getElementById("consigne").innerHTML="Pour charger un plan d'eau cliquer sur l'un des boutons numérotés. "; 
+     
+ }
 
-            console.debug("Index:"+index+" "+txt+"\n");
-        }     
-        // Retracer le canvas 1
-        drawAll();
-        drawBoueesContexte1();  // avec les bouees      
-    }
+// ----------------------- 
+function listePlansEau(){
+    getListePlansEau(); // Récupère la liste des plans d'eau
+    document.getElementById("transfert").style.visibility="hidden";
+    document.getElementById("consigne").innerHTML="Liste des plans d'eau : cliquez sur <b>\"Liste\"</b>. "; 
  }
  
+ 
+ // Trace une petitebouee circulaire
+ //--------------------------------
+function drawBoueeColorContexte1(x,y,color,flag,idfixe){   
+    ctx.fillStyle=color;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    if (idfixe>=0){
+        ctx.rect(x-4, y-4, 8, 8);   
+        ctx.fill(); 
+        ctx.stroke();
+    }
+    else{
+        ctx.ellipse(x, y, 5, 4, 0, 0, Math.PI * 2);
+        ctx.fill();   
+        ctx.stroke();     
+    }   
+        
+    // Flag
+    ctx.beginPath();
+    ctx.strokeStyle = flag;
+    ctx.beginPath();   
+    ctx.moveTo(x, y-4); 
+    ctx.lineTo(x, y-13);
+    ctx.lineTo(x+5, y-10);
+    ctx.lineTo(x, y-7);            
+    ctx.fillStyle=flag;
+    ctx.fill();
+    ctx.lineWidth = 0.5;
+    ctx.stroke();      
+}
+
 // Dessine toutes les bouées placées sur le canvas1
+// ----------------------------------
 function drawBoueesContexte1(){
     if ((bouees !== undefined) && (bouees.length>0)){
         for (var index=0; index<bouees.length; index++){
-            drawBoueeColor(bouees[index].cx,bouees[index].cy,bouees[index].color,bouees[index].flag,ctx);
+            drawBoueeColorContexte1(bouees[index].cx,bouees[index].cy,bouees[index].color,bouees[index].flag,bouees[index].idfixe);                
         }    
     }
 }

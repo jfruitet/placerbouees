@@ -1,0 +1,188 @@
+{
+  "name":"La Plage Verte",
+  "geojsonZoneConcurrents": {
+      "type": "FeatureCollection",
+      "features": 
+        [ 
+            {
+              "type": "Feature",
+              "properties": 
+                {
+                    "name":"ZCS",
+                    "title": "Zone Concurrents",
+                    "description": "Zone de déplacement des concurrents",
+                    "infobox": true,
+                    "weight": "3",
+                    "color": "#aaaa33",
+                    "fill": "#ffffee"              
+                },
+                "geometry": {
+                  "coordinates": [
+                    [
+                        -1.517046490743354,
+                        47.34048706989108
+                    ],
+                    [
+                        -1.5173071277016277,
+                        47.34004748529165
+                    ],
+                    [
+                        -1.518060078915056,
+                        47.339592197383666
+                    ],
+                    [
+                        -1.5182222530230263,
+                        47.33961967176518
+                    ],
+                    [
+                        -1.518396010995474,
+                        47.33970601972888
+                    ]
+                ],
+                "type": "LineString"
+            }
+          }              
+        ]              
+     },    
+  "geojsonZoneNav": {
+      "type":"FeatureCollection",
+      "features": 
+          [
+            {
+              "type": "Feature",
+              "properties": { 
+                 "name":"ZNLaPlageVerte",      
+                 "title": "Z.Nav. de La Plage Verte",
+                 "infobox": true,
+                 "color": "#7777ff",             
+                 "opacity": "0.2",
+                 "fill-opacity": "0.2",  
+                 "weight": "1",
+                 "fillColor": "#ffffee",
+                 "fill": "#ffffee",
+                 "description": "Zone de navigation de La Plage Verte pour les régates de voiliers radiocommandés"       
+              },
+              "geometry": {
+                  "coordinates": [
+                    [
+                      [
+                        -1.518297548144261,
+                        47.33964322122375
+                      ],
+                      [
+                        -1.5180079515237708,
+                        47.33984339119803
+                      ],
+                      [
+                        -1.5175040534031439,
+                        47.340114208189846
+                      ],
+                      [
+                        -1.517428758281909,
+                        47.34054986739247
+                      ],
+                      [
+                        -1.5190910428844973,
+                        47.340867778595765
+                      ],
+                      [
+                        -1.520011960138163,
+                        47.339886565013984
+                      ],
+                      [
+                        -1.5186856076159927,
+                        47.339231104182204
+                      ],
+                      [
+                        -1.518297548144261,
+                        47.33964322122375
+                      ]
+                    ]
+                  ],
+                  "type": "Polygon"
+                }
+              }
+            ]
+    },
+  "geojsonBalises":{
+      "type": "FeatureCollection",
+      "features": [
+        {
+        "type": "Feature",
+        "id": 1,
+        "properties": {
+          "title": "Ponton",
+          "name": "Ponton",
+          "description": "Ponton réservé au modélisme",
+          "color": "#000000",
+          "fillColor": "#000000",
+          "fillOpacity": 0.8        
+        },
+        "geometry": {
+          "coordinates": [
+            -1.5184133867922753,
+            47.339717794439935
+          ],
+          "type": "Point"
+        }
+      },
+      {
+      "type": "Feature",
+      "id": 2,
+      "properties": {
+            "title": "AMSEG01",
+            "name": "AMSEG01",
+            "description": "AMSEG01 - Départ Sud",
+            "color": "#cc0000",
+            "fillColor": "#cc0000",
+            "fillOpacity": 0.8              
+      },
+      "geometry": {
+        "coordinates": [
+          -1.5186508560214804,
+          47.339831616514374
+        ],
+        "type": "Point"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 3,
+      "properties": {
+            "title": "AMSEG02",
+            "name": "AMSEG02",
+            "description": "AMSEG02 - Nord",
+            "color": "#0000ff",
+            "fillColor": "#0000ff",
+            "fillOpacity": 0.8              
+      },
+      "geometry": {
+        "coordinates": [
+          -1.5188767413852702,
+          47.34041249776149
+        ],
+        "type": "Point"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 4,
+      "properties": {
+            "title": "AMSEG03",
+            "name": "AMSEG03",
+            "description": "AMSEG03 - Est",
+            "color": "#eeee00",
+            "fillColor": "#eeee00",
+            "fillOpacity": 0.8       
+      },
+      "geometry": {
+        "coordinates": [
+          -1.51767781137562,
+          47.340165231525475
+        ],
+        "type": "Point"
+      }
+    }
+        ]
+  }
+}

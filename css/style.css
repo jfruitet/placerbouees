@@ -6,6 +6,7 @@ body {
     background-color: white; 
     font-family: Verdana, sans-serif; 
     font-size: 9pt;
+    min-width: 1000px;
 }
 h1 {
     font-size: 200%; 
@@ -30,6 +31,12 @@ h4 {
 p,ul,li,td {
     color: black; 
 }
+
+.surligne {
+    color: black;
+    background-color: yellow; 
+}
+
 a:link {
     color: blue;
     background-color: transparent; 
@@ -73,6 +80,13 @@ img {
   float: right;
 }
 
+.imgboueefixe  {
+    float: none;
+    display: none;
+    width:16px;
+    height:24px;
+}
+
 button {
   background-color: lightyellow; 
   color: navy;
@@ -82,6 +96,13 @@ button {
 .input {
   float: none;
   background-color: black; 
+  color: white;
+  text-align: center;
+}
+
+.map {
+  float: none;
+  background-color: #006600; 
   color: white;
   text-align: center;
 }
@@ -112,20 +133,67 @@ button {
   padding: 2px;
   clear: right;
   overflow: auto;
-  display: none;
+  display: block;
   width:100%;
+  height: 230px;
+}
+
+#gauche {
+  float: left;
+  border: 1px solid black;
+  background-color: #def;
+  color: black;
+  margin: 2px;
+  padding: 2px;
+  right: 0;
+  top: 0;
+  clear: right;
+  overflow: auto;
+  position : relative;
+}
+
+
+#droite {
+  border: 1px solid black;
+  color: black;
+  margin: 2px;
+  padding: 2px;
+  right: 8px;
+  top: 42px;
+  width: 300px;
+  height: 225px;
+  clear: right;
+  position : absolute;
 }
 
 .typebouee {
   background-color: #ffffee;
   color: black;
-  border: 1px solid black;
   margin: 2px;
   padding: 2px;
   visibility: hidden;
   width:100%;
 }
 
+.mapmenu {
+  background-color: #eeffde;
+  color: black;
+  margin: 2px;
+  padding: 2px;
+  visibility: hidden;
+  width:100%;
+}
+
+.scrollleft {
+    height:100px;
+    width:70%;
+    margin:2px;
+    padding:2px;
+    border:1px solid black;
+    float:left;
+    overflow:auto;
+}
+    
 .graphicLayout1 {
   background-color: #ffffff;
   color: black;
@@ -138,6 +206,11 @@ button {
   overflow: auto;
 }
 
+.info {
+    right:0;
+    position:relative;
+}
+ 
 .canvas {
     left:0;
     position:relative;
@@ -145,35 +218,40 @@ button {
  
  #canvas1 {
   background-color: transparent;
-  opacity:0.75;
+  opacity:1;
   border: 0.5px solid grey;
   left:0;
-  height: 500px;
-  width: 500px;
   z-index: 2;
   position: absolute;
 }
   
+  #canvas2 {
+    background-color: transparent;
+    opacity:1;
+    right: 0;
+    top: 0px;
+    z-index: 4;
+    position: absolute;
+}
+
+
 #canvas3 {
   background-color: transparent;
   opacity:1;
   left:0;
-  height: 500px;
-  width: 500px;
-  z-index: 0;
+  z-index: 3;
   position: absolute;
 }
 
-#canvas2 {
-  background-color: transparent;
+#canvas4 {
+  background-color:  transparent;
   opacity:1;
   right: 0;
-  top: 0;
-  height: 150px;
-  width: 150px;
+  top: 150px;
   z-index: 1;
   position: absolute;
 }
+
 
 .graphicLayout2 {
   background-color: #eeffde;
@@ -189,4 +267,57 @@ button {
   height:600px;
   width:100%;
 }
+
+/*Legend specific
+https://codepen.io/haakseth/pen/KQbjdO
+*/
+.legend {
+  padding: 6px 8px;
+  font: 12px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
+  border-radius: 3px;
+  line-height: 24px;
+  color: #555;
+}
+
+.legend h4 {
+  text-align: center;
+  font-size: 14px;
+  margin: 2px 12px 8px;
+  color: #777;
+}
+
+.legend span {
+  position: relative;
+  bottom: 3px;
+}
+
+.legend i {
+  width: 16px;
+  height: 16px;
+  float: left;
+  margin: 0 8px 0 0;
+  opacity: 0.7;
+}
+
+.legend i.icon {
+  background-size: 14px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.legend i2 {
+  width: 24px;
+  height: 36px;
+  float: left;
+  margin: 0 8px 0 0;
+  opacity: 0.7;
+}
+
+.legend i2.icon {
+  background-size: 32px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
 

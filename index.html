@@ -4,44 +4,51 @@
   <meta name="keywords" content="HTML, CSS, JavaScript">
   <meta name="description" content="Placement de bouées pour la Voile radiocommandée">
   <meta name="author" content="Jean Fruitet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, target-densitydpi=device-dpi">
   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
   <!-- base href="http://localhost/placerbouees/" target="_blank" -->
   <title>Placement de Bouées RC</title>
   <!-- Feuilles de style -->
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
+<!-- link rel="stylesheet" href="map.css"  -->
+ 
 <!-- Javascript ---------->
 <script src="js/myscript.js"></script>
 
-  <!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+<!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
-  <!-- Make sure you put this AFTER Leaflet's CSS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
-     
+
 </head>
 <body>
  <div id="entete"></div>
  <script>
-    document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Informations</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+    document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
  </script>
  <noscript>
 <div class="menu"><h3>Placement de Bouées RC</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
-<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/Carto_LePlessis#README'">GitHub JF</button></span>
+<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/placerbouees#README'">GitHub JF</button></span>
   </div>
  </noscript>
  
- <div class="corpstexte">   
-  <h1>Placement de Bouées RC</h1>    
-    <a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
-    <p>Test de l'algorithme de placement de bouées dans une zone de navigation de voile radiocommandée.</p>
+ <div class="corpstexte">  
+ <!-- div id="gauche" --> 
+  <h2>Placement de Bouées radio commandées</h2>    
+<a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
+<p> <!-- button id="liste" onclick="listePlansEau(); ">Lister</button--> <b>Sites de navigation disponibles</b> 
+<div class="scrollleft">
+    <ul id="mylist"></ul>
+</div>
+<div id="droite">
     <img src="images/parcours_regate-vrc_imagette.gif" alt="logo" style="max-width:100%;height:auto;">
-    <p>En cours...</p>
- </div>
+</div>
+</div>
 
 <div class="graphicLayout1">
 
@@ -51,106 +58,86 @@
  <p> <span id="twddeg">TWD ° ?</span> &nbsp; &nbsp; &nbsp; <span id="twdrad"></span>,  
  &nbsp; &nbsp; &nbsp; Zoom:<span id="zoomv">?</span>
  <br />
- &nbsp; &nbsp; &nbsp; X:<span id="coordx">?</span> Y:<span id="coordy">?</span>
- &nbsp; &nbsp; &nbsp; Lon:<span id="lon">?</span> Lat:<span id="lat">?</span> 
+ X:<span id="coordx">?</span> Y:<span id="coordy">?</span>
+ &nbsp; &nbsp; &nbsp; Lon:<span id="lon">?</span> Lat:<span id="lat">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance">...</span> 
  </p>
 <b>TWD</b> : <input type="text" id="twd" name="twd" size="5">  
  <button class="input" onclick="setTWD(); affiche_fleche_TWD();">Soumettre</button>
- &nbsp;  <b>Zoom</b> <button class="input" id="zoomin" onclick="zoomIn(); ">+</button>  <button class="input" id="zoomout" onclick="zoomOut(); ">-</button>  
+ &nbsp;  <b>Zoom</b> <button class="input" id="zoomin" onclick="zoomIn(); ">+</button>  
+ <button class="input" id="zoomout" onclick="zoomOut(); ">-</button>  
  <button class="input" id="zoomout" onclick="zoomReset(); ">1</button>
 
 <!--  &nbsp; &nbsp; &nbsp; 
  <button class="input" id="draw" onclick="drawAll();">Afficher</button>
  -->
  &nbsp; <button class="input" id="clear" onclick="ajouterBouees(); ">Bouées</button> 
+ &nbsp; <button class="input" id="bdelete" onclick="boueesDelete(); ">Retirer</button>
+ &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
  &nbsp; <button class="input" id="bvalider" onclick="boueesValider(); ">Valider</button>
-  &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
- &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; 
+ &nbsp; <button class="input" id="bannuler" onclick="boueesAnnuler(); ">Annuler</button>
+ &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  
 
 <div id="typebouee"> 
- <label for="babord">Bâbord</label> 
-<input type="radio" id="babord" name="franchissement" value="babord" />
- <label for="tribord">Tribord</label>
-<input type="radio" id="tribord" name="franchissement" value="tribord" checked>
- &nbsp; &nbsp;
-  <label for="depart">Départ</label> 
-<input type="checkbox" id="depart" name="depart" value="depart" checked />
-  <label for="arrivee">Arrivée</label>
-<input type="checkbox" id="arrivee" name="arrivee" value="arrivee" />
-  <label for="porte">Porte</label>
-<input type="checkbox" id="porte" name="porte" value="porte" />
+<input type="radio" id="babord" name="franchissement" value="babord" /><label for="babord">Bâbord</label> 
+<input type="radio" id="tribord" name="franchissement" value="tribord" checked><label for="tribord">Tribord</label>
+ &nbsp; &nbsp; 
+<input type="radio" id="depart" name="type" value="depart" checked /><label for="depart">Départ</label>  
+<input type="radio" id="arrivee" name="type" value="arrivee" /><label for="arrivee">Arrivée</label>  
+<input type="radio" id="porte" name="type" value="porte" /><label for="porte">Porte</label>
+<input type="radio" id="dogleg" name="type" value="dogleg" /><label for="dogleg">DogLeg</label>
 </div>  
 
  <div class="canvas">
-    <canvas id="canvas1" onmousedown="show_coords(event); screen2earth();">  
+    <canvas id="canvas1" width="500" height="500" onmousedown="show_coords(event); screen2earth();">  
  This text is displayed if your browser does not support HTML5 Canvas.
     </canvas> 
-    <canvas id="canvas2"></canvas>
-    <canvas id="canvas3" onmousemove="drawReticule();"></canvas>    
+    <canvas id="canvas3" width="500" height="500" onmousemove="drawReticule(event);"></canvas>  
+    <div  class="info">
+        <canvas id="canvas2" width="150" height="150"></canvas>
+        <canvas id="canvas4" width="150" height="300"></canvas> 
+    </div>  
  </div>
 </div>
+
+<!-- script src="js/le-plessis.js"></script -->
+<script src="js/map.js"></script>
+<script src="js/ajax.js"></script>  
+<script src="js/sitenavigation.js"></script>
+<script src="js/geo_utils.js"></script> 
+<script src="js/icones.js"></script>
+
+<script src="js/canvas.js"></script>
+<script src="js/bouees.js"></script>
 
 
 <div class="graphicLayout2">
 
  <h3>Carte</h3>
- <p>Zone de navigation et bouées fixes...<br /></p>
- 
+ <p id="mapinfo">Zone de navigation et bouées fixes...</p>
+
 <div id="osm-map"></div> 
 </div>
     
-<script src="js/geo_utils.js"></script>
-<script src="js/le-plessis.js"></script>
-<script src="js/canvas.js"></script>
+
 <script>
+mylist
+//document.getElementById('mylist').style.visibility="hidden";
+document.getElementById('bdelete').style.visibility="hidden";
 document.getElementById('breset').style.visibility="hidden";
-document.getElementById('typebouee').style.visibility="hidden";
 document.getElementById('bvalider').style.visibility="hidden";
+document.getElementById('bannuler').style.visibility="hidden";
+document.getElementById('typebouee').style.visibility="hidden";
 
 // Chargement de la carte
  window.onload = function(){
         //console.log('Page chargée');
+        checkCookies();
+        initMap(); // Affiche le fond de carte
         setTWD(); 
         affiche_fleche_TWD();
-        drawAll();
-        // document.getElementById("rotation").style.display="inline";
-        document.getElementById("transfert").style.visibility="hidden";
-        // Carte de l'étang du Plessis           
-        // Where you want to render the map.
-        var element = document.getElementById('osm-map');
-
-        // Height has to be set. You can do this in CSS too.
-        //element.style = 'height:600px;width:100%';
-
-        // Create Leaflet map on map element.
-        var map = L.map(element);
-
-        // Add OSM tile layer to the Leaflet map.
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            maxZoom: 20,
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-        // Target's GPS coordinates.
-        var target = L.latLng('47.24338', '-1.47402');
-
-        // Set map's center to target with zoom 18. Zoom Maximum 
-        map.setView(target, 18);
-
-        // Place a marker on the same location.
-        L.marker(target).addTo(map)
-            .bindPopup('Zone réservée au voiliers radiocommandés.<br><a href="https://arbl.fr/">ARBL</a>.')
-            //.openPopup()
-            ;
-        // Ajout de la zone de navigation
-        L.geoJSON(geojsonZoneNav).addTo(map);
-        // Ajout des balises
-        L.geoJSON(geojsonBalises).addTo(map);
-
-        L.geoJSON(geojsonBalises, {
-            onEachFeature: popupInfo
-            }).addTo(map);
-    
+        affiche_legende();
+        listePlansEau();
+        getSite();
  }   
 </script>
 
