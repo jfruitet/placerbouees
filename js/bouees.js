@@ -79,7 +79,22 @@ function drawReticule(event){
   *     Saisie des emplacements de bouées    *
   ********************************************/
  
- 
+ function boueesAnnuler(){ // remets à zéro toute saisie
+    nbouees=0;
+    bouees.length=0;
+    saisir_encore=false;
+    compteur = 0;
+
+    drawAll();
+    
+    document.getElementById("bdelete").style.visibility="hidden";
+    document.getElementById("transfert").style.visibility="hidden";
+    document.getElementById("breset").style.visibility="hidden";
+    document.getElementById("bvalider").style.visibility="hidden";
+    document.getElementById("bannuler").style.visibility="hidden";
+    document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";
+    
+ }
  // retire la dernière bouée du tableau
  function boueesDelete(){ // raz bouees[]
     if (bouees.length>0) {
@@ -100,12 +115,15 @@ function drawReticule(event){
     saisir_encore=true;
     compteur = 0;
 
-    drawAll();
+    //drawAll();
+    /*
     document.getElementById("bdelete").style.visibility="hidden";
     document.getElementById("transfert").style.visibility="hidden";
     document.getElementById("breset").style.visibility="hidden";
     document.getElementById("bvalider").style.visibility="hidden";
+    document.getElementById("bannuler").style.visibility="hidden";
     document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";
+    */
 }
 
 // affiche les bouées sur la map, arrête la saisie des bouées
@@ -135,10 +153,17 @@ function drawReticule(event){
             console.debug(txt+"}\n");
         }     
         */
+        addBouees2Map();
+        saisir_encore=false;
+        document.getElementById("bdelete").style.visibility="hidden";
+        document.getElementById("transfert").style.visibility="hidden";
+        document.getElementById("breset").style.visibility="hidden";
+        document.getElementById("bvalider").style.visibility="hidden";
+        document.getElementById("bannuler").style.visibility="hidden";
+        document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";        
     }
  
-    addBouees2Map();
-    saisir_encore=false;
+
     //drawBouees();
     removeEvent(canvas3,"dblclick");
     removeEvent(canvas3,"mouseover");  
@@ -273,7 +298,7 @@ function nouvelleBouee() {
         boueesValider();       
     }
     // Dessiner les bouées... 
-    drawBouees();
+    //drawBouees();
 }
 
 // Dessine toutes les bouées placées sur le canvas
@@ -366,6 +391,7 @@ function drawCible(x,y){
     document.getElementById("typebouee").style.visibility="visible";
     document.getElementById("breset").style.visibility="visible";
     document.getElementById("bvalider").style.visibility="visible";
+    document.getElementById("bannuler").style.visibility="visible";
     document.getElementById("bdelete").style.visibility="visible";
 
     // Placerle canvas3 au dessus des autres

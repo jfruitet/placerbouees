@@ -202,24 +202,24 @@ function clearCanvas(){
 function zoomOut() {
     zoom-=0.1;
     zoomfactor--;
-    nbouees=0;
-    bouees.lenth=0;
+    //nbouees=0;
+    //bouees.lenth=0;
     drawAll();
 }
 
 function zoomIn() {
   zoom+=0.1;
   zoomfactor++;
-  nbouees=0;
-  bouees.lenth=0;
+  //nbouees=0;
+  //bouees.lenth=0;
   drawAll();
 }
 
 function zoomReset() {
   zoom=1;
   zoomfactor=1;
-  nbouees=0;
-  bouees.lenth=0;  
+  //nbouees=0;
+  //bouees.lenth=0;  
   drawAll();
 }
   
@@ -283,6 +283,7 @@ function drawAll(){
     document.getElementById("transfert").style.visibility="hidden";
     document.getElementById("breset").style.visibility="hidden";
     document.getElementById("bvalider").style.visibility="hidden";
+    document.getElementById("bannuler").style.visibility="hidden";
     document.getElementById("zoomv").innerHTML=zoomfactor;
     //document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"";
     // Passer la main au canvas
@@ -299,7 +300,7 @@ function drawAll(){
     draw_Ecran_ligne_concurrents();
     //console.debug("draw_Ecran_bouees_fixes()"); 
     draw_Ecran_bouees_fixes();
-        
+
     if ((bouees !== undefined) && (bouees.length>0)){
         drawBoueesContexte1();
     }   
@@ -434,8 +435,8 @@ function draw_scale(){
         ctx.moveTo(index*dw, maxh-1);
         ctx.lineTo(index*dw,maxh-5);
     }
-    ctx.lineWidth = 0.3;
-    ctx.strokeStyle = "black";
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = "Black";
     ctx.stroke(); 
     ctx.font = "9pt Calibri";
     ctx.fillStyle = "black";
@@ -552,6 +553,7 @@ function drawBoueesFixesColor(x,y,fillcolor){
     ctx.strokeStyle = "black";
     ctx.ellipse(x, y, 4, 4, 0, 0, Math.PI * 2);
     ctx.fill();
+    ctx.lineWidth = 0.5;
     ctx.stroke();       
 }
 
