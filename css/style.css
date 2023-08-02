@@ -184,6 +184,16 @@ button {
   width:100%;
 }
 
+.scrollleft {
+    height:100px;
+    width:70%;
+    margin:2px;
+    padding:2px;
+    border:1px solid black;
+    float:left;
+    overflow:auto;
+}
+    
 .graphicLayout1 {
   background-color: #ffffff;
   color: black;

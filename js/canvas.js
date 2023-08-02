@@ -290,19 +290,19 @@ function drawAll(){
     //document.getElementById("canvas3").style.zIndex=0;    
     document.getElementById("canvas3").hidden=true;
     init_ecran_ZN(); // tenir compte du zoom
-    init_ecran_bouees(); // Toutes les bouées fixes sont placées dans un tableau
+    
+    init_ecran_bouees_fixes(); // Toutes les bouées fixes sont placées dans un tableau
 
     clearCanvas();
     draw_scale(); 
     draw_Ecran_poly_navigation(); 
     draw_Ecran_ligne_concurrents();
-    
-    if ((bouees !== undefined) && (bouees.length>0)){
-        drawBoueesContexte1();
-    }
     //console.debug("draw_Ecran_bouees_fixes()"); 
     draw_Ecran_bouees_fixes();
-    
+        
+    if ((bouees !== undefined) && (bouees.length>0)){
+        drawBoueesContexte1();
+    }   
 }
 
 function draw_Ecran_poly_navigation(){
@@ -532,7 +532,7 @@ function setSaisieToDisplayY(x,y,radian){
  
  
 // -----------------------
-function init_ecran_bouees(){  
+function init_ecran_bouees_fixes(){  
     // Les balises sont des bouées fixes stockées dans une table initialisée dans le script sitenavigation.js 
     
     if ((balisesTable!==undefined) && (balisesTable.length>0)){
@@ -570,8 +570,8 @@ function tranfertBouees(){
     sauveBouees(); // Envoie la liste des bouées vers le serveur PHP pour le stokage
     document.getElementById("transfert").style.visibility="hidden";
     document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. ";
-    document.getElementById("liste").style.visibility="true";
-    document.getElementById("consigne").innerHTML="Liste des plans d'eau : cliquez sur <b>\"Liste\"</b>. "; 
+    //document.getElementById("liste").style.visibility="true"; // Supprimé de l'interface
+    document.getElementById("consigne").innerHTML="Pour charger un plan d'eau cliquer sur l'un des boutons numérotés. "; 
      
  }
 

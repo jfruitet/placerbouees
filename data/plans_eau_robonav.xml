@@ -9,6 +9,7 @@
 		<lon>-1.47402</lon>
 		<lat>47.24338</lat>
 		<club>ARBL</club>
+        <email>bureau-arbl@laposte.net</email>
 		<url>https://www.arbl.fr</url>
 		<json>leplessis.json</json>
 	</site>
@@ -21,6 +22,7 @@
 		<lon>-1.46507</lon>
 		<lat>47.25533</lat>
 		<club>ARBL</club>
+        <email>bureau-arbl@laposte.net</email>
 		<url>https://www.arbl.fr</url>
 		<json>laminais.json</json>
 	</site>
@@ -33,6 +35,7 @@
 		<lon>-1.518302</lon>
 		<lat>47.3401461</lat>
 		<club>AMSEG</club>
+        <email></email>
 		<url>https://modelismesuceen.fr/</url>
 		<json>laplageverte.json</json>
 	</site>
@@ -45,7 +48,8 @@
 		<lon>-1.36899</lon>
 		<lat>47.25326</lat>
 		<club>CAP Sport et Nature</club>
-		<url>https://www.capsn.org/</url>
+        <email></email>
+		<url>https://www.capsn.org/voile-radiocommandee/</url>
 		<json>planeauduchene.json</json>
 	</site>	
 	<site>
@@ -56,7 +60,8 @@
 		<country>France</country>
 		<lon>-2.184745</lon>
 		<lat>47.313416</lat>
-		<club>MFTrignac</club>
+		<club>Mini-Flotte Trignac</club>
+        <email>miniflotte@miniflottetrignac.fr</email>
 		<url>https://miniflottetrignac.fr/</url>
 		<json>lemprunt.json</json>
 	</site>	
@@ -69,6 +74,7 @@
 		<lon>-2.255556</lon>
 		<lat>47.279069</lat>
 		<club>SNOS</club>
+        <email>contactsnosvoile@gmail.com</email>
 		<url>https://www.snos-voile.com/</url>
 		<json>boisjoalland.json</json>
 	</site>	

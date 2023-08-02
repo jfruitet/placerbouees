@@ -87,7 +87,7 @@ function drawReticule(event){
         bouees.length--;
         nbouees=bouees.length;
         compteur = nbouees;
-        ctx3.clearRect(0, 0, canvas3.width, canvas3.height); 
+        ctx3.clearRect(0, 0, canvas3.width, canvas3.height);         
         drawBouees(ctx3);
     }        
 }
@@ -99,6 +99,7 @@ function drawReticule(event){
     bouees.length=0;
     saisir_encore=true;
     compteur = 0;
+
     drawAll();
     document.getElementById("bdelete").style.visibility="hidden";
     document.getElementById("transfert").style.visibility="hidden";
@@ -340,7 +341,7 @@ function drawCible(x,y){
     ctx.rotate(twd_radian - Math.PI / 2);   // R
     ctx.translate(-canvasw/2, -canvash/2-20);       // T2
     init_ecran_ZN(); 
-    init_ecran_bouees();
+    init_ecran_bouees_fixes();
     draw_Ecran_poly_navigation(); 
     draw_Ecran_ligne_concurrents();   
     draw_Ecran_bouees_fixes();

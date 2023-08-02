@@ -13,7 +13,7 @@ let myInitGet = {
     referrer: "about:client", //ou "" (pas de réferant) ou une url de l'origine
     referrerPolicy: "no-referrer-when-downgrade", //ou no-referrer, origin, same-origin...
     mode: "cors", //ou same-origin, no-cors
-    credentials: "same-origin", //ou omit, include
+    credentials: "include", //same-origin, ou omit, ou include
     cache: "default", //ou no-store, reload, no-cache, force-cache, ou only-if-cached
     redirect: "follow", //ou manual ou error
     integrity: "", //ou un hash comme "sha256-abcdef1234567890"
@@ -91,7 +91,12 @@ function ajax_post(url, mystrjson){
             signal: undefined //ou AbortController pour annuler la requête            
         })
         .then(response => response.json())  // Le retour est aussi une chaîne
-        .then(response => console.debug(response))
+        .then(response => {
+                console.debug(response);
+                if (response.ok==1){
+                    document.getElementById("consigne").innerHTML='Données sauvegardées';    
+                }
+            })
         .catch(error => console.debug("Erreur : "+error));
     }
 }

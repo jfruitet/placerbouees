@@ -30,7 +30,7 @@ else {
 if (isset($data) && (!empty($data)))
 {
     $mydata = json_decode($data,true);
-    print_r($mydata);
+    //print_r($mydata);
     $filename="placementbouees_".$mydata['twd']."_".date("Ymd").".json";
     if ($handle = fopen("../data/".$filename, "w")){
         fwrite($handle, $data);
