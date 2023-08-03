@@ -1,4 +1,4 @@
-# Placement de bouées de régate sur l'étang du Plessis à Sainte-Luce-sur-Loire (44980)
+# Placement de bouées de régate radiocommandées
 Positionnement manuel de bouées pour les régates de voliers radiocommandés.
 
 Application **Web** :  *placerbouees/index.html* 
@@ -15,8 +15,6 @@ Elle est un composant logiciel du projet RoBoNav mené depuis février 2023 avec
 Sélection d'un site de navigation et chargement des données.
 
 Les fichiers json des sites disponibles sont placés dans le dossier ./data/
-
-Pour chaque site j'utilise Umap pour créer les zones de navigation (polygone), la zone des concurrents et éventuellement la liste des bouées fixes, quoi qu'il soit plus simple encore pour les balises d'en relever les positions sur une carte GoogleMaps en mode terrain où elles apparaissent. 
 
 ### Partie droite 
 Affichage de la carte du plan d'eau du Plessis avec le périmètre de navigation , la zone des concurrents et les bouées ancrées (bouées fixes, à demeure).
@@ -63,6 +61,14 @@ Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la cr�
 
 L'adaptation à une langue différente du français ne me paraît pas trop compliquée...
 
+## Edition des sites
+
+Pour ajouter de nouveaux sites, modifier sous éditeur texte le fichier ./data/plans_eau_robonav.xml.
+
+Puis ajouter dans ./data un fichier <*nomdusite.json*> sur le modèle du fichier *leplessis.json*.
+Le plus efficace est de saisir la zone de navigation (polygone), le chemin des concurrents (Linestring) et les éventuellement les pontons et bouées fixes, 
+directement sur l'éditeur en ligne **geojson.io** ; recopier ensuite dans le fichier <*nomdusite.json*> que vous modifiez sous éditeur texte. 
+
 ## Sources
 ```
 ./placerbouees
@@ -88,7 +94,8 @@ L'adaptation à une langue différente du français ne me paraît pas trop compl
     leplessis.json
     laminais.json
     laplageverte.json
-    planeauduche.json
+    planeauduchene.json
+    boisjoalland.json
 ./doc
   Captures d'écran
 ```
