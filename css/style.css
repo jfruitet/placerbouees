@@ -95,7 +95,15 @@ button {
 
 .input {
   float: none;
-  background-color: black; 
+  background-color: navy; 
+  color: white;
+  text-align: center;
+}
+
+
+.attention {
+  float: none;
+  background-color: #aa0077; 
   color: white;
   text-align: center;
 }
@@ -133,7 +141,7 @@ button {
   padding: 2px;
   clear: right;
   overflow: auto;
-  display: block;
+  display: none;
   width:100%;
   height: 230px;
 }
@@ -200,7 +208,7 @@ button {
   border: 1px solid black;
   margin: 2px;
   padding: 2px;
-  height: 700px;
+  height: 720px;
   clear: right;
   float: left;
   overflow: auto;
@@ -259,7 +267,7 @@ button {
   border: 1px solid black;
   margin: 2px;
   padding: 2px; 
-  height: 700px;
+  height: 720px;
   overflow: auto;
 }
 

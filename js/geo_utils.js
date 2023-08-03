@@ -72,11 +72,11 @@ function rectangle_englobantZN(){
     //console.debug("geo_utils.js :: ligne 66 :: delta_lon:"+delta_lon+" delta_lat:"+delta_lat+"\n");
     
     if (Math.abs(delta_lat)<Math.abs(delta_lon)){
-        coeff_homothetie = cw / Math.abs(delta_lon);
+        coeff_homothetie = canvasw / Math.abs(delta_lon);
         delta_lonlat=Math.abs(delta_lon);
     }
     else{
-        coeff_homothetie = ch / Math.abs(delta_lat);
+        coeff_homothetie = canvash / Math.abs(delta_lat);
         delta_lonlat=Math.abs(delta_lat);  
     }
     //console.debug("geo_utils.js :: ligne 72 :: coeff_homothetie:"+coeff_homothetie+" delta_lonlat:"+delta_lonlat+"\n");
@@ -103,5 +103,5 @@ function distanceGeodesique(x1,y1,x2,y2){
         var dlon =  6378137.0 * anglelon * Math.PI / 180.0;
         var dlat =  6356752.0 * anglelat * Math.PI / 180.0;  
         distance = Math.sqrt(dlon * dlon + dlat * dlat);
-        return (Math.round(distance * 100000.0) / 100000.0);        
+        return (Math.round(distance * 100.0) / 100.0);        
 }

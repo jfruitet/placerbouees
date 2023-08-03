@@ -7,15 +7,11 @@ var strproperty="";
 var tproperties=[];
 var tcoordinates=[];
 
-let zonenav_lat=[];
-//47.243830107759834,47.24306984068747,47.24323699253995,47.24364139000113,47.24402062214875,47.24396131113892,47.243830107759834
-let zonenav_lon=[];
-//-1.4746555619712751,-1.4733794850961033,-1.4732841764495106,-1.4733636003215622,-1.4737871943051744,-1.4743378664837508,-1.4746555619712751             
+let zonenav_lat=[];     // latitudes du polyline de navigation
+let zonenav_lon=[];     // longitudes du polyline de navigation
 
-let zoneconc_lon= [];
-//-1.4747445028388313,-1.4744189545636743,-1.4741350461847276,-1.4739079194809506,-1.4736921491121393,-1.4734763787433565,-1.4733401027220054
-let zoneconc_lat = [];
-//47.2439195874486,47.24402752137087,47.2440943374981,47.244138024920545,47.24416372338749,47.24415601384845,47.24410975659259
+let zoneconc_lon= [];   // longitudes de la ligne des concurrents
+let zoneconc_lat = [];  // latitudes de la ligne des concurrents
 
 // Objet Javascript et non pas string geojson 
 let geojsonZoneConcurrents="";
@@ -378,6 +374,7 @@ function setDataSite(response){
         // Pas évident de parcourir ce tableau d'objet !:>((
         zoneconc_lon.length=0;
         zoneconc_lat.length=0;
+        
         for (var i=0; i<ZCCoordinates.length; i++ ){
             // console.debug("index,Lon,Lat : "+ZCCoordinates[i]+"\n");  
             // index,Lon,Lat : 6,-1.4733401027220054,47.24410975659259          
@@ -386,7 +383,7 @@ function setDataSite(response){
             var latlon = ZCCoordinates[i][1].toString().split(',');
             // console.debug("lat:"+latlon[1]+" lon:"+latlon[0]+"\n"); 
             // lat:47.24410975659259 lon:-1.4733401027220054
-            // Bon c'est ça qu'il me faut
+            // Bon c'est ça qu'il me faut: à la position ZCCoordinates[i][0] je mets la valeur latlon[0] et latlon[1] 
             zoneconc_lon[ZCCoordinates[i][0]]=latlon[0];
             zoneconc_lat[ZCCoordinates[i][0]]=latlon[1];
         }         

@@ -25,7 +25,7 @@ const ctx = canvas.getContext("2d");
 canvas.height=canvas.width;
 canvasw=canvas.width;
 canvash=canvas.height;
-//console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
+console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
 
 const canvas2 = document.getElementById("canvas2");
 const ctx2 = canvas2.getContext("2d");
@@ -166,12 +166,14 @@ function affiche_legende(x){
  * ****************************************/
 function setMouseXPos(xmousecoord){  // retourne une position dans le canvas en fonction de la position de la souris 
     //return Math.round(xmousecoord * (canvasw*zoom) / cw);
-    return Math.round(xmousecoord * (canvasw) / cw);
+    //return Math.round(xmousecoord * (canvasw) / cw);
+    return (xmousecoord);
 }
 
 function setMouseYPos(ymousecoord){
     //return Math.round(ymousecoord * (canvash*zoom) / ch);
-    return Math.round(ymousecoord * (canvash) / ch);
+    //return Math.round(ymousecoord * (canvash) / ch);
+    return (ymousecoord);
 }
 
 function affiche_dot(){
@@ -227,12 +229,12 @@ function zoomReset() {
 
 function get_Xecran_lon(lon){
     // return Math.round(zoom * canvasw * (1 - (lon-lonmax) / (lonmin-lonmax)));
-    return Math.round((lon-lonmax) * (cw*zoom) / (lonmin-lonmax));
+    return Math.round((lon-lonmax) * (canvasw*zoom) / (lonmin-lonmax));
 }  
    
 function get_Yecran_lat(lat){  
     //return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax)); 
-    return Math.round((lat-latmax) * (zoom*ch) / (latmin-latmax));
+    return Math.round((lat-latmax) * (zoom*canvash) / (latmin-latmax));
 }    
 
 
@@ -379,11 +381,11 @@ function get_lat_Yecran(y){
 // à la grille du monde réel 
 
 function get_lon_MouseXecran(x){
-    return (lonmin*1.0 -  x  * (lonmin-lonmax) / cw);
+    return (lonmin*1.0 -  x  * (lonmin-lonmax) / canvasw);
 } 
  
 function get_lat_MouseYecran(y){
-    return (y * (latmin-latmax) / ch + latmax*1.0); // Forcer le '+'' mathématique sino ça renvoie NaN car (+ latmax) est pris pour une chaîne ! 
+    return (y * (latmin-latmax) / canvash + latmax*1.0); // Forcer le '+'' mathématique sino ça renvoie NaN car (+ latmax) est pris pour une chaîne ! 
 } 
 
  // Affiche les longitude Latitude correspondant au point sur l'écran

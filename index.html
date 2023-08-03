@@ -29,12 +29,13 @@
 <body>
  <div id="entete"></div>
  <script>
-    document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+ document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+//document.getElementById("entete").innerHTML = "<b>Placement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp;<button onclick=\"window.open('https://github.com/jfruitet/placerbouees#README', '_blank'\">Sources</button>";
  </script>
  <noscript>
 <div class="menu"><h3>Placement de Bouées RC</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
 <span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/placerbouees#README'">GitHub JF</button></span>
-  </div>
+</div>
  </noscript>
  
  <div class="corpstexte">  
@@ -75,7 +76,7 @@
  &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
  &nbsp; <button class="input" id="bvalider" onclick="boueesValider(); ">Valider</button>
  &nbsp; <button class="input" id="bannuler" onclick="boueesAnnuler(); ">Annuler</button>
- &nbsp; <button class="input" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  
+ &nbsp; <button class="attention" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  
 
 <div id="typebouee"> 
 <input type="radio" id="babord" name="franchissement" value="babord" /><label for="babord">Bâbord</label> 
@@ -88,10 +89,10 @@
 </div>  
 
  <div class="canvas">
-    <canvas id="canvas1" width="500" height="500" onmousedown="show_coords(event); screen2earth();">  
+    <canvas id="canvas1" width="520" height="520" onmousedown="show_coords(event); screen2earth();">  
  This text is displayed if your browser does not support HTML5 Canvas.
     </canvas> 
-    <canvas id="canvas3" width="500" height="500" onmousemove="drawReticule(event);"></canvas>  
+    <canvas id="canvas3" width="520" height="520" onmousemove="drawReticule(event);"></canvas>  
     <div  class="info">
         <canvas id="canvas2" width="150" height="150"></canvas>
         <canvas id="canvas4" width="150" height="300"></canvas> 
@@ -99,7 +100,6 @@
  </div>
 </div>
 
-<!-- script src="js/le-plessis.js"></script -->
 <script src="js/map.js"></script>
 <script src="js/ajax.js"></script>  
 <script src="js/sitenavigation.js"></script>
@@ -111,15 +111,12 @@
 
 
 <div class="graphicLayout2">
-
- <h3 id="mapinfo">Carte</h3>
+<h3 id="mapinfo">Carte</h3>
 <div id="osm-map"></div> 
 </div>
     
 
 <script>
-mylist
-//document.getElementById('mylist').style.visibility="hidden";
 document.getElementById('bdelete').style.visibility="hidden";
 document.getElementById('breset').style.visibility="hidden";
 document.getElementById('bvalider').style.visibility="hidden";

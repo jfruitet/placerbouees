@@ -8,8 +8,8 @@
                 "type": "Feature",
                 "properties": 
                 {
-                    "name":"ZCS",
-                    "title": "Zone Concurrents Sud",
+                    "name":"ZC",
+                    "title": "Zone Concurrents",
                     "description": "Zone de déplacement des concurrents",
                     "infobox": true,
                     "weight": "3",
@@ -19,6 +19,20 @@
                 "geometry": {
                     "coordinates": 
                     [
+                   [
+                                -1.4644344664976074,
+                                47.25514084463558
+                        ] ,                       
+                            [
+                                -1.4650752771713087,
+                                47.25499186872909
+                                ],                            [
+                            -1.4655420093552323,
+                            47.254928511032745
+                            ],
+
+         
+                    
                         [
                         -1.4655874211343018,
                         47.25504152740325
@@ -34,37 +48,6 @@
                         [
                             -1.4655924668876708,
                         47.255510714031885
-                        ]
-                    ],
-                    "type": "LineString"
-                }
-            },
-            {
-                    "type": "Feature",
-                    "properties": 
-                    {
-                        "name":"ZCO",
-                        "title": "Zone Concurrents Ouest",
-                        "description": "Zone de déplacement des concurrents",
-                        "infobox": true,
-                        "color": "#aaaa33",
-                        "fill": "#ffffee"
-                    },                               
-                    "geometry": 
-                    {
-                        "coordinates": 
-                        [
-                            [
-                            -1.4655420093552323,
-                            47.254928511032745
-                            ],
-                            [
-                                -1.4650752771713087,
-                                47.25499186872909
-                                ],
-                            [
-                                -1.4644344664976074,
-                                47.25514084463558
                         ]
                     ],
                     "type": "LineString"

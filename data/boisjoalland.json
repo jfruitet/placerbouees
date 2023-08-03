@@ -1,0 +1,200 @@
+{
+    "name":"Etang du Bois Joalland",
+    "geojsonZoneConcurrents": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",    
+                "properties": {
+                    "name":"ZC",
+                    "title": "Zone Concurrents",
+                    "description": "Zone de déplacement des concurrents",
+                    "infobox": true,
+                    "weight": "3",
+                    "color": "#aaaa33",
+                    "fill": "#ffffee"              
+                },     
+                "geometry": {
+                    "coordinates": [
+          [
+            -2.259499400523083,
+            47.278151768486936
+          ],
+          [
+            -2.2590533288385473,
+            47.27805527677785
+          ],
+          [
+            -2.2586395811880493,
+            47.2778535208173
+          ],
+          [
+            -2.2587494829075183,
+            47.277739484499136
+          ],
+          [
+            -2.2584521017841723,
+            47.27760351779864
+          ],
+          [
+            -2.2582775519945244,
+            47.27766492215832
+          ]
+        ],
+        "type": "LineString"
+      }           
+       }
+       ]
+    },
+    "geojsonZoneNav": {
+        "type":"FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name":"ZNBoisJoalland",      
+                    "title": "Z. Nav. du Bois Joallad",
+                    "description": "Zone de navigation du Bois Joalland",
+                    "infobox": true,
+                    "color": "#7777ff",             
+                    "opacity": "0.3",
+                    "fill-opacity": "0.2",  
+                    "weight": "1",
+                    "fillColor": "#ffffee",
+                    "fill": "#ffffee"           
+                },
+                "geometry": {
+                    "coordinates": [
+                        [
+                            [
+              -2.2590404735603897,
+              47.27805527677748
+            ],
+            [
+              -2.2585913785011655,
+              47.27783233639667
+            ],
+            [
+              -2.2587282977262646,
+              47.277743159981355
+            ],
+            [
+              -2.258443505737972,
+              47.277620542164726
+            ],
+            [
+              -2.258268249129685,
+              47.27767999326292
+            ],
+            [
+              -2.257753432842293,
+              47.27755737529992
+            ],
+            [
+              -2.2568278588779833,
+              47.27747191412777
+            ],
+            [
+              -2.2563678102805795,
+              47.278226197099855
+            ],
+            [
+              -2.25685524272302,
+              47.278895010445666
+            ],
+            [
+              -2.258169667286978,
+              47.27932230343515
+            ],
+            [
+              -2.2595991040005288,
+              47.27938175262068
+            ],
+            [
+              -2.2610778316345943,
+              47.27937803704879
+            ],
+            [
+              -2.260760179031763,
+              47.27808128642744
+            ],
+            [
+              -2.2595169524646224,
+              47.2781593153
+            ],
+            [
+              -2.2590404735603897,
+              47.27805527677748
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+            }
+        ]
+    },
+    "geojsonBalises":
+    {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature" ,
+                "id": 1,
+                "properties": {
+                    "description": "Ponton Ouest",
+                    "title": "Ponton 1",
+                    "name": "Ponton 1",
+                    "color": "#000000",
+                    "fillColor": "#000000",
+                    "fillOpacity": 0.8
+                },
+                "geometry": {
+                    "coordinates": [
+                        -2.2593161519573925,
+                        47.27808505585685
+                    ],
+                    "type": "Point"
+                }                                              
+            },
+            {
+                "type": "Feature",
+                "id": 2,
+                "properties": {
+                    "description": "Ponton Centre",
+                    "title": "Ponton",
+                    "name": "Ponton",
+                    "color": "#ff00aa",
+                    "fillColor": "#ff00aa",
+                    "fillOpacity": 0.8
+                },
+                "geometry": {
+                    "coordinates": [
+                        -2.2586774593863765,
+                        47.27782270800182
+                    ],
+                    "type": "Point"
+                }
+            },
+            {
+                "type": "Feature",
+                "id": 3,
+                "properties": {
+                    "description": "Ponton Est",
+                    "title": "Ponton",
+                    "name": "Ponton",
+                    "color": "#00aaff",
+                    "fillColor": "#00aaff",
+                    "fillOpacity": 0.8
+                },
+                "geometry": {
+                    "coordinates": [
+                        -2.2582777334232844,
+                        47.27761341833059
+                    ],
+                    "type": "Point"
+                }
+            }
+        ]
+    }
+}
+

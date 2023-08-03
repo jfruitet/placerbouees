@@ -15,8 +15,8 @@ let canvash= 0;
 let zoom=1;   // Valeur multiplicative appliquée au calcul des positions sur le canvas
 let zoomfactor=1; // compteur pour l'affichage 
 
-let cw = 500; // Dimension du viewport affecté au canvas ; un event.offsetX vaut entre 0 et cw 
-let ch = 500; // A vrai dire on devrait pouvoir identifier ça à la largeur du canvas
+//let cw = 520; // Dimension du viewport affecté au canvas ; un event.offsetX vaut entre 0 et cw 
+//let ch = 520; // A vrai dire on devrait pouvoir identifier ça à la largeur du canvas
 
 const windsector=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","N"];
 
@@ -129,7 +129,7 @@ function setCookie(cname, cvalue, exdays) {
   const d = new Date();
   d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
   let expires = "expires="+d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  document.cookie = cname + "=" + cvalue + "; SameSite=Strict; " + expires + ";path=/";
 }
 
  
