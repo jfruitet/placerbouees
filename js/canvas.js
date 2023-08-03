@@ -5,7 +5,6 @@
 // let rectangle = {x1:0,y1:0,x2:0,y2:0}; // le rectangle à tracer
 // let oksaisierectangle=0; // état de la saisie 0: aucun sommet; 1 : un sommet; 2: deux sommets 
 
-
 let saisir_encore=true; 
 let compteur=0; // Compteur de bouées, permet de d'activer babord ou tribord automatiquement 
 // Balies : bouées fixes du plan d'eau
@@ -130,21 +129,21 @@ function drawPetiteBaliseAncree(x, y, fillcolor, flag){
 }
 
 // Affiche la légende dans le canvas4
-function affiche_legende(){
+function affiche_legende(x){
     ctx4.clearRect(0, 0, canvas4.width, canvas4.height);
     ctx4.font = "16pt Calibri";
     ctx4.beginPath(); 
     ctx4.fillStyle = "#0033aa";
-    ctx4.fillText("Légende", 14, 24); 
+    ctx4.fillText("Légende", x, 24); 
     ctx4.font = "12pt Calibri";
-    ctx4.fillText("Bouées fixes", 14, 48);
-    ctx4.fillText("Balises mobiles", 14, 128);     
+    ctx4.fillText("Bouées fixes", x, 48);
+    ctx4.fillText("Balises mobiles", x, 128);     
     ctx4.font = "10pt Calibri";
-    ctx4.fillText("Balises ancrées", 14, 90);     
-    ctx4.fillText("Départ tribord", 14, 166); 
-    ctx4.fillText("Arrivée bâbord", 14, 204);
-    ctx4.fillText("Dog leg tribord", 14, 240);
-    ctx4.fillText("Porte bâbord", 14, 274);
+    ctx4.fillText("Balises ancrées", x, 90);     
+    ctx4.fillText("Départ tribord", x, 166); 
+    ctx4.fillText("Arrivée bâbord", x, 204);
+    ctx4.fillText("Dog leg tribord", x, 240);
+    ctx4.fillText("Porte bâbord", x, 274);
        
     ctx4.stroke(); 
     // dot     
@@ -380,11 +379,11 @@ function get_lat_Yecran(y){
 // à la grille du monde réel 
 
 function get_lon_MouseXecran(x){
-    return (lonmin -  x  * (lonmin-lonmax) / cw);
+    return (lonmin*1.0 -  x  * (lonmin-lonmax) / cw);
 } 
  
 function get_lat_MouseYecran(y){
-    return (y * (latmin-latmax) / ch + latmax);
+    return (y * (latmin-latmax) / ch + latmax*1.0); // Forcer le '+'' mathématique sino ça renvoie NaN car (+ latmax) est pris pour une chaîne ! 
 } 
 
  // Affiche les longitude Latitude correspondant au point sur l'écran
@@ -394,7 +393,6 @@ function screen2earth() {
   document.getElementById("lon").innerHTML = "<i>"+lon+"</i>";
   document.getElementById("lat").innerHTML = "<i>"+lat+"</i>";
 }
-
 
 function draw_scale(){
 // calcule et affiche l'échelle en mètres

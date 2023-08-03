@@ -45,11 +45,14 @@ async function myMoveFunction(){
     document.getElementById("coordx").innerHTML = x;
     document.getElementById("coordy").innerHTML = y;
     // Calcul de distance
+    
     gcoord2=fromScreenToGeoCoord(x, y);
     document.getElementById("lon").innerHTML = Math.round(gcoord2.lon * 100000) / 100000;
     document.getElementById("lat").innerHTML = Math.round(gcoord2.lat * 100000) / 100000;    
     
     if ((bouees !== undefined) && (bouees.length>=1)){
+        var distance = distanceGeodesique(bouees[bouees.length-1].x, bouees[bouees.length-1].y, x, y);
+        /*
         gcoord1=fromScreenToGeoCoord(bouees[bouees.length-1].x, bouees[bouees.length-1].y);
 
         // On applique la formule de la distance selon un grand cercle 
@@ -61,7 +64,8 @@ async function myMoveFunction(){
         var dlon =  6378137 * anglelon * Math.PI / 180.0;
         var dlat =  6356752 * anglelat * Math.PI / 180.0;  
         distance = Math.sqrt(dlon * dlon + dlat * dlat);
-        document.getElementById("distance").innerHTML = "<span class=\"surligne\">"+ (Math.round(distance * 100000) / 100000) +"</span>";
+        */
+        document.getElementById("distance").innerHTML = "<span class=\"surligne\">"+ distance +"</span>";
     }    
     await sleep(200);
     // Let's go reticule  

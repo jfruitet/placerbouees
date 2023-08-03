@@ -7,6 +7,9 @@ let twd=0;
 let xcoord=0;   // Valeur du event.offsetX de la souris
 let ycoord=0;
 
+let xcoordold=0; // Pour le calcul de distance entre deux points successifs du canvas
+let ycoordold=0;
+
 let canvasw= 0; // valeur de canvas.width
 let canvash= 0;
 let zoom=1;   // Valeur multiplicative appliquée au calcul des positions sur le canvas
@@ -66,15 +69,27 @@ function setTWD() {
     document.getElementById("twdrad").innerHTML='TWD radian: <i>'+twd_radrounded+'</i>';
 }
 
+function afficheDistance(){
+
+
+}
+
 // Affiche les coordonnées quand on clique dans le Canvas
 function show_coords(event) {
-  //xcoord= document.getElementById("coordx").innerHTML = event.clientX;
-  //ycoord= document.getElementById("coordy").innerHTML = event.clientY;
-  // On veut les coordonnées relatives au canvas
-  xcoord= event.offsetX;
-  ycoord= event.offsetY;
-  document.getElementById("coordx").innerHTML = xcoord;
-  document.getElementById("coordy").innerHTML = ycoord;
+    //xcoord= document.getElementById("coordx").innerHTML = event.clientX;
+    //ycoord= document.getElementById("coordy").innerHTML = event.clientY;
+    // On veut les coordonnées relatives au canvas
+    xcoord= event.offsetX;
+    ycoord= event.offsetY;
+    //console.debug("Event Offset X:"+event.offsetX+" Y:"+event.offsetY);
+    //console.debug("Xcoord:"+xcoord+" Ycoord:"+ycoord);   
+    document.getElementById("coordx").innerHTML = ycoord;
+    document.getElementById("coordy").innerHTML = ycoord;
+    // calcule la distance au point cliqué précedemment
+    var distance = distanceGeodesique(xcoord,ycoord,xcoordold,ycoordold);
+    document.getElementById("distance").innerHTML = distance;
+    xcoordold=xcoord;
+    ycoordold=ycoord;  
 }
 
 // A sleep function from https://www.sitepoint.com/delay-sleep-pause-wait/

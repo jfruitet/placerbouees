@@ -58,7 +58,8 @@ function resetMarkersBouees(){
                     "Concurrents": zoneconcurrents, 
                     "Balises": balises
             }
-            layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);  
+            layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map); // Deux couches proposées
+            //layerControl = L.control.layers(overlayMaps).addTo(map);   
         }
     }        
 }
@@ -172,7 +173,7 @@ function initMap(){
             center:targetSite,
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         });
-
+        
         // Autre source de carte (ce sont des images de pixels géolocalisés)
         osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -185,7 +186,7 @@ function initMap(){
             "OpenStreetMap": osm,
             "<span style='color: navy'>OpenStreetMap.HOT</span>": osmHOT
         };     
-        
+      
        // Set map's center to target with zoom 18.  
         if (map===undefined){
             map = L.map('osm-map', {
@@ -194,7 +195,7 @@ function initMap(){
                 layers: [osm]            
             });    
             
-            layerControl = L.control.layers(baseMaps).addTo(map);
+            layerControl = L.control.layers(baseMaps).addTo(map); // Deux couches 
         }                     
     }
 }
@@ -299,6 +300,7 @@ function displayMap(){
              
         map.removeControl(layerControl);    // L'ancien contrôle est remplacé
         layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);  
+
 
         // Légende 
         if (legend !== undefined){map.removeControl(legend);} 

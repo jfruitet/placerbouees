@@ -112,9 +112,7 @@
 
 <div class="graphicLayout2">
 
- <h3>Carte</h3>
- <p id="mapinfo">Zone de navigation et bouées fixes...</p>
-
+ <h3 id="mapinfo">Carte</h3>
 <div id="osm-map"></div> 
 </div>
     
@@ -135,8 +133,10 @@ document.getElementById('typebouee').style.visibility="hidden";
         initMap(); // Affiche le fond de carte
         setTWD(); 
         affiche_fleche_TWD();
-        affiche_legende();
+        affiche_legende(8);
         listePlansEau();
+        infoSite=nomDuSite;
+        document.getElementById("mapinfo").innerHTML=infoSite;
         getSite();
  }   
 </script>

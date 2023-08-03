@@ -90,3 +90,18 @@ function rectangle_englobantZN(){
 }      
     
 
+// Distance entre deux points du canvas
+function distanceGeodesique(x1,y1,x2,y2){
+    gcoord1=fromScreenToGeoCoord(x1, y1);
+    gcoord2=fromScreenToGeoCoord(x2, y2);
+        // On applique la formule de la distance selon un grand cercle 
+        // seulement valable à l'équateur pour les longitudes sur la projection Mercator
+        // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  Math.PI / 180
+        // Sur les latitudes la formule 
+        var anglelon=gcoord2.lon-gcoord1.lon;
+        var anglelat=gcoord2.lat-gcoord1.lat;
+        var dlon =  6378137.0 * anglelon * Math.PI / 180.0;
+        var dlat =  6356752.0 * anglelat * Math.PI / 180.0;  
+        distance = Math.sqrt(dlon * dlon + dlat * dlat);
+        return (Math.round(distance * 100000.0) / 100000.0);        
+}

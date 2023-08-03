@@ -218,7 +218,7 @@ function initPlanEau(response) {
     longitudeDuSite=objSite.lon;
     latitudeDuSite=objSite.lat;
     fichierACharger=objSite.jsonfile;      
-    infoSite='Plan d\'eau : '+objSite.nom+', '+objSite.zipcode+' '+objSite.ville+'.<br>Club de radiomodélisme <a target="_blank" href="'+objSite.url+'">'+objSite.club+'</a>.';
+    infoSite=objSite.nom+', '+objSite.zipcode+' '+objSite.ville+'.<br>Club de radiomodélisme <a target="_blank" href="'+objSite.url+'">'+objSite.club+'</a>.';
     document.getElementById("mapinfo").innerHTML=infoSite;
     // On peut lancer le chargement des données du site
     getSite(); 
