@@ -2,7 +2,7 @@
 // Lecture de la liste des plans d'eau disponibles pour la régate radiocommandée 
 // Utilise simpleXml
 
-define("DATAPATH", "../data/");
+define("DATAPATH", "../json/");
 
 $debug = true;
 $reponse_ok = array("ok"=>1);

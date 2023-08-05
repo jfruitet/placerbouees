@@ -6,10 +6,11 @@ let myList = document.getElementById('mylist'); // La liste des sites à charger
 let url_serveur = 'http://localhost/placerbouees/php/';     // Les scripts des serveurs
 let url_data = 'http://localhost/placerbouees/data/';   // les fichiers de sortie 
 let url_json = 'http://localhost/placerbouees/json/';   // les fichiers de configuration des plans d'eau
-
 let tFichiers=[]; // tableau des fichiers proposés au chargement
+
 let boueesMobiles=[];
 let boueesFixes=[];
+
 
 
 let myInitGet = {
@@ -31,81 +32,6 @@ let myInitGet = {
 /*************************************************
  * Charger les caractéristiques d'un plan d'eau
  * **********************************************/
-
-// ----------------------- 
-function sauveBouees(){
-// envoie le fichier JSON des bouées au serveur pour l'enregistrer dans le dossier ./data
-    var myjsonboueesfixes='"boueesfixes":[';
-    var myjson='"boueesmobiles":[';
-    var compteurfixe=0;
-    var compteurmobile=0;
-    if ((bouees !== undefined) && (bouees.length>0)){
-        for (var index=0; index<bouees.length; index++){
-            if (bouees[index].idfixe>=0){
-                if (compteurfixe==0){ 
-                    myjsonboueesfixes = myjsonboueesfixes+'{"boueefixe":'+true+',"id":'+bouees[index].idfixe+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';                
-                }
-                else{
-                    myjsonboueesfixes = myjsonboueesfixes+',{"boueefixe":'+true+',"id":'+bouees[index].idfixe+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';
-                } 
-                compteurfixe++;
-            }
-            else{
-                if (compteurmobile==0){ 
-                   myjson = myjson+'{"boueefixe":'+false+',"id":'+compteurmobile+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';                
-                }
-                else{
-                    myjson = myjson+',{"boueefixe":'+false+',"id":'+compteurmobile+',"lon":'+bouees[index].lon+',"lat":'+bouees[index].lat+',"color":"'+bouees[index].color+'","fillcolor":"'+bouees[index].flag+'"}';                  
-                }             
-                compteurmobile++;
-            }
-        } 
-        myjsonboueesfixes = myjsonboueesfixes+']';           
-        myjson = myjson+']';
-        
-        var mystrjson='{"site":"'+nomDuSite.replace(/\s+/g, '')+'","twd":'+twd+',' + myjsonboueesfixes+','+myjson+'}';
-        // console.debug("Bouees Fixes JSON:"+myjsonboueesfixes+"\n");
-        // console.debug("Bouees JSON:"+myjson+"\n");
-        // console.debug("JSON:"+mystrjson+"\n");
-        
-        var url= url_serveur+'sauverbouees.php';
-        ajax_post(url, mystrjson);
-    }
- }
-
-
-// ----------------------- 
-function ajax_post(url, mystrjson){    
-    if ((url !== undefined) && (url.length>0) && (mystrjson !== undefined) && (mystrjson.length>0)){        
-        // POST avec fetch()
-        fetch(url, { // let url_serveur = 'http://localhost/placerbouees/php/sauverbouees.php';
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
-            },
-            //body: JSON.stringify(myjson), // turn the JS object literal into a JSON string
-            body: mystrjson, // mystrjson est déjà une chaîne
-            referrer: "about:client", //ou "" (pas de réferanr) ou une url de l'origine
-            referrerPolicy: "no-referrer-when-downgrade", //ou no-referrer, origin, same-origin...
-            mode: "cors", //ou same-origin, no-cors
-            credentials: "include", //ou same-origin ou omit, include
-            cache: "default", //ou no-store, reload, no-cache, force-cache, ou only-if-cached
-            redirect: "follow", //ou manual ou error
-            integrity: "", //ou un hash comme "sha256-abcdef1234567890"
-            keepalive: false, //ou true pour que la requête survive à la page
-            signal: undefined //ou AbortController pour annuler la requête            
-        })
-        .then(response => response.json())  // Le retour est aussi une chaîne
-        .then(response => {
-                console.debug(response);
-                if (response.ok==1){
-                    document.getElementById("consigne").innerHTML='Données sauvegardées';    
-                }
-            })
-        .catch(error => console.debug("Erreur : "+error));
-    }
-}
-    
     
 
 // ----------------------- 
@@ -212,7 +138,7 @@ function getThatPlansEau(id_plan_eau){
     ajax_SetPlanEau(url, myget);     
 }
 
-
+// ----------------------- 
 function initPlanEau(response) {
     // console.debug("Traitement de la réponse\n"+ response);
     // Traitement de la réponse 
@@ -237,15 +163,11 @@ function ajax_GetSite(url, mystr){
         .then(response => response.text())  // Le retour est aussi une chaîne
         .then(response => {
             setDataSite(response);         
-            // Calculer l'emprise de la zone à afficher sur le canvas 
-            rectangle_englobantZN();
-            document.getElementById("transfert").style.visibility="hidden";
-            // En cas de changement de site il faut réinitialiser la collecte des balises
-            nbouees=0;
-            bouees.length=0;  
             // Puisque le site est chargé on peut sauvegarder les cookies 
-            setCookies(); // nomDuSite, longitudeDuSite, latitudeDuSite, fichierACharger     
-            drawAll();      // Afficher le canvas            
+            setCookies(); // nomDuSite, longitudeDuSite, latitudeDuSite, fichierACharger 
+            document.getElementById("mapinfo").innerHTML=infoSite;
+            document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
+            getDataWindBoueeSite(twd,nomDuSite);        
         })  // tout le boulot se fait ici  dans le script  sitenavigation.js              
         .catch(error => console.debug("Erreur : "+error));
     }
@@ -263,5 +185,174 @@ function getSite() {
 }
 
 
+/***********************************************
+ * Récupère les données de position des bouées
+ * du dossier ./data/
+ **********************************************/
 
+
+
+//-----------------
+function proposeChoixWindData(){
+    if ((tFichiers !== undefined) && (tFichiers.length>0)){ 
+        //console.debug("tFichiers 2 : "+ tFichiers);
+        document.getElementById("myListWindData").innerHTML=""; // Sinon les items fichiers sont en doublés 
+                                                            // et je n'ai toujours pas compris pourquoi
+        for (var i=0; i<tFichiers.length; i++){     
+            //console.debug("tFichiers i:"+i+" => "+ tFichiers[i]);
+            const listItem = document.createElement("li");   
+            var b = document.createElement('button');
+            b.setAttribute('name',tFichiers[i]);
+            b.setAttribute('onclick','getThatData("'+encodeURI(tFichiers[i])+'");');
+            b.textContent=tFichiers[i];
+            // append the anchor to the dom element
+            listItem.appendChild(b);
+            myListWindData.appendChild(listItem);
+        }
+    }                     
+}
+
+// ----------------------- 
+function ajax_GetDataWindSite(url, mystr){ 
+    if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
+        // GET avec fetch()
+        fetch(url+"?"+mystr, myInitGet)
+        .then(response => response.json()) 
+        .then((data) => {
+            //console.debug(data);
+            if (data.ok==1){
+                tFichiers.length=0;    // Evite le doublonnage dû à deux appels successifs rapprochés de l'appel Ajax !  
+                for (const fichier of data.fichiers) {
+                        //console.debug(fichier);
+                        tFichiers.push(fichier);
+                }  
+                //console.debug("tFichiers : "+ tFichiers);
+                proposeChoixWindData();
+            }   
+        })                          
+        .catch(error => console.debug("Erreur : "+error));
+    }
+}
+
+// Recherche les fichiers de forme "robonav_NomDuSite_45*.json" 
+// ------------------------
+function getDataWindBoueeSite(twd,site) {
+    if ((site!==undefined) && (site.length>0)){
+        //console.debug("Chargement du plan d'eau\n"+ nomDuSite);
+        //console.debug("Fichier\n"+ fichierACharger);
+        let expressionACharger= "robonav_"+site.replace(/\s+/g, '')+"_"+twd;       
+        let url= url_serveur+'getdata.php';
+        let myfile="expression="+expressionACharger;    
+        //console.debug(expressionACharger);        
+        ajax_GetDataWindSite(url, myfile);
+    }        
+}
+
+
+//-----------------
+function proposeChoixData(){    // Tous les fichiers de data sauf 45°
+    if ((tFichiers !== undefined) && (tFichiers.length>0)){ 
+        //console.debug("tFichiers 2 : "+ tFichiers);
+        document.getElementById("myListData").innerHTML=""; // Sinon les items fichiers sont en doublés 
+                                                            // et je n'ai toujours pas compris pourquoi
+        for (var i=0; i<tFichiers.length; i++){     
+            //console.debug("tFichiers i:"+i+" => "+ tFichiers[i]);
+            const listItem = document.createElement("li");   
+            var b = document.createElement('button');
+            b.setAttribute('name',tFichiers[i]);
+            b.setAttribute('onclick','getThatData("'+encodeURI(tFichiers[i])+'");');
+            b.textContent=tFichiers[i];
+            // apend the anchor to the dom element
+            listItem.appendChild(b);
+            myListData.appendChild(listItem);
+        }
+    }                     
+}
+
+// ----------------------- 
+function ajax_GetDataSite(url, mystr){ 
+    if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
+        // GET avec fetch()
+        fetch(url+"?"+mystr, myInitGet)
+        .then(response => response.json()) 
+        .then((data) => {
+            //console.debug(data);
+            if (data.ok==1){
+                tFichiers.length=0;    // Evite le doublonnage dû à deux appels successifs rapprochés de l'appel Ajax !  
+                for (const fichier of data.fichiers) {
+                        //console.debug(fichier);
+                        tFichiers.push(fichier);
+                }  
+                //console.debug("tFichiers : "+ tFichiers);
+                proposeChoixData();
+            }   
+        })                          
+        .catch(error => console.debug("Erreur : "+error));
+    }
+}
+
+
+// Recherche les fichiers de forme "robonav_NomDuSite*.json" 
+// ------------------------
+function getDataBoueeSite(twd, site) {
+    if ((site!==undefined) && (site.length>0)){
+        //console.debug("Chargement du plan d'eau\n"+ nomDuSite);
+        //console.debug("Fichier\n"+ fichierACharger);
+        let expressionACharger= "robonav_"+site.replace(/\s+/g, '');       
+        let url= url_serveur+'getdata.php';
+        let myfile="expression="+expressionACharger+"&nottwd="+twd;    
+        //console.debug(expressionACharger);        
+        ajax_GetDataSite(url, myfile);
+    }        
+}
+
+
+// ----------------------- 
+function ajax_GetData(url, mystr){ 
+    if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
+        // GET avec fetch()
+        fetch(url+"?"+mystr, myInitGet)
+        .then(response => response.json()) 
+        .then((data) => {
+                boueesFixes=data.boueesfixes;
+                boueesMobiles=data.boueesmobiles;
+/*
+                if (boueesMobiles.length>0){
+                    for (var item=0; item<boueesMobiles.length; item++){
+                        console.debug("Données objet index "+item);
+                        console.debug(boueesMobiles[item].id);
+                        console.debug(boueesMobiles[item].lon);
+                        console.debug(boueesMobiles[item].lat);
+                        console.debug(boueesMobiles[item].color);
+                        console.debug(boueesMobiles[item].fillcolor);
+                    } 
+                }    
+*/               
+                addBoueesMobiles2Map();
+            }
+        )           
+        .catch(error => console.debug("Erreur : "+error));
+    }
+}
+
+    
+// ----------------------- 
+function getThatData(nf){  
+    //console.debug("Chargement des bouées\n");
+    //console.debug("Fichier\n"+ nf);
+    boueesMobiles.length=0;
+    boueesFixes.lengt=0;
+    var url= url_serveur+'getdata.php';
+    let myfile="file="+nf;  
+    ajax_GetData(url,  myfile);     
+}
+
+
+//--------------------------
+function majDataBouees(){
+    document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
+    getDataWindBoueeSite(twd,nomDuSite);
+    document.getElementById("datanotwind").innerHTML="pour les autres directions du vent";
+    getDataBoueeSite(twd,nomDuSite);
+}
 

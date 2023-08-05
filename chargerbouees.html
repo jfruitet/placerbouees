@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="Placement de bouées pour la Voile radiocommandée">
+  <meta name="author" content="Jean Fruitet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, target-densitydpi=device-dpi">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <!-- base href="http://localhost/placerbouees/" target="_blank" -->
+  <title>Affichage de Bouées RC</title>
+  <!-- Feuilles de style -->
+
+<link rel="stylesheet" href="css/style.css">
+<!-- link rel="stylesheet" href="map.css"  -->
+ 
+<!-- Javascript ---------->
+<script src="js/myscript.js"></script>
+
+<!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+</head>
+<body>
+ <div id="entete"></div>
+ <script>
+ document.getElementById("entete").innerHTML = "<b>Affichage de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+ </script>
+ <noscript>
+<div class="menu"><h3>Placement de Bouées RC</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
+<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/placerbouees#README'">GitHub JF</button></span>
+</div>
+ </noscript>
+ 
+ <div class="corpstexte">  
+ <!-- div id="gauche" --> 
+  <h2>Affichage de Bouées radio commandées</h2>    
+<a href="mailto:jean.fruitet@free.fr?subject=Affichage des bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
+ <p><b>Sites disponibles</b> 
+<div class="scrollleft">
+    <ul id="mylist"></ul>
+</div>
+<div id="droite">
+    <img src="images/parcours_regate-vrc_imagette.gif" alt="logo" style="max-width:100%;height:auto;">
+</div>
+</div>
+
+<div class="graphicLayout3">
+<p>Entrez la direction <b><i>d'où souffle le vent</i></b><br /> en degré puis cliquez "Soumettre" 
+<br /><span id="twddeg">TWD ° ?</span> <span id="twdrad"></span>,  
+<br /><b>TWD</b> : <input type="text" id="twd" name="twd" size="5">  
+<button class="input" onclick="setTWD(); majDataBouees();">Soumettre</button>
+</p> 
+<p><b>Données disponibles</b><br />
+<span id="datawind"></span></p> 
+<ol id="myListWindData"></ol>
+<span id="datanotwind"></span></p> 
+<ul id="myListData"></ul>   
+</div>
+
+<script src="js/map.js"></script>
+<script src="js/map2.js"></script>
+<script src="js/ajax2.js"></script>  
+<script src="js/sitenavigation.js"></script>
+<script src="js/geo_utils.js"></script> 
+<script src="js/icones.js"></script>
+<!-- script src="js/canvas.js"></script -->
+<!-- script src="js/bouees.js"></script -->
+
+
+<div class="graphicLayout2">
+<h3 id="mapinfo">Carte</h3>
+<div id="osm-map"></div> 
+</div>
+    
+
+<script>
+// Chargement de la carte
+ window.onload = function(){
+        //console.log('Page chargée');
+        checkCookies();
+        initMap(); // Affiche le fond de carte
+        setTWD(); 
+        //affiche_fleche_TWD();
+        //affiche_legende(8);
+        listePlansEauDisponibles();
+        infoSite=nomDuSite;
+        document.getElementById("mapinfo").innerHTML=infoSite;
+        getSite();
+        document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
+        getDataWindBoueeSite(twd,nomDuSite);
+        document.getElementById("datanotwind").innerHTML="pour les autres directions du vent";
+        getDataBoueeSite(twd,nomDuSite);
+ }   
+</script>
+
+    
+</body>
+</html>

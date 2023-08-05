@@ -271,6 +271,18 @@ button {
   overflow: auto;
 }
 
+.graphicLayout3 {
+  background-color: #ffeeff;
+  color: black;
+  border: 1px solid black;
+  margin: 2px;
+  padding: 2px;
+  height: 720px;
+  clear: right;
+  float: left;
+  overflow: auto;
+}
+
 #osm-map {
   height:600px;
   width:100%;

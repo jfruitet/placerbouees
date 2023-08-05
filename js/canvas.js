@@ -25,7 +25,7 @@ const ctx = canvas.getContext("2d");
 canvas.height=canvas.width;
 canvasw=canvas.width;
 canvash=canvas.height;
-console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
+//console.debug("Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
 
 const canvas2 = document.getElementById("canvas2");
 const ctx2 = canvas2.getContext("2d");
@@ -577,12 +577,6 @@ function tranfertBouees(){
      
  }
 
-// ----------------------- 
-function listePlansEau(){
-    getListePlansEau(); // Récupère la liste des plans d'eau
-    document.getElementById("transfert").style.visibility="hidden";
-    document.getElementById("consigne").innerHTML="Liste des plans d'eau : cliquez sur <b>\"Liste\"</b>. "; 
- }
  
  
  // Trace une petitebouee circulaire

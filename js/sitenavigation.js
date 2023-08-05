@@ -428,21 +428,9 @@ function setDataSite(response){
              balisesTable[i]=(JSON.parse('{'+tid[i]+','+tcoordinates[i]+','+tproperties[i]+'}'));    
         }                
         //console.debug(balisesTable.toString());
-        
-        // Calculer l'emprise de la zone à afficher sur le canvas 
-        rectangle_englobantZN();               
-       
-        // document.getElementById("rotation").style.display="inline";
-        document.getElementById("transfert").style.visibility="hidden";
+
         initMap();
         displayMap(); // Afficher la carte  
-          
-        // En cas de changement de site il faut réinitialiser la collecte des balises
-        nbouees=0;
-        bouees.length=0;  
-        // Puisque le site est chargé on peut sauvegarder les cookies 
-        setCookies(); // nomDuSite, longitudeDuSite, latitudeDuSite, fichierACharger     
-        drawAll();      // Afficher le canvas
     }          
 }
 

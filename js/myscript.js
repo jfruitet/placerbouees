@@ -62,6 +62,10 @@ function setTWD() {
     if (document.getElementById("twd").value.length>0){
         twd=document.getElementById("twd").value;        
     }
+    if (twd>=0 && twd<=360){
+        document.getElementById("twddeg").innerHTML='TWD°: <i>'+twd+'</i>';
+    }    
+
     document.getElementById("twd").innerHTML=""; // Efface le contenu de la saisie
     document.getElementById("twddeg").innerHTML='TWD°: <i>'+twd+'</i>';
     twd_radian=get_radian_repere_direct(twd);// Math.round(number*100)/100
@@ -69,10 +73,6 @@ function setTWD() {
     document.getElementById("twdrad").innerHTML='TWD radian: <i>'+twd_radrounded+'</i>';
 }
 
-function afficheDistance(){
-
-
-}
 
 // Affiche les coordonnées quand on clique dans le Canvas
 function show_coords(event) {
@@ -161,6 +161,13 @@ let infoSite='Plan d\'eau du Plessis, 44980 Sainte-Luce/Loire.<br>Club de radiom
 
 // verifie les cookies utiles
 function checkCookies() {
+  let stwd = getCookie("stwd");
+  if (stwd!="" && stwd!=null) {
+    var itwd=parseInt(stwd);    
+    if (!isNaN(itwd) && itwd>=0 && itwd<=360){
+        twd=itwd;
+    }    
+  } 
   let nomsite = getCookie("nomsite");
   if (nomsite != "" && nomsite !=null) {
         nomDuSite=nomsite;
@@ -181,6 +188,10 @@ function checkCookies() {
   
 // positionne les cookies utiles
 function setCookies(){  
+    
+    if (twd>=0 && twd<=360) {
+        setCookie("stwd", twd, 30); // 30 jours
+    }   
     if (nomDuSite != "" && nomDuSite != null) {
         setCookie("nomsite", nomDuSite, 30); // 30 jours
     }
@@ -194,3 +205,9 @@ function setCookies(){
         setCookie("fichieracharger", fichierACharger, 30); // 30 jours
     }
 } 
+
+ // ----------------------- 
+function listePlansEauDisponibles(){
+    getListePlansEau(); // Récupère la liste des plans d'eau
+ }
+

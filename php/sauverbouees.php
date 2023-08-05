@@ -1,7 +1,9 @@
 <?php
 // enregistre un fichier JSON de placement de bouées 
 
-$debug = true;
+define("DATAPATH", "../data/");
+
+$debug = false;
 $mydata = new stdClass();
 $reponse_ok = array("ok"=>1);
 $reponse_not_ok = array("ok"=>0);
@@ -31,8 +33,8 @@ if (isset($data) && (!empty($data)))
 {
     $mydata = json_decode($data,true);
     //print_r($mydata);
-    $filename="placementbouees_".$mydata['twd']."_".date("Ymd").".json";
-    if ($handle = fopen("../data/".$filename, "w")){
+    $filename="robonav_".$mydata['site']."_".$mydata['twd']."_".date("Ymd").".json";
+    if ($handle = fopen(DATAPATH.$filename, "w")){
         fwrite($handle, $data);
         fclose($handle);
     }

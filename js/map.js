@@ -121,7 +121,7 @@ function addBouees2Map(){
                     myIcon = myIconRed; 
                 }
             }   
-            console.log("maps:: 123 :: Lat:"+bouees[index].lat+" Lon: "+bouees[index].lon+"\n");
+            //console.log("maps:: 123 :: Lat:"+bouees[index].lat+" Lon: "+bouees[index].lon+"\n");
             
             //geojsonb = geojsonb + ',"weight":1,"opacity":1,"fillOpacity":0.8},"geometry":{"coordinates":['+ bouees[index].lon +','+bouees[index].lat+'],"type":"Point"}} ';
             var latlng = L.latLng(bouees[index].lat,bouees[index].lon);
@@ -284,7 +284,7 @@ function displayMap(){
 </svg> `,
   className: "",
   iconSize: [40, 40],
-  iconAnchor: [40, 0],
+  iconAnchor: [20, 0],
 });     
     
         baliseSite = L.marker(targetSite, { icon: svgIcon }).addTo(map)

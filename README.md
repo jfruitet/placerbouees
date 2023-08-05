@@ -1,7 +1,7 @@
-# Placement de bouées de régate radiocommandées
+# Placement et affichage de bouées autonomes de régate de voiliers radiocommandée
 
 ## Présentation
-Le positionnement de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
+Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
 
 Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation de bouées asservies chacune à une position GPS.
 
@@ -10,25 +10,29 @@ L'application **Web** :  *placerbouees/index.html* est une composante de ce proj
 ### Développement: JF en javascript et PHP.
 (cc) jean.fruitet@free.fr
 
-La page web *./placerbouees/index.html* permet d'assigner des positions GPS à des balises mobiles autonomes sur une carte OpenStreetMap.
+La page web *./placerbouees/index.html* permet d'affecter des positions GPS sur une carte OpenStreetMap à des balises mobiles autonomes, en fonction de la direction du vent.
 
-## Ecran
-### Partie supérieure
+La page web *./placerbouees/chargerbouees.html* affiche ces bouées autonomes sur une carte OpenStreetMap.
+
+## Page index.html
+
+### Ecran
+#### Partie supérieure
 Sélection d'un site de navigation et chargement des données afférentes.
 
 Les fichiers json des sites disponibles sont placés dans le dossier ./json/
 
-### Partie droite 
+#### Partie droite 
 Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents et, éventuellement, des bouées ancrées (bouées fixes, à demeure).
 
-### Partie gauche  
+#### Partie gauche  
 Pointage à la souris des bouées du parcours d'une régate, en s'appuyant aussi bien sur les bouées ancrées (fixes) que sur des bouées mobiles (des balises autonomes ancrées virtuellement).
 
-## Fonctionnalités
+### Fonctionnalités
 Après positionnement à la souris d'un jeu de bouées organisées en *ligne de départ*, *ligne d'arrivée*, *porte* et *dog leg* sur la partie gauche de l'écran, les bouées sont affichées sur la carte et leurs coordonnées GPS (longitude, latitude) 
 transmises au serveur pour ^tre mises à disposition de l'application de pilotage pour smartphone **RoBoNav**.
 
-## Interface
+### Interface
 - Boutons 
   - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
   - *Zoom* : "+", "-", "1": remise à l'échelle 1 ;
@@ -48,14 +52,43 @@ Les bouées placées sont surmontées d'un drapeau de couleur verte (bouée à l
 
 Le bouton "**Transmettre**" envoie à un serveur externe les coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; ces coordonnées seront disponibles pour l'applet **RoBoNav** de pilotage des balises autonomes.
 
+
+## Page chargerbouees.html
+### Ecran
+#### Partie supérieure
+Sélection d'un site de navigation.
+ - Saisie de la direction du vent et du site 
+ - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
+
+Le fichier XML des sites renseignés est placé dans le dossier ./data/
+
+Les fichiers de position des balies mobiles est placé dans le dossier ./data/
+
+#### Partie inférieure droite
+Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents, des bouées ancrées (bouées fixes, à demeure) et des bouées mobiles à leur position GPS.
+
+#### Interface
+ - Saisie de la direction du vent et du site 
+ - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
+
+## Connexion avec un serveur externe
+
+Le bouton "**Charger**" récupère sur un serveur externe le fichier json des coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; 
+ces coordonnées sont les mêmes que celles de l'applet **RoBoNav** de pilotage des balises autonomes.
+
 ### Fonctionnement du serveur
 Il y a quelques conditions au fonctionnement du serveur :
   1. La connexion Web doit être activée (ou les *Données mobiles* activées)
   2. Le serveur doit être activé.
-  3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source.
+  3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source du script *./js/ajax.js*.
   
 ## Ce qui reste à faire
-- Intérfacer l'application **PlacerBouees** au projet **RoBoNav* de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS;
+- Interfacer l'application **PlacerBouees** au projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS;
+- Réécrire l'application **ChargerBouees** pour smartphone.
+
+## Production des données 
+
+C'est l'application placerbouees/index.html qui produit les fichiers d'entrée de l'application ./placerbouees/chargerbouees.html
 
 ### Difficultés rencontrées
 Il m'a fallut reprendre complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques.
@@ -76,15 +109,18 @@ directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scri
 ## Sources
 ```
 ./placerbouees
-  index.html
-
+    index.html
+    chargerbouees.html
+    
 ./js
     ajax.js
+    ajax2.js
     bouees.js
     canavas.js
     geo_utils.js
     iconse.js
     maps.js
+    maps2.js
     myscript.js
     sitnenavigation.js   
 
@@ -94,6 +130,7 @@ directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scri
   material-icons.css
 
 ./data
+    Fichiers .json de positionnement de bouées mobiles
 
 ./doc
   Captures d'écran
@@ -106,6 +143,7 @@ directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scri
 ./images
 
 ./json
+    // Données .json des sites de navigation (zonz d'évolution, concurrents, bouées fixes) 
     leplessis.json
     laminais.json
     laplageverte.json
@@ -116,9 +154,15 @@ directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scri
 ```
   
 ## Data
+### Placer bouées
 Les données produites sont placées dans le dossier du serveur *./data/*
 Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées et leur position GPS, stockées dans des fichiers .json
 sur le format <*leplessis-45_20230803.json*> pour l'étang du Plessis et un vent de direction 45 °
+
+### Charger bouées
+Les données sont lues dans le dossier du serveur *./data/*
+Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées et leur position GPS, stockées dans des fichiers .json
+sur le format <*robonav_leplessis_45_20230803.json*> pour l'étang du Plessis et un vent de direction 45°
    
 ## Liens
 MIT App Inventor http://ai2.appinventor.mit.edu/
