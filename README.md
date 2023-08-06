@@ -184,7 +184,7 @@ Les données ci-dessus sont lues dans le dossier du serveur *./data/*
 ### Difficultés rencontrées
 Il m'a fallu réactualiser complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques, bien oubliées, je dois dire...
 
-Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la création des cartes **OpenStreetMap"", ainsi que sur les dizaines de contributions disponibles en ligne sur les forums ad hoc.
+Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la création des cartes **OpenStreetMap**, ainsi que sur les dizaines de contributions disponibles en ligne sur les forums ad hoc.
 
 L'adaptation à une langue différente du français ne me paraît pas trop compliquée car il y a très peu de chaînes à traduire...
 
@@ -197,7 +197,7 @@ MIT App Inventor http://ai2.appinventor.mit.edu/ : langage de programmation par 
 
 GeoJSON https://geojson.io/ : éditeur en ligne de fichier geojson
 
-JSON Editor OnLine https://jsoneditoronline.org/ : comme sont nom l'indique. 
+JSON Editor OnLine https://jsoneditoronline.org/ : comme son nom l'indique. 
 
 Leaflet https://leafletjs.com/ : bibliothèque Javascript pour les cartes OpenStreetMap
 
@@ -209,9 +209,11 @@ PSPad http://www.pspad.com/fr/ : éditeur de fichiers sources
 
 dnGrep https://dngrep.github.io/ : recherche de chaînes de caractères multi dossier
 
-Figma https://www.figma.com/ : éditeur de pages web et création d'objets vectoriels au format svn
+Figma https://www.figma.com/ : éditeur de pages web et création d'objets vectoriels au format svg
 
-## License
+## Droits d'utilisation et de modification (License)
+Tous ce projet est en Open source.
+
 Pour le code source : **MIT** *Free Software, Hell Yeah!* https://github.com/pandao/editor.md/blob/master/LICENSE
 
 Pour les documents : **Creative Commons** http://creativecommons.org/licenses/by-sa/4.0/
