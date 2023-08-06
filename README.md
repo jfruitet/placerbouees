@@ -1,4 +1,4 @@
-# Placement et affichage de bouées autonomes de régate de voiliers radiocommandée
+# Placement et affichage de bouées autonomes de régates de voiliers radiocommandés
 
 ## Présentation
 Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
@@ -30,16 +30,25 @@ Pointage à la souris des bouées du parcours d'une régate, en s'appuyant aussi
 
 ### Fonctionnalités
 Après positionnement à la souris d'un jeu de bouées organisées en *ligne de départ*, *ligne d'arrivée*, *porte* et *dog leg* sur la partie gauche de l'écran, les bouées sont affichées sur la carte et leurs coordonnées GPS (longitude, latitude) 
-transmises au serveur pour ^tre mises à disposition de l'application de pilotage pour smartphone **RoBoNav**.
+transmises au serveur pour être mises à disposition de l'application de pilotage pour smartphone **RoBoNav**.
 
 ### Interface
 - Boutons 
   - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
   - *Zoom* : "+", "-", "1": remise à l'échelle 1 ;
-  - Bouton "**Bouées**" : Saisie des positions à la souris;
+  - Boutons 
+    - "**Bouées**" : Saisie des positions à la souris ;   
+    - "**Retirer**" : Supprime la dernière position saisie ;        
+    - "**Vider**" : Supprime toutes les positions saisies ;    
+    - "**Valider**" : Met fin à la saisie et affiche les bouées saisies sur la carte OpenStreetMap ;
+    - "**Transférer**" : Sauvegarde des positions saisies dans un fichier <*./data/robonav_NomPlanEau_TWD.json*>
+    - Radio boutons         
+        -Radio boutons : **Bâbord**, **Tribord* : indication du franchissement
+        -Radio boutons : **Départ**, **Arrivée**, **Porte**, **Dog leg** : Rôles dans le parcours de régate 
+    
 - Légendes
-  1. Tracé d'une flèche indiquant la **direction vers laquelle soufle le vent**, *TWD* : true wind direction, en  ° ;
-  2. "**Bouées fixes**" telles que lues dans le fichier geojson attaché au plan d'eau du Plessis ;
+  1. Tracé d'une flèche indiquant la **direction vers laquelle soufle le vent**, *TWD* (true wind direction), en  ° ;
+  2. "**Bouées fixes**" telles que lues dans le fichier geojson attaché au plan d'eau considéré ;
   3. **Balises mobiles** :
     * Bouées de départ en jaune
     * Bouée d'arrivée en bleu
