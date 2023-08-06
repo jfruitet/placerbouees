@@ -33,20 +33,25 @@ Après positionnement à la souris d'un jeu de bouées organisées en *ligne de 
 transmises au serveur pour être mises à disposition de l'application de pilotage pour smartphone **RoBoNav**.
 
 ### Interface
-- Boutons 
-  - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
-  - *Zoom* : "+", "-", "1": remise à l'échelle 1 ;
+- Informations
+    - TWD°:<*valeur*> TWD radian:<*valeur*>, Zoom:<*valeur*>
+    - X: Y : *position*  du pointeur souris en coocrdonnées écran
+    - Lon: Lat : *position géographique* du pointeur souris
+    - Distance : distance entre deux points en mètres            
+- Saisie 
+  - Textbox *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés puis cliquer sur le bouton "**Soumettre**") ;
+  - *Zoom* : "+", "-", "1"  (remise à l'échelle 1) ;
   - Boutons 
     - "**Bouées**" : Saisie des positions à la souris ;   
     - "**Retirer**" : Supprime la dernière position saisie ;        
     - "**Vider**" : Supprime toutes les positions saisies ;    
     - "**Valider**" : Met fin à la saisie et affiche les bouées saisies sur la carte OpenStreetMap ;
-    - "**Transférer**" : Sauvegarde des positions saisies dans un fichier <*./data/robonav_NomPlanEau_TWD.json*>
+    - "**Transférer**" : Sauvegarde des positions saisies dans un fichier <*./data/robonav_NomPlanEau_TWD_AAAAMMDD.json*>
     - Radio boutons         
         -Radio boutons : **Bâbord**, **Tribord* : indication du franchissement
         -Radio boutons : **Départ**, **Arrivée**, **Porte**, **Dog leg** : Rôles dans le parcours de régate 
     
-- Légendes
+- Légende
   1. Tracé d'une flèche indiquant la **direction vers laquelle soufle le vent**, *TWD* (true wind direction), en  ° ;
   2. "**Bouées fixes**" telles que lues dans le fichier geojson attaché au plan d'eau considéré ;
   3. **Balises mobiles** :
@@ -59,7 +64,8 @@ Les bouées placées sont surmontées d'un drapeau de couleur verte (bouée à l
 
 ## Connexion avec un serveur externe
 
-Le bouton "**Transmettre**" envoie à un serveur externe les coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; ces coordonnées seront disponibles pour l'applet **RoBoNav** de pilotage des balises autonomes.
+Le bouton "**Transmettre**" envoie à un serveur externe les coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; 
+ces coordonnées sont disponibles pour la page Web **chargerbouees.html* et pour l'applet **RoBoNav** de pilotage des balises autonomes.
 
 
 ## Page chargerbouees.html
@@ -67,44 +73,30 @@ Le bouton "**Transmettre**" envoie à un serveur externe les coordonnées géogr
 #### Partie supérieure
 Sélection d'un site de navigation.
  - Saisie de la direction du vent et du site 
- - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
 
-Le fichier XML des sites renseignés est placé dans le dossier ./data/
+Le fichier XML des sites renseignés et les fichiers de position des balises mobiles sont placés dans le dossier *./data/*
 
-Les fichiers de position des balies mobiles est placé dans le dossier ./data/
+#### Partie inférieure 
 
-#### Partie inférieure droite
-Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents, des bouées ancrées (bouées fixes, à demeure) et des bouées mobiles à leur position GPS.
-
-#### Interface
- - Saisie de la direction du vent et du site 
- - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
+- A gauche 
+    - *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "**Soumettre**" ;
+    - Liste des fichiers de position disponibles pour ce site et ce choix de direction du vent
+    - Autres fichiers de position pour ce site
+- A droite
+    - Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents, des bouées ancrées (bouées fixes, à demeure) et des bouées mobiles à leur position GPS.
 
 ## Connexion avec un serveur externe
-
-Le bouton "**Charger**" récupère sur un serveur externe le fichier json des coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; 
-ces coordonnées sont les mêmes que celles de l'applet **RoBoNav** de pilotage des balises autonomes.
+Un serveur externe stocke et retourne tous les fichiersutiles à l'application :
+- Fichier .XML des sites enregistrés
+- Fichiers .json des données de plan d'eai
+- Fichiers .json coordonnées géographiques (Longitude, Latitude) des bouées et balises constituant un parcours de régate pour une direction de vent donnée ; 
+    Ces dernier sont les mêmes que ceux utilisés par l'applet **RoBoNav** de pilotage des balises autonomes.
 
 ### Fonctionnement du serveur
 Il y a quelques conditions au fonctionnement du serveur :
   1. La connexion Web doit être activée (ou les *Données mobiles* activées)
   2. Le serveur doit être activé.
   3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source du script *./js/ajax.js*.
-  
-## Ce qui reste à faire
-- Interfacer l'application **PlacerBouees** au projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS;
-- Réécrire l'application **ChargerBouees** pour smartphone.
-
-## Production des données 
-
-C'est l'application placerbouees/index.html qui produit les fichiers d'entrée de l'application ./placerbouees/chargerbouees.html
-
-### Difficultés rencontrées
-Il m'a fallut reprendre complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques.
-
-Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la création des cartes **OpenStreetMap"", ainsi que sur les dizaines de contributions disponibles en ligne sur les forums ad hoc.
-
-L'adaptation à une langue différente du français ne me paraît pas trop compliquée...
 
 ## Edition des sites
 
@@ -161,6 +153,24 @@ directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scri
     plans-eau_robonav.xml
 
 ```
+
+## Production des données 
+
+C'est l'application placerbouees/index.html qui produit les fichiers d'entrée de l'application ./placerbouees/chargerbouees.html
+
+  
+## Ce qui reste à faire
+- Interfacer l'application **PlacerBouees** avec le projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS;
+- Réécrire l'application **ChargerBouees** pour smartphone.
+- Automatiser le placement des bouées en fonction d'un site et d'une direction du vent.
+
+### Difficultés rencontrées
+Il m'a fallut reprendre complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques.
+
+Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la création des cartes **OpenStreetMap"", ainsi que sur les dizaines de contributions disponibles en ligne sur les forums ad hoc.
+
+L'adaptation à une langue différente du français ne me paraît pas trop compliquée...
+
   
 ## Data
 ### Placer bouées
