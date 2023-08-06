@@ -5,10 +5,11 @@ Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voilier
 
 Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation de bouées asservies chacune à une position GPS.
 
-L'application **Web** :  *placerbouees/index.html* est une composante de ce projet. 
+Les pages **Web** :  *placerbouees/index.html* et *./placerbouees/chargerbouees.html*  sont des 
+composantes de ce projet. 
 
-### Développement: JF en javascript et PHP.
-(cc) jean.fruitet@free.fr
+### Développement
+Par JF en javascript et PHP. (cc) jean.fruitet@free.fr
 
 La page web *./placerbouees/index.html* permet d'affecter des positions GPS sur une carte OpenStreetMap à des balises mobiles autonomes, en fonction de la direction du vent.
 
@@ -67,6 +68,7 @@ Les bouées placées sont surmontées d'un drapeau de couleur verte (bouée à l
 Le bouton "**Transmettre**" envoie à un serveur externe les coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; 
 ces coordonnées sont disponibles pour la page Web **chargerbouees.html** et pour l'applet **RoBoNav** de pilotage des balises autonomes.
 
+L'adresse du serveur est écrite en dur dans le fichier ./js/config.js, à modifier si vous passez sur un serveur public.
 
 ## Page chargerbouees.html
 ### Ecran
@@ -87,7 +89,7 @@ Les fichiers de position des balises mobiles par site et par direction du vent s
     - Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents, des bouées ancrées (bouées fixes, à demeure) et des bouées mobiles à leur position GPS.
 
 ## Connexion avec un serveur externe
-Un serveur externe stocke et retourne tous les fichiersutiles à l'application :
+Un serveur externe stocke et retourne tous les fichiers utiles à l'application :
 - Fichier .XML des sites enregistrés
 - Fichiers .json des données de plan d'eai
 - Fichiers .json coordonnées géographiques (Longitude, Latitude) des bouées et balises constituant un parcours de régate pour une direction de vent donnée ; 
@@ -97,7 +99,7 @@ Un serveur externe stocke et retourne tous les fichiersutiles à l'application :
 Il y a quelques conditions au fonctionnement du serveur :
   1. La connexion Web doit être activée (ou les *Données mobiles* activées)
   2. Le serveur doit être activé.
-  3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source du script *./js/ajax.js*.
+  3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source du script *./js/config.js*.
 
 ## Edition des sites
 
@@ -128,6 +130,7 @@ C'est l'application placerbouees/index.html qui produit les fichiers d'entrée d
     ajax2.js
     bouees.js
     canavas.js
+    config.js
     geo_utils.js
     iconse.js
     maps.js
@@ -188,6 +191,10 @@ Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la cr�
 
 L'adaptation à une langue différente du français ne me paraît pas trop compliquée car il y a très peu de chaînes à traduire...
 
+
+## Installation
+- Recopier l'ensemble des sources dans un dossier ./placerbouées de votre serveur httpd
+- Modifier le contenu du fichier ./js/config.js pour indiquer l'adresse du serveur.
    
 ## Outils et liens 
 
