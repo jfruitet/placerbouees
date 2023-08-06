@@ -62,19 +62,20 @@ transmises au serveur pour être mises à disposition de l'application de pilota
       
 Les bouées placées sont surmontées d'un drapeau de couleur verte (bouée à laisser à tribord) ou rouge (bouée à laisser à bâbord).
 
-## Connexion avec un serveur externe
+### Connexion avec un serveur externe
 
 Le bouton "**Transmettre**" envoie à un serveur externe les coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; 
-ces coordonnées sont disponibles pour la page Web **chargerbouees.html* et pour l'applet **RoBoNav** de pilotage des balises autonomes.
+ces coordonnées sont disponibles pour la page Web **chargerbouees.html** et pour l'applet **RoBoNav** de pilotage des balises autonomes.
 
 
 ## Page chargerbouees.html
 ### Ecran
 #### Partie supérieure
-Sélection d'un site de navigation.
+ - Sélection d'un site de navigation.
  - Saisie de la direction du vent et du site 
 
-Le fichier XML des sites renseignés et les fichiers de position des balises mobiles sont placés dans le dossier *./data/*
+Le fichier XML des sites renseignés est placé dans le dossier ./json/
+Les fichiers de position des balises mobiles par site et par direction du vent sont placés dans le dossier *./data/*
 
 #### Partie inférieure 
 
@@ -100,12 +101,21 @@ Il y a quelques conditions au fonctionnement du serveur :
 
 ## Edition des sites
 
-Pour ajouter de nouveaux sites, modifier sous éditeur de texte type PSPad ou Notepad++ le fichier *./json/plans_eau_robonav.xml*.
+Pour ajouter de nouveaux sites, modifier sous éditeur de texte type PSPad ou Notepad++ le fichier *./data/plans_eau_robonav.xml*.
 
 Puis ajouter dans le dossier *./json/* un fichier <*nomdusite.json*> sur le modèle du fichier <*leplessis.json*>.
 
-Le plus efficace est de saisir la zone de navigation (polygone), le chemin des concurrents (Linestring continue) et les éventuellement les pontons et bouées fixes, 
-directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scripts geojson* dans le fichier <*nomdusite.json*> sous éditeur texte. 
+Le plus efficace est de saisir à la souris la zone de navigation (polygone), 
+le chemin des concurrents (Linestring continue) et les éventuelles positions des pontons et bouées fixes, 
+avec l'éditeur en ligne **geojson.io** ; 
+
+Replacer ensuite les contenus des *{"type":"Featurecollection"}* de ces scripts *geojson* 
+dans le fichier <*nomdusite.json*> sous éditeur texte type **PSPad**.
+
+### Chaîne de production des données 
+
+C'est l'application placerbouees/index.html qui produit les fichiers d'entrée de l'application ./placerbouees/chargerbouees.html
+
 
 ## Sources
 ```
@@ -154,45 +164,52 @@ directement avec l'éditeur en ligne **geojson.io** ; recopier ensuite ces *scri
 
 ```
 
-## Production des données 
+  
+## Data
+### Output : Placer bouées
+Les données produites par *./placrbouees/index.html* sont placées dans le dossier du serveur *./data/*
 
-C'est l'application placerbouees/index.html qui produit les fichiers d'entrée de l'application ./placerbouees/chargerbouees.html
+Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
+et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_aammdd.json*>, par exemple
+<*robonav_LePlessis_45_20230803.json*>, pour l'étang du Plessis et un vent de direction 45°
 
+### Input : Charger bouées
+Les données ci-dessus sont lues dans le dossier du serveur *./data/* 
   
 ## Ce qui reste à faire
-- Interfacer l'application **PlacerBouees** avec le projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS;
-- Réécrire l'application **ChargerBouees** pour smartphone.
+- Interfacer l'application **PlacerBouees** avec le projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS ; cela consiste à implnater l'application **ChargerBouees** sur smartphone.
 - Automatiser le placement des bouées en fonction d'un site et d'une direction du vent.
+    - La plupart des fonctions nécessaires sont déjà présentes, il suffit d'implanter l'algorithme décrit par ailleurs. 
 
 ### Difficultés rencontrées
-Il m'a fallut reprendre complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques.
+Il m'a fallu réactualiser complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques, bien oubliées, je dois dire...
 
 Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la création des cartes **OpenStreetMap"", ainsi que sur les dizaines de contributions disponibles en ligne sur les forums ad hoc.
 
-L'adaptation à une langue différente du français ne me paraît pas trop compliquée...
+L'adaptation à une langue différente du français ne me paraît pas trop compliquée car il y a très peu de chaînes à traduire...
 
-  
-## Data
-### Placer bouées
-Les données produites sont placées dans le dossier du serveur *./data/*
-Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées et leur position GPS, stockées dans des fichiers .json
-sur le format <*leplessis-45_20230803.json*> pour l'étang du Plessis et un vent de direction 45 °
-
-### Charger bouées
-Les données sont lues dans le dossier du serveur *./data/*
-Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées et leur position GPS, stockées dans des fichiers .json
-sur le format <*robonav_leplessis_45_20230803.json*> pour l'étang du Plessis et un vent de direction 45°
    
-## Liens
-MIT App Inventor http://ai2.appinventor.mit.edu/
+## Outils et liens 
 
-GeoJSON https://geojson.io/
+OpenStreetMap https://www.openstreetmap.org/ : alternative libre et ouverte à GoogleMaps
 
-JSON Editor OnLine https://jsoneditoronline.org/
+MIT App Inventor http://ai2.appinventor.mit.edu/ : langage de programmation par blocs pour smartphones Android
 
-Leaflet https://leafletjs.com/
+GeoJSON https://geojson.io/ : éditeur en ligne de fichier geojson
 
-Umap https://umap.openstreetmap.fr/fr/
+JSON Editor OnLine https://jsoneditoronline.org/ : comme sont nom l'indique. 
+
+Leaflet https://leafletjs.com/ : bibliothèque Javascript pour les cartes OpenStreetMap
+
+Umap https://umap.openstreetmap.fr/fr/ : éditeur de cartes collaboratif 
+
+Xampp https://www.apachefriends.org/fr/index.html : serveur httpd pour Windows
+
+PSPad http://www.pspad.com/fr/ : éditeur de fichiers sources
+
+dnGrep https://dngrep.github.io/ : recherche de chaînes de caractères multi dossier
+
+Figma https://www.figma.com/ : éditeur de pages web et création d'objets vectoriels au format svn
 
 ## License
 Pour le code source : **MIT** *Free Software, Hell Yeah!* https://github.com/pandao/editor.md/blob/master/LICENSE
