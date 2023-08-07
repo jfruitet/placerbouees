@@ -270,7 +270,7 @@ function set_X_Ecran_ligne_concurrents(){
 function set_Y_Ecran_ligne_concurrents(){
   var index=0;
   ligne_yecran.length=0;
-  while (index<zonenav_lat.length){
+  while (index<zoneconc_lat.length){
     ligne_yecran[index]=get_Yecran_lat(zoneconc_lat[index]);
     index++;
   }  
