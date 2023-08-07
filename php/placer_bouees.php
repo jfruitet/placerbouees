@@ -6,9 +6,11 @@
 define("DATAPATH_INPUT", "../json/"); // Les données seront lues dans ce dossier.
 define("DATAPATH_OUTPUT", "../data/"); // Les données seront sauvegardées dans ce dossier.
 
-$debug = true;
-$twd_degre=0;
-$twd_radian=0.0;
+include ("./include/geo_utils.php");
+
+$debug = false;
+$debug1 = true;
+
 $site='';
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
@@ -67,8 +69,8 @@ if (file_exists(DATAPATH_INPUT.$filename_input)){
             file_put_contents("debug_test.txt", $data, FILE_APPEND);
         }
         $dataObject=json_decode($data,false);
-        //print_r($dataObject);
         if ($debug){
+            print_r($dataObject);
             file_put_contents("debug_test.txt", $dataObject, FILE_APPEND);
         }
     }
@@ -79,69 +81,125 @@ if (file_exists(DATAPATH_INPUT.$filename_input)){
  * ****************************************/
 if (!empty($dataObject)){
     // Zone des Concurrents 
-    $ZC_lon=array();
-    $ZC_lat=array();
+      
+    $zoneconc_lon=array();
+    $zoneconc_lat=array();
+    
+    $zonenav_lon=array();
+    $zonenav_lat=array();
+    
+    $balises_name=array();
+    $balises_lon=array();
+    $balises_lat=array();    
 
     foreach ($dataObject->geojsonZoneConcurrents->features[0]->geometry->coordinates as $key => list($lon,$lat)){
-        $ZC_lon[$key]=$lon;
-        $ZC_lat[$key]=$lat;
+        $zoneconc_lon[$key]=$lon;
+        $zoneconc_lat[$key]=$lat;
     }
     
     // Zone de navigation
-    $ZN_lon=array();
-    $ZN_lat=array();
+    $zonenav_lon=array();
+    $zonenav_lat=array();
     
     foreach ($dataObject->geojsonZoneNav->features[0]->geometry->coordinates[0] as $key => list($lon,$lat)){
-        $ZN_lon[$key]=$lon;
-        $ZN_lat[$key]=$lat;
+        $zonenav_lon[$key]=$lon;
+        $zonenav_lat[$key]=$lat;
     }
 
     // Bouées fixes
-    
-    $Balises_name=array();
-    $Balises_lon=array();
-    $Balises_lat=array();
     $index=0;
     foreach ($dataObject->geojsonBalises->features as $feature){
-        $Balises_name[$index]=$feature->properties->name;
+        $balises_name[$index]=$feature->properties->name;
         $index++;
     }
 
     $index=0;
     foreach ($dataObject->geojsonBalises->features as $feature){
-        $Balises_lon[$index]=$feature->geometry->coordinates[0];
-        $Balises_lat[$index]=$feature->geometry->coordinates[1];
+        $balises_lon[$index]=$feature->geometry->coordinates[0];
+        $balises_lat[$index]=$feature->geometry->coordinates[1];
         $index++;
     }
     
     if ($debug){    
     echo "<br>Zone Concurrents<br>\n";    
     echo "<br>ZC_lon<br>\n";
-    print_r($ZC_lon);
-    echo "<br>ZC_lat<br>\n";
-    print_r($ZC_lat);
+    print_r($zoneconc_lon);
+    echo "<br>zoneconc_lat<br>\n";
+    print_r($zoneconc_lat);
     echo "<br>Zone Navigation<br>\n";
-    echo "<br>ZN_lon<br>\n";
-    print_r($ZN_lon);
-    echo "<br>ZN_lat<br>\n";
-    print_r($ZN_lat);
+    echo "<br>zonenav_lon<br>\n";
+    print_r($zonenav_lon);
+    echo "<br>zonenav_lat<br>\n";
+    print_r($zonenav_lat);
 
-    echo "<br>Balises fixes<br>\n";   
-    echo "<br>Balises_name<br>\n";
-    print_r($Balises_name);
+    echo "<br>balises fixes<br>\n";   
+    echo "<br>balises_name<br>\n";
+    print_r($balises_name);
                
-    echo "<br>Balises_lon<br>\n";
-    print_r($Balises_lon);
-    echo "<br>Balises_lat<br>\n";
-    print_r($Balises_lat);
+    echo "<br>balises_lon<br>\n";
+    print_r($balises_lon);
+    echo "<br>balises_lat<br>\n";
+    print_r($balises_lat);
     }    
 }
+
 
 /******************************************
  * Début de l'algorithme de positionnement
  * ****************************************/
+// Initialiser les dimensions hors tout du plan d'eau
+// Convertir les polygones de navigation et les lignes de déplacement des concurrents dans le repère écran
+init_ecran_ZN();
+
+
+if ($debug){
+    echo "Polygone de navigation<br>\n<table>\n<tr>\n";
+    foreach ($poly_xecran as $x){
+        echo "<td>".$x."</td>";
+    }
+    echo "</tr><tr>\n";
+    foreach ($poly_yecran as $y){
+        echo "<td>".$y."</td>";
+    }
+    echo "</tr>\n</table>\n";
+}
+
+if ($debug){
+    echo "Ligne des concurrents<br>\n<table>\n<tr>\n";
+    foreach ($ligne_xecran as $x){
+        echo "<td>".$x."</td>";
+    }
+    echo "</tr><tr>\n";
+    foreach ($ligne_yecran as $y){
+        echo "<td>".$y."</td>";
+    }
+    echo "</tr>\n</table>\n";
+}
+
+// Appliquer une transformation pour se ramener face au vent
  
- 
+rotation_ecran_ZN($twd_radian);
+if ($debug1){
+    echo "Polygone de navigation  APRES rotation <br>\n<table>\n<tr>\n";
+    foreach ($poly_xsaisie as $x){
+        echo "<td>".$x."</td>";
+    }
+    echo "</tr><tr>\n";
+    foreach ($poly_ysaisie as $y){
+        echo "<td>".$y."</td>";
+    }
+    echo "</tr>\n</table>\n";
+
+    echo "Ligne des concurrents   APRES rotation <br>\n<table>\n<tr>\n";
+    foreach ($ligne_xsaisie as $x){
+        echo "<td>".$x."</td>";
+    }
+    echo "</tr><tr>\n";
+    foreach ($ligne_ysaisie as $y){
+        echo "<td>".$y."</td>";
+    }
+    echo "</tr>\n</table>\n";
+}
  
 
 /******************************************
@@ -163,4 +221,5 @@ if ($handle = fopen(DATAPATH.$filename, "w")){
 
 
 echo ("</body></head></html>");
+
 ?>
