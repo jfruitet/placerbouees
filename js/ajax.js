@@ -96,7 +96,8 @@ function ajax_post(url, mystrjson){
         .then(response => {
                 console.debug(response);
                 if (response.ok==1){
-                    document.getElementById("consigne").innerHTML='Données sauvegardées';    
+                    //document.getElementById("consigne").innerHTML='Données sauvegardées'; 
+                    document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. ";
                 }
             })
         .catch(error => console.debug("Erreur : "+error));

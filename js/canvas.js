@@ -570,12 +570,8 @@ function draw_Ecran_bouees_fixes(){
 // ----------------------- 
 function tranfertBouees(){
     sauveBouees(); // Envoie la liste des bouées vers le serveur PHP pour le stokage
-    document.getElementById("transfert").style.visibility="hidden";
-    document.getElementById("consigne").innerHTML="Transfert vers le serveur <span class=\"surligne\"><i>"+url_serveur+"</i></span> effectué. ";
-    //document.getElementById("liste").style.visibility="true"; // Supprimé de l'interface
-    document.getElementById("consigne").innerHTML="Pour charger un plan d'eau cliquer sur l'un des boutons numérotés. "; 
-     
- }
+    document.getElementById("transfert").style.visibility="hidden";     
+}
 
  
  

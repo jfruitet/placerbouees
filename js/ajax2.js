@@ -3,9 +3,6 @@
 // la communication avec les serveurs
 
 let myList = document.getElementById('mylist'); // La liste des sites à charger
-let url_serveur = 'http://localhost/placerbouees/php/';     // Les scripts des serveurs
-let url_data = 'http://localhost/placerbouees/data/';   // les fichiers de sortie 
-let url_json = 'http://localhost/placerbouees/json/';   // les fichiers de configuration des plans d'eau
 let tFichiers=[]; // tableau des fichiers proposés au chargement
 
 let boueesMobiles=[];

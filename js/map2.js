@@ -21,7 +21,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
 
     
@@ -41,7 +41,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
 
 
@@ -62,7 +62,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
    
 
@@ -83,7 +83,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
       
 
@@ -102,7 +102,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
 </svg> `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
         
 
@@ -123,7 +123,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [8, -10]
+  iconAnchor: [10, -4]
 });      
         
 
@@ -143,7 +143,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
    
 
@@ -163,7 +163,7 @@ var mesMarkersMobiles;  // Objet des markers mobiles affichés sur la map
  `,
   className: "",
   iconSize: [20, 28],
-  iconAnchor: [10, -10]
+  iconAnchor: [10,-4]
 });      
    
 
