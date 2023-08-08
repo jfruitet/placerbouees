@@ -453,15 +453,15 @@ function draw_scale(){
 
 // Passer du canavas d'affichage vers le canvas de saisie
 /*
-    ctx.translate(-canvasw/2, -(canvash/2+20);// T1
+    ctx.translate(-canvasw/2, -(canvash/2);// T1
     ctx.rotate(Math.PI / 2 - twd_radian);   // R
-    ctx.translate(canvasw/2, canvash/2-20);       // T2
+    ctx.translate(canvasw/2, canvash/2);       // T2
 
 
     M = [sin(𝛼)   cos(𝛼)] 
        [-cos(𝛼)  sin(𝛼)]
        
-    ctx.translate(+canvasw/2, (canvash/2+20);   
+    ctx.translate(+canvasw/2, (canvash/2);   
 */
 
 //---------------------------
@@ -476,7 +476,7 @@ function fromDisplayToSaisieCoordLonLat(x, y){
 function setDisplayToSaisieX(x,y, radian){
 // On applique une translation T1, une rotation R  de (twd_radian - PI/2) et une translation -T1   
     var x0 = x - canvasw/2; // Translation T1
-    var y0 = y - (canvash/2+20);
+    var y0 = y - (canvash/2);
     var x1 = x0*Math.sin(radian) + y0*Math.cos(radian); // Rotation R
     return Math.round(x1) + canvasw/2; // Translation -T1
 }
@@ -485,9 +485,9 @@ function setDisplayToSaisieX(x,y, radian){
 function setDisplayToSaisieY(x,y,radian){
 // On applique une translation T, une rotation R  et une translation -T   
     var x0 = x - canvasw/2; // Translation T1
-    var y0 = y - (canvash/2+20);
+    var y0 = y - (canvash/2);
     var y1 = - x0 * Math.cos(radian) + y0*Math.sin(radian);
-    return Math.round(y1) + (canvash/2+20);
+    return Math.round(y1) + (canvash/2);
 }
  
 
@@ -498,11 +498,11 @@ function setDisplayToSaisieY(x,y,radian){
 
 // Repasser dans le repère du canavas d'origine 
 /*
-    ctx.translate(-canvasw/2, -canvash/2+20); 
+    ctx.translate(-canvasw/2, -canvash/2); 
     ctx.rotate(twd_radian - Math.PI / 2); --> Math.PI / 2 - twd_radian
     M = [sin(𝛼)   -cos(𝛼)] 
        [cos(𝛼)  sin(𝛼)]
-    ctx.translate(canvasw/2, canvash/2-20);   
+    ctx.translate(canvasw/2, canvash/2);   
 */
 
 //---------------------------
@@ -517,7 +517,7 @@ function fromScreenToGeoCoord(x, y){
 function setSaisieToDisplayX(x,y, radian){
 // On applique une translation -T, une rotation inverse R  et une translation T   
     var x0 = x - canvasw/2; // Translation T1
-    var y0 = y - (canvash/2+20);
+    var y0 = y - (canvash/2);
     var x1 = x0*Math.sin(radian) - y0*Math.cos(radian); // Rotation R
     return Math.round(x1) + canvasw/2; // Translation T2
 }
@@ -525,9 +525,9 @@ function setSaisieToDisplayX(x,y, radian){
 function setSaisieToDisplayY(x,y,radian){
 // On applique une translation T1, une rotation R  et une translation T2   
     var x0 = x - canvasw/2; // Translation T1
-    var y0 = y - (canvash/2+20);
+    var y0 = y - (canvash/2);
     var y1 = x0 * Math.cos(radian) + y0*Math.sin(radian);
-    return Math.round(y1) + (canvash/2+20);
+    return Math.round(y1) + (canvash/2);
 }
  
  
