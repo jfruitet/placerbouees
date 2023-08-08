@@ -155,7 +155,7 @@ if (!empty($dataObject)){
  * *****************************************************************/
 init_ecran_ZN();
 
-if ($debug){
+if ($debug1){
     echo "<br>Polygone de navigation<br>\n<table border=\"1\">\n<tr>\n";
     foreach ($poly_xecran as $x){
         echo "<td>".$x."</td>";
@@ -194,7 +194,7 @@ if ($debug){
 
 rotation_ecran_ZN($twd_radian);
 
-if ($debug){
+if ($debug1){
     echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
     foreach ($poly_xsaisie as $x){
         echo "<td>".$x."</td>";
@@ -217,7 +217,7 @@ if ($debug){
 }
  
 // Vérification
-if ($debug){
+if ($debug1){
     echo "<br>VERIFICATION DES TRANSFORMATIONS<br>\n";
     echo "<br>Milieu (lon,lat) : ".$milieu_lon.", ".$milieu_lat."\n";
     
@@ -250,7 +250,7 @@ if ($debug1){
 /******************************************
  * Début de l'algorithme de positionnement
  * ****************************************/
- calcule_rectangle_bouees();
+ calcule_rectangle_bouees_debug();
  
 /******************************************
  * Sauvegarder les position

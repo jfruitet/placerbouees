@@ -160,11 +160,19 @@ function rectangle_englobantZN(){
 // seulement valable à l'équateur pour les longitudes sur la projection Mercator
 // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  PI / 180
 
+// Distance entre deux poits de l'écran
+// --------------------------------------
+function distancePointsEcran($x1,$y1,$x2,$y2){
+    return sqrt(($x1-$x2) * ($x1-$x2) + ($y1-$y2) * ($y1-$y2)); 
+}
+
+
+
 // Distance entre deux points du plan d'eau
 //---------------------------------------
 function distanceGeodesique($lon1,$lat1,$lon2,$lat2){
-    $anglelon=$lon2 - $lon1;
-    $anglelat=$lat2 - $lat1;
+    $anglelon=abs($lon2 - $lon1);
+    $anglelat=abs($lat2 - $lat1);
     $dlon =  6378137.0 * $anglelon * M_PI / 180.0;
     $dlat =  6356752.0 * $anglelat * M_PI / 180.0;  
     $distance = sqrt($dlon * $dlon + $dlat * $dlat);
@@ -172,7 +180,7 @@ function distanceGeodesique($lon1,$lat1,$lon2,$lat2){
 }
             
 // --------------------------------------
-function distanceEcran($x1,$y1,$x2,$y2){
+function distanceEcran2Earth($x1,$y1,$x2,$y2){
     $gcoord1=fromScreenToGeoCoord($x1, $y1);
     $gcoord2=fromScreenToGeoCoord($x2, $y2);
     return(distanceGeodesique($gcoord1->lon,$gcoord1->lat,$gcoord1->lon,$gcoord2->lat));        
@@ -180,12 +188,12 @@ function distanceEcran($x1,$y1,$x2,$y2){
 
 // --------------------------------------
 function distanceHorizontalePixels($x,$y,$npixels){
-    return distanceEcran($x, $y, $x+$npixels, $y);
+    return distanceEcran2Earth($x, $y, $x+$npixels, $y);
 }
 
 // --------------------------------------
 function distanceVerticalePixels($x,$y,$npixels){
-    return distanceEcran($x, $y, $x, $y+$npixels);
+    return distanceEcran2Earth($x, $y, $x, $y+$npixels);
 }
 
 
@@ -204,18 +212,36 @@ function secteur_vent($twd){
 // Conversion coordonnées géographique lon, lat en coordonnées écran du canvas
 // $cavasw est défini plus haut
 
-function get_Xecran_lon($lon){
+// Origine coin supérieur gauche, sens indirect
+function get_Xecran_lon2($lon){
     global $lonmax;
     global $lonmin;
     global $canvasw;
     return round(($lon-$lonmax) * $canvasw / ($lonmin-$lonmax));
 }  
-   
-function get_Yecran_lat($lat){  
+
+function get_Yecran_lat2($lat){  
     global $latmax;
     global $latmin;
     global $canvash;    
     return round(($lat-$latmax) * $canvash / ($latmin-$latmax));
+}    
+
+
+   
+// Centré sur 0,0 en milieu d'écran, repère normal, sens direct
+function get_Xecran_lon($lon){
+    global $lonmax;
+    global $lonmin;
+    global $canvasw;
+    return round(($lon-(($lonmax+$lonmin)/2.0)) * $canvasw / ($lonmin-$lonmax));
+}  
+
+function get_Yecran_lat($lat){  
+    global $latmax;
+    global $latmin;
+    global $canvash;    
+    return round(($lat-(($latmax+$latmin)/2.0)) * $canvash / ($latmax-$latmin));
 }    
 
 
@@ -317,18 +343,35 @@ global $ligne_yecran;
 // $canvasw est défini plus haut
 // Ne pas oublier que la définition sur la grille du canevas est très grossière par rapport
 // à la grille du monde réel 
-function get_lon_Xecran($x){
+
+// Repère indirect
+function get_lon_Xecran2($x){
     global $lonmax;
     global $lonmin;
     global $canvasw;
     return ($x * ($lonmin-$lonmax) / $canvasw + $lonmax*1.0);
 } 
  
-function get_lat_Yecran($y){
+function get_lat_Yecran2($y){
     global $latmax;
     global $latmin;
     global $canvash;    
     return ($y * ($latmin-$latmax) / $canvash + $latmax*1.0);
+} 
+
+// Repère direct
+function get_lon_Xecran($x){
+    global $lonmax;
+    global $lonmin;
+    global $canvasw;
+    return ($x * ($lonmin-$lonmax) / $canvasw + ($lonmax+$lonmin) / 2.0);
+} 
+ 
+function get_lat_Yecran($y){
+    global $latmax;
+    global $latmin;
+    global $canvash;    
+    return ($y * ($latmax-$latmin) / $canvash + ($latmax+$latmin)/2.0);
 } 
 
 // Conversion des coordonnées d'un point cliqué à la souris en coordonnées géographiques lon, lat 
