@@ -19,6 +19,9 @@ $latmin=90;
 $lonmax=-179; // en degré géographique EST ligne de changement d'horaire
 $latmax=-90;
 
+$milieu_lon=0;
+$milieu_lat=0;
+
 $poly_xecran= array(); // Tableau des coordonnées écran de la zone de navigation
 $poly_yecran= array();
 $ligne_xecran= array(); // Tableau des coordonnées écran de la ligne de déambulation des concurrents
@@ -76,6 +79,7 @@ function get_degre_repere_geographique($angle){
 
 
 // Boite englobante de la zone de navigation + zone d'évolution des concurrents
+// ---------------------------------
 function rectangle_englobantZN(){
     global $lonmax;
     global $lonmin;
@@ -88,6 +92,8 @@ function rectangle_englobantZN(){
     global $zonenav_lat;
     global $zoneconc_lon;    
     global $zoneconc_lat;
+    global $milieu_lon;
+    global $milieu_lat;
     
     $lonmin=180; // en degré géographique
     $latmin=90;
@@ -149,6 +155,7 @@ function rectangle_englobantZN(){
     
 
 // Distance entre deux points du canvas
+// --------------------------------------
 function distanceGeodesique($x1,$y1,$x2,$y2){
     $gcoord1=fromScreenToGeoCoord($x1, $y1);
     $gcoord2=fromScreenToGeoCoord($x2, $y2);

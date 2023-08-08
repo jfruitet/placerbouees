@@ -63,6 +63,10 @@ if ($debug){
 // Elles sont dans un fichier DATAPATH_INPUT."nomsite.json"
 
 $filename_input=$site.".json";
+if ($debug1){
+    echo ("Fichier : ".DATAPATH_INPUT.$filename_input."<br>\n");
+}
+
 if (file_exists(DATAPATH_INPUT.$filename_input)){
     if ($data=file_get_contents(DATAPATH_INPUT.$filename_input)){
         if ($debug){
@@ -120,7 +124,7 @@ if (!empty($dataObject)){
         $index++;
     }
     
-    if ($debug){    
+    if ($debug1){    
     echo "<br>Zone Concurrents<br>\n";    
     echo "<br>ZC_lon<br>\n";
     print_r($zoneconc_lon);
@@ -141,6 +145,7 @@ if (!empty($dataObject)){
     echo "<br>balises_lat<br>\n";
     print_r($balises_lat);
     }    
+    echo "<br>\n";
 }
 
 
@@ -152,8 +157,8 @@ if (!empty($dataObject)){
 init_ecran_ZN();
 
 
-if ($debug){
-    echo "Polygone de navigation<br>\n<table>\n<tr>\n";
+if ($debug1){
+    echo "<br>Polygone de navigation<br>\n<table border=\"1\">\n<tr>\n";
     foreach ($poly_xecran as $x){
         echo "<td>".$x."</td>";
     }
@@ -161,11 +166,9 @@ if ($debug){
     foreach ($poly_yecran as $y){
         echo "<td>".$y."</td>";
     }
-    echo "</tr>\n</table>\n";
-}
+    echo "</tr>\n</table>\n<br>\n";
 
-if ($debug){
-    echo "Ligne des concurrents<br>\n<table>\n<tr>\n";
+    echo "Ligne des concurrents<br>\n<table border=\"1\">\n<tr>\n";
     foreach ($ligne_xecran as $x){
         echo "<td>".$x."</td>";
     }
@@ -180,7 +183,7 @@ if ($debug){
  
 rotation_ecran_ZN($twd_radian);
 if ($debug1){
-    echo "Polygone de navigation  APRES rotation <br>\n<table>\n<tr>\n";
+    echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
     foreach ($poly_xsaisie as $x){
         echo "<td>".$x."</td>";
     }
@@ -188,9 +191,9 @@ if ($debug1){
     foreach ($poly_ysaisie as $y){
         echo "<td>".$y."</td>";
     }
-    echo "</tr>\n</table>\n";
+    echo "</tr>\n</table><br>\n";
 
-    echo "Ligne des concurrents   APRES rotation <br>\n<table>\n<tr>\n";
+    echo "Ligne des concurrents   APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
     foreach ($ligne_xsaisie as $x){
         echo "<td>".$x."</td>";
     }
@@ -201,6 +204,31 @@ if ($debug1){
     echo "</tr>\n</table>\n";
 }
  
+// Vérification
+if ($debug1){
+    echo "<br>VERIFICATION DES TRANSFORMATIONS<br>\n";
+    echo "<br>Milieu (lon,lat) : ".$milieu_lon.", ".$milieu_lat."\n";
+    
+    // convertir en coordonnées écran
+    $ecranX=get_Xecran_lon($milieu_lon);
+    $ecranY=get_Yecran_lat($milieu_lat);
+    echo "<br>Passage en coordonnées écran<br>Milieu (ecranX,ecranY) : ".$ecranX.", ".$ecranY."\n";
+    // rotation
+    $saisieX = setDisplayToSaisieX($ecranX,$ecranY, $twd_radian);
+    $saisieY = setDisplayToSaisieY($ecranX,$ecranY, $twd_radian);    
+    echo "<br>Passage en coordonnées de saisie<br>Milieu (saisieX,saisieY) : ".$saisieX.", ".$saisieY."\n";
+    
+    // revenir aux coordonnées écran
+    $ecranX2=setSaisieToDisplayX($saisieX, $saisieY, $twd_radian);    
+    $ecranY2=setSaisieToDisplayY($saisieX, $saisieY, $twd_radian);
+    echo "<br>Retour en coordonnées écran<br>Milieu (saisieX,saisieY) : ".$ecranX2.", ".$ecranY2."\n";
+    
+    // repasser en coordonnées géographiques
+    $milieu_lon2=get_lon_Xecran($ecranX2);
+    $milieu_lat2=get_lat_Yecran($ecranY2);
+    echo "<br>Retour en coordonnées géographiques<br>Milieu (lon,lat) : ".$milieu_lon2.", ".$milieu_lat2."\n";   
+}    
+
 
 /******************************************
  * Sauvegarder les position
