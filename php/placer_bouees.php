@@ -7,6 +7,7 @@ define("DATAPATH_INPUT", "../json/"); // Les données seront lues dans ce dossie
 define("DATAPATH_OUTPUT", "../data/"); // Les données seront sauvegardées dans ce dossier.
 
 include ("./include/geo_utils.php");
+include ("./include/algo.php");
 
 $debug = false;
 $debug1 = true;
@@ -50,11 +51,11 @@ if (isset($_GET) && !empty($_GET)){
 /*
 B° → A radian : A = (PI / 180 * (270 - B)) MODULO 2PI
 */
-echo ("<html><head></head><body>");
+echo ("<html><head></head><body><h3>Placer_bouees.php</h3><p>Placement automatique des bouées de régate mobiles<br>(cc)jean.fruitet@free.fr</p>");
 $twd_radian = (M_PI / 180.0) * ((450 - $twd_degre) % 360);
 
-if ($debug){
-    $msg=sprintf("<br>Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
+if ($debug1){
+    $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
     echo "<br />$msg\n";
     // file_put_contents("debug_test.txt", $msg, FILE_APPEND);
 }
@@ -124,7 +125,7 @@ if (!empty($dataObject)){
         $index++;
     }
     
-    if ($debug1){    
+    if ($debug){    
     echo "<br>Zone Concurrents<br>\n";    
     echo "<br>ZC_lon<br>\n";
     print_r($zoneconc_lon);
@@ -149,15 +150,12 @@ if (!empty($dataObject)){
 }
 
 
-/******************************************
- * Début de l'algorithme de positionnement
- * ****************************************/
-// Initialiser les dimensions hors tout du plan d'eau
-// Convertir les polygones de navigation et les lignes de déplacement des concurrents dans le repère écran
+/*******************************************************************
+ * Transformation en coordonnées "écran" pour accélerer l'algorithme 
+ * *****************************************************************/
 init_ecran_ZN();
 
-
-if ($debug1){
+if ($debug){
     echo "<br>Polygone de navigation<br>\n<table border=\"1\">\n<tr>\n";
     foreach ($poly_xecran as $x){
         echo "<td>".$x."</td>";
@@ -179,10 +177,24 @@ if ($debug1){
     echo "</tr>\n</table>\n";
 }
 
-// Appliquer une transformation pour se ramener face au vent
- 
+/******************************************
+ * Transformations 
+ * ****************************************/
+// Convertir les polygones de navigation et les lignes de déplacement des concurrents dans le repère dit "de saisie"
+
+// Appliquer une transformation pour ramener la figure face au vent 
+// La figure est tournée dans une direction apparente du vent de 0°
+// Désormais il est facile de déterminer un alignement de bouées face au vent :
+// Bouées en travers du vent : y=constante
+// Bouées dans le sens du vent : x=constante
+// Dog leg au vent : y=minimum
+// Porte sous le vent : y=maximum
+// Départ : minimum<y<maximum au plus proche du chemin des concurrent 
+// Ecart entre les bouées de départ, d'arrivée, porte, dog leg : entre 10 m et 20m
+
 rotation_ecran_ZN($twd_radian);
-if ($debug1){
+
+if ($debug){
     echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
     foreach ($poly_xsaisie as $x){
         echo "<td>".$x."</td>";
@@ -205,7 +217,7 @@ if ($debug1){
 }
  
 // Vérification
-if ($debug1){
+if ($debug){
     echo "<br>VERIFICATION DES TRANSFORMATIONS<br>\n";
     echo "<br>Milieu (lon,lat) : ".$milieu_lon.", ".$milieu_lat."\n";
     
@@ -229,7 +241,17 @@ if ($debug1){
     echo "<br>Retour en coordonnées géographiques<br>Milieu (lon,lat) : ".$milieu_lon2.", ".$milieu_lat2."\n";   
 }    
 
+if ($debug1){
+    echo "<br>Données chargées avec succès. Transformations vérifiées. Début de l'algorithme calcul<br>\n";
+}
 
+   
+   
+/******************************************
+ * Début de l'algorithme de positionnement
+ * ****************************************/
+ calcule_rectangle_bouees();
+ 
 /******************************************
  * Sauvegarder les position
  * ****************************************/ 

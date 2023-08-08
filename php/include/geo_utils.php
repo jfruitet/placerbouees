@@ -126,6 +126,8 @@ function rectangle_englobantZN(){
         echo("geo_utils.php :: ligne 92 :: zoneconc_lat vide\n");
     }    
   
+    // Pour avoir des figures homothétiques sans cisaillement 
+    // N'est pasutilisé pour le moment
     $delta_lat=$latmax-$latmin; 
     $delta_lon=$lonmax-$lonmin;
     //echo("geo_utils.php :: ligne 125 :: delta_lon:".$delta_lon." delta_lat:".$delta_lat."\n");
@@ -153,27 +155,42 @@ function rectangle_englobantZN(){
     // echo("PointSup:: Lon:".$pointSup->lon." Lat:".$pointSup->lat. "\nPointInf :: Lon:".$pointInf->lon." Lat:".$pointInf->lat."\n");
 }      
     
+// Distances 
+// On applique la formule de la distance selon un grand cercle 
+// seulement valable à l'équateur pour les longitudes sur la projection Mercator
+// Distance (km) = Rayon terreste(6400 km) * angle (°)  *  PI / 180
 
-// Distance entre deux points du canvas
+// Distance entre deux points du plan d'eau
+//---------------------------------------
+function distanceGeodesique($lon1,$lat1,$lon2,$lat2){
+    $anglelon=$lon2 - $lon1;
+    $anglelat=$lat2 - $lat1;
+    $dlon =  6378137.0 * $anglelon * M_PI / 180.0;
+    $dlat =  6356752.0 * $anglelat * M_PI / 180.0;  
+    $distance = sqrt($dlon * $dlon + $dlat * $dlat);
+    return (round($distance * 100.0) / 100.0);
+}
+            
 // --------------------------------------
-function distanceGeodesique($x1,$y1,$x2,$y2){
+function distanceEcran($x1,$y1,$x2,$y2){
     $gcoord1=fromScreenToGeoCoord($x1, $y1);
     $gcoord2=fromScreenToGeoCoord($x2, $y2);
-        // On applique la formule de la distance selon un grand cercle 
-        // seulement valable à l'équateur pour les longitudes sur la projection Mercator
-        // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  PI / 180
-        // Sur les latitudes la formule 
-        $anglelon=$gcoord2->lon - gcoord1->lon;
-        $anglelat=$gcoord2->lat - $gcoord1->lat;
-        $dlon =  6378137.0 * $anglelon * M_PI / 180.0;
-        $dlat =  6356752.0 * $anglelat * M_PI / 180.0;  
-        $distance = sqrt($dlon * $dlon + $dlat * $dlat);
-        return (round(distance * 100.0) / 100.0);        
+    return(distanceGeodesique($gcoord1->lon,$gcoord1->lat,$gcoord1->lon,$gcoord2->lat));        
+}
+
+// --------------------------------------
+function distanceHorizontalePixels($x,$y,$npixels){
+    return distanceEcran($x, $y, $x+$npixels, $y);
+}
+
+// --------------------------------------
+function distanceVerticalePixels($x,$y,$npixels){
+    return distanceEcran($x, $y, $x, $y+$npixels);
 }
 
 
-
 // Secteurs du vent 
+// --------------------------------------
 function secteur_vent($twd){
     return windsector[round(($twd % 360) / 22.5)];
 }
@@ -412,7 +429,7 @@ function fromScreenToGeoCoord($x, $y){
 global $twd_radian; 
     $cx=setSaisieToDisplayX($x,$y,$twd_radian); 
     $cy=setSaisieToDisplayY($x,$y,$twd_radian);
-    return '{"lon":'.get_lon_Xecran($cx).',"lat":'.get_lat_Yecran($cy).'}';
+    return json_decode('{"lon":'.get_lon_Xecran($cx).',"lat":'.get_lat_Yecran($cy).'}',false);
 }
 
 // -----------------------
