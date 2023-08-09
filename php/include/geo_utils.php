@@ -196,6 +196,23 @@ function distanceVerticalePixels($x,$y,$npixels){
     return distanceEcran2Earth($x, $y, $x, $y+$npixels);
 }
 
+// Retourne le nombre de "pseudo pixels" pour une distance horizontale "d" en mètres
+// ------------------------------------
+function howMuchXPixelsForMeters($d){ // 
+global $lonmin;
+global $lonmax;
+global $canvasw;
+    return (round($d*$canvasw/distanceGeodesique($lonmin,0.0,$lonmax,0.0)));
+}
+
+// Retourne le nombre de "pseudo pixels" pour une distance verticale "d" en mètres
+// ------------------------------------
+function howMuchYPixelsForMeters($d){ 
+global $latmin;
+global $latmax;
+global $canvash;
+    return (round($d*$canvash/distanceGeodesique(0.0,$latmin,0.0,$latmax)));
+}
 
 // Secteurs du vent 
 // --------------------------------------
@@ -529,7 +546,7 @@ global $canvash;
 //---------------------------
 function fromScreenToGeoCoord($x, $y){
 // Pas de translation
-// Ne pas oublier d'appliquer les transformations inverses T
+// Ne pas oublier d'appliquer les transformations inverses R(-a)
 global $twd_radian; 
     $cx=setSaisieToDisplayX($x,$y,$twd_radian); 
     $cy=setSaisieToDisplayY($x,$y,$twd_radian);

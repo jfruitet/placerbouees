@@ -247,12 +247,69 @@ if ($debug1){
     echo "<br>Données chargées avec succès. Transformations vérifiées. Début de l'algorithme calcul<br>\n";
 }
 
-   
-   
+      
 /******************************************
  * Début de l'algorithme de positionnement
  * ****************************************/
- calcule_rectangle_bouees($debug||$debug1);
+$distance_H_MillePixels=distanceHorizontalePixels(0,0,1000);
+$distance_V_MillePixels=distanceVerticalePixels(0,0,1000); 
+
+$deltaXpixels=howMuchXPixelsForMeters(30.0);
+$deltaYpixels=howMuchYPixelsForMeters(60.0);
+if ($debug1){
+    echo "<br>Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
+    echo "<br>Distance verticale pour 1000 \"pixels\": ".$distance_V_MillePixels."\n";
+    echo "<br>Nombre de \"pixels\" pour une distance horizontale de 30 mètres: ".$deltaXpixels."\n";
+    echo "<br>Nombre de \"pixels\" pour une distance verticale de 60 mètres: ".$deltaYpixels."\n";
+}
+
+
+
+calcule_rectangle_bouees(false);
+// $ObjDistances=json_encode($tab_distances);
+    
+
+if ($debug1){    
+    echo "<br>Points d'intersection trouvés\n";
+    for ($i=0;$i<count($tab_distances); $i++){
+        echo ("<br>".$tab_distances[$i]);
+    }
+}
+
+$distanceecranmin=1000000;
+$sommetmin=0;
+$coordonneesmin=null;
+$intersectionmin=null;
+$distanceterrainmin=1000000;
+
+    for ($i=0;$i<count($tab_distances);$i++){
+        // list($sommet_poly,$coordonnees,$intersection,$distanceecran,$distanceterrain)=json_encode($tab_distances[$i]);
+        //echo ($sommet_poly.",".$coordonnees.",".$intersection.",".$distanceecran.",".$distanceterrain);
+        //$tab_d=explode(',',$tab_distances[$i]); 
+        //echo "<br>\n";
+        //print_r($tab_d);
+        $tab_d=$tab_distances[$i];
+        list($sommet_poly,$coordonnees,$segment_ligne,$intersection,$distanceecran,$distanceterrain)=explode(';',$tab_d);
+        if ($debug1){
+            echo "<br>\n";
+            echo ($sommet_poly.", ".$coordonnees.", ".$segment_ligne.", ".$intersection.", ".$distanceecran.", ".$distanceterrain);
+        }
+        if ($distanceecran<$distanceecranmin){
+            $distanceecranmin=$distanceecran;
+            $sommetmin=$sommet_poly;
+            $coordonneesmin=$coordonnees;
+            $intersectionmin=$intersection;            
+            $distanceterrainmin=$distanceterrain;
+        }                     
+    }
+
+if ($debug1|| true){    
+    echo "<br>Minimas trouvés<br>\n";
+    echo ($sommetmin.", ".$coordonneesmin.", ".$intersectionmin.", ".$distanceecranmin.", ".$distanceterrainmin);
+    echo "<br>\n";
+}
+
+// 
  
 /******************************************
  * Sauvegarder les position
@@ -272,6 +329,6 @@ if ($handle = fopen(DATAPATH.$filename, "w")){
 */
 
 if ($debug || $debug1){
-echo ("</body></head></html>");
+    echo ("</body></head></html>");
 }
 ?>

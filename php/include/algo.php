@@ -14,7 +14,19 @@
 // Déterminer un rectangle vertical (face au vent apparent venant du nord) 
 // inclus dans le plan d'eau au plus près de la polyligne d'évolution des concurrents
 
-$tab_distances=array();
+/*********************************************
+ * 
+ * Points d'intersection trouvés
+ * $tab_distances
+{"sommet_poly":0, "coordonnees":[38844,-28276], "segment_ligne":[0,1], "intersection":[48846,-28276], "distanceecran":10002, "distanceterrain":10.51}
+{"sommet_poly":6, "coordonnees":[38844,-28276], "segment_ligne":[0,1], "intersection":[48846,-28276], "distanceecran":10002, "distanceterrain":10.51}
+{"sommet_poly":1, "coordonnees":[-65038,12649], "segment_ligne":[1,2], "intersection":[42391,12649], "distanceecran":107429, "distanceterrain":112.91}
+{"sommet_poly":5, "coordonnees":[38353,-3438], "segment_ligne":[1,2], "intersection":[45975,-3438], "distanceecran":7622, "distanceterrain":8.01}
+{"sommet_poly":2, "coordonnees":[-55068,25942], "segment_ligne":[2,3], "intersection":[38794,25942], "distanceecran":93862, "distanceterrain":98.65}
+{"sommet_poly":3, "coordonnees":[-20332,39716], "segment_ligne":[3,4], "intersection":[33952,39716], "distanceecran":54284, "distanceterrain":57.05}
+{"sommet_poly":4, "coordonnees":[24195,31929], "segment_ligne":[3,4], "intersection":[36936,31929], "distanceecran":12741, "distanceterrain":13.39}
+**********************************************/
+$tab_distances=null;
 
 // ------------------------------------
 function calcule_rectangle_bouees($debug){
@@ -75,7 +87,7 @@ global $ligne_ysaisie;
                         echo "<br>Intersection entre le sommet  ".$i." [".$xp.",".$yp."] du polygone et le segment C".$index."[".$xc1.",".$yc1."] - C".$index2."[".$xc2.",".$yc2."] au point I[".$xc.",".$yp."]<br>\n";
                         echo "<br> Distance écran = ".$distance1." Distance terrain = ".$distance2."\n";
                     }
-                    $tab_distances[$k]= '{"sommet_poly":'.$i.', "coordonnees":['.$xp.','.$yp.'], "segment_ligne":['.$index.','.$index2.'], "intersection":['.$xc.','.$yp.'], "distanceecran":'.$distance1.', "distanceterrain":'.$distance2.'}';
+                    $tab_distances[$k]= '"sommet_poly":'.$i.';"coordonnees":['.$xp.','.$yp.'];"segment_ligne":['.$index.','.$index2.'];"intersection":['.$xc.','.$yp.'];"distanceecran":'.$distance1.';"distanceterrain":'.$distance2;
                     $k++; 
                 } 
             }                
@@ -98,20 +110,13 @@ global $ligne_ysaisie;
                         echo "<br>Intersection entre le sommet  ".$i." [".$xp.",".$yp."] du polygone et le segment C".$index."[".$xc1.",".$yc1."] - C".$index2."[".$xc2.",".$yc2."] au point I[".$xc.",".$yp."]<br>\n";
                         echo "<br> Distance écran = ".$distance1." Distance terrain = ".$distance2."\n";
                     }
-                    $tab_distances[$k]= '{"sommet_poly":'.$i.', "coordonnees":['.$xp.','.$yp.'], "segment_ligne":['.$index.','.$index2.'], "intersection":['.$xc.','.$yp.'], "distanceecran":'.$distance1.', "distanceterrain":'.$distance2.'}';
+                    $tab_distances[$k]= '"sommet_poly":'.$i.';"coordonnees":['.$xp.','.$yp.'];"segment_ligne":['.$index.','.$index2.'];"intersection":['.$xc.','.$yp.'];"distanceecran":'.$distance1.';"distanceterrain":'.$distance2;                                        
                     $k++; 
                 }             
             }
         }             
         $index++;
-    }
-    
-    //
-    echo "<br>Points d'intersection trouvés\n";
-    for ($i=0;$i<count($tab_distances); $i++){
-        echo ("<br>".$tab_distances[$i]);
-    }
-    
+    }    
 } 
 
 
