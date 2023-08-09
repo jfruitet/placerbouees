@@ -344,7 +344,7 @@ global $ligne_yecran;
 // Ne pas oublier que la définition sur la grille du canevas est très grossière par rapport
 // à la grille du monde réel 
 
-// Repère indirect
+// Repère indirect avec l'origine centrée au coin supérieur gauche
 function get_lon_Xecran2($x){
     global $lonmax;
     global $lonmin;
@@ -359,7 +359,7 @@ function get_lat_Yecran2($y){
     return ($y * ($latmin-$latmax) / $canvash + $latmax*1.0);
 } 
 
-// Repère direct
+// Repère direct centré au milieu de l'écran
 function get_lon_Xecran($x){
     global $lonmax;
     global $lonmin;
@@ -379,14 +379,14 @@ function get_lat_Yecran($y){
 // Ne pas oublier que la définition sur l'écran est très grossière par rapport
 // à la grille du monde réel 
 
-function get_lon_MouseXecran($x){
+function get_lon_MouseXecran2($x){
     global $lonmax;
     global $lonmin;
     global $canvasw;
     return ($lonmin*1.0 -  $x  * ($lonmin-$lonmax) / $canvasw);
 } 
  
-function get_lat_MouseYecran($y){
+function get_lat_MouseYecran2($y){
     global $latmax;
     global $latmin;
     global $canvash;
@@ -394,7 +394,7 @@ function get_lat_MouseYecran($y){
 } 
 
  // Affiche les longitude Latitude correspondant au point sur l'écran
-function screen2earth($xcoord, $ycoord) {   
+function screen2earth2($xcoord, $ycoord) {   
   $lon = round(get_lon_MouseXecran($xcoord)*100000)/100000; // 5 décimales
   $lat = round(get_lat_MouseYecran($ycoord)*100000)/100000;
   echo (" lon <i>".$lon."</i>");
@@ -407,7 +407,7 @@ function screen2earth($xcoord, $ycoord) {
  * vers l'écran de saisie
  * ***************************************************/
 
-// Passer du canavas d'affichage vers le canvas de saisie
+// Passer du canavas d'affichage vers le canvas de saisie 
 /*
     ctx.translate(-canvasw/2, -($canvash/2+20);// T1
     ctx.rotate(PI / 2 - $twd_radian);   // R
@@ -420,6 +420,39 @@ function screen2earth($xcoord, $ycoord) {
     ctx.translate(+canvasw/2, ($canvash/2+20);   
 */
 
+// Repère indirect centré sur le coin supérieur gauche
+//---------------------------
+function fromDisplayToSaisieCoordLonLat2($x, $y){
+    // Appliquer les transformations inverses (T) ° (-R) ° (-T)
+global $twd_radian;
+    $cx=setDisplayToSaisieX2($x,$y,$twd_radian); 
+    $cy=setDisplayToSaisieY2($x,$y,$twd_radian);
+    return '{"lon":'.get_lon_Xecran2($cx).',"lat":'.get_lat_Yecran2($cy).'}';
+}
+
+// -----------------------
+function setDisplayToSaisieX2($x,$y, $radian){
+// On applique une translation T1, une rotation R  de ($twd_radian - PI/2) et une translation -T1   
+global $canvasw;
+global $canvash;
+    $x0 = $x - ($canvasw/2); // Translation T1
+    $y0 = $y - ($canvash/2);
+    $x1 = $x0 * sin($radian) + $y0 * cos($radian); // Rotation R
+    return round($x1 + $canvasw/2.0); // Translation -T1
+}
+ 
+// -----------------------
+function setDisplayToSaisieY2($x,$y,$radian){
+// On applique une translation T, une rotation R  et une translation -T 
+global $canvasw;
+global $canvash;  
+    $x0 = $x - ($canvasw/2); // Translation T1
+    $y0 = $y - ($canvash/2);
+    $y1 = $y0 * sin($radian) - $x0 * cos($radian);
+    return round($y1 + $canvash/2.0); // Translation -T1
+}
+ 
+// Repère direct centré sur l'écran
 //---------------------------
 function fromDisplayToSaisieCoordLonLat($x, $y){
     // Appliquer les transformations inverses (T) ° (-R) ° (-T)
@@ -431,13 +464,11 @@ global $twd_radian;
 
 // -----------------------
 function setDisplayToSaisieX($x,$y, $radian){
-// On applique une translation T1, une rotation R  de ($twd_radian - PI/2) et une translation -T1   
+// On applique seulement une rotation R  de ($twd_radian - PI/2) car le repère est déjà 
+// centré sur l'origine au centre de l'écran
 global $canvasw;
 global $canvash;
-    $x0 = $x - ($canvasw/2); // Translation T1
-    $y0 = $y - ($canvash/2);
-    $x1 = $x0 * sin($radian) + $y0 * cos($radian); // Rotation R
-    return round($x1 + $canvasw/2.0); // Translation -T1
+    return round($x * sin($radian) + $y * cos($radian)); // Rotation R
 }
  
 // -----------------------
@@ -445,13 +476,9 @@ function setDisplayToSaisieY($x,$y,$radian){
 // On applique une translation T, une rotation R  et une translation -T 
 global $canvasw;
 global $canvash;  
-    $x0 = $x - ($canvasw/2); // Translation T1
-    $y0 = $y - ($canvash/2);
-    $y1 = $y0 * sin($radian) - $x0 * cos($radian);
-    return round($y1 + $canvash/2.0); // Translation -T1
+    return round($y * sin($radian) - $x * cos($radian));
 }
  
-
 
 /** **************************************************
  * Transfert des positions des bouées vers la carte  *
@@ -466,17 +493,18 @@ global $canvash;
     ctx.translate(canvasw/2, canvash/2-20);   
 */
 
+// Repère indirect centré sur le coin supérieur gauche
 //---------------------------
-function fromScreenToGeoCoord($x, $y){
+function fromScreenToGeoCoord2($x, $y){
 // Ne pas oublier d'appliquer les transformations inverses (-T) ° TR ° (T)
 global $twd_radian; 
-    $cx=setSaisieToDisplayX($x,$y,$twd_radian); 
-    $cy=setSaisieToDisplayY($x,$y,$twd_radian);
-    return json_decode('{"lon":'.get_lon_Xecran($cx).',"lat":'.get_lat_Yecran($cy).'}',false);
+    $cx=setSaisieToDisplayX2($x,$y,$twd_radian); 
+    $cy=setSaisieToDisplayY2($x,$y,$twd_radian);
+    return json_decode('{"lon":'.get_lon_Xecran2($cx).',"lat":'.get_lat_Yecran2($cy).'}',false);
 }
 
 // -----------------------
-function setSaisieToDisplayX($x, $y, $radian){
+function setSaisieToDisplayX2($x, $y, $radian){
 // On applique une translation -T, une rotation inverse R  et une translation T   
 global $canvasw;
 global $canvash; 
@@ -487,7 +515,7 @@ global $canvash;
 }
  
  // -----------------------
-function setSaisieToDisplayY($x, $y,$radian){
+function setSaisieToDisplayY2($x, $y,$radian){
 // On applique une translation T1, une rotation R  et une translation T2
 global $canvasw;
 global $canvash;  
@@ -495,6 +523,33 @@ global $canvash;
     $y0 = $y - ($canvash/2.0);
     $y1 = $x0 * cos($radian) + $y0 * sin($radian);
     return round($y1 + ($canvash/2.0));
+}
+ 
+// Repère direct centré sur le centre de l'écran
+//---------------------------
+function fromScreenToGeoCoord($x, $y){
+// Pas de translation
+// Ne pas oublier d'appliquer les transformations inverses T
+global $twd_radian; 
+    $cx=setSaisieToDisplayX($x,$y,$twd_radian); 
+    $cy=setSaisieToDisplayY($x,$y,$twd_radian);
+    return json_decode('{"lon":'.get_lon_Xecran($cx).',"lat":'.get_lat_Yecran($cy).'}',false);
+}
+
+// -----------------------
+function setSaisieToDisplayX($x, $y, $radian){
+// On applique une rotation inverse R mais pas de translations T   
+global $canvasw;
+global $canvash; 
+    return round($x * sin($radian) - $y * cos($radian)); // Rotation R
+}
+ 
+ // -----------------------
+function setSaisieToDisplayY($x, $y,$radian){
+// On applique une rotation R  mais pas de translation T1 et -T1
+global $canvasw;
+global $canvash;  
+    return round($x * cos($radian) + $y * sin($radian));
 }
  
 

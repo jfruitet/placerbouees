@@ -10,7 +10,7 @@ include ("./include/geo_utils.php");
 include ("./include/algo.php");
 
 $debug = false;
-$debug1 = true;
+$debug1 = false;
 
 $site='';
 $reponse_ok = '{"ok":1}';
@@ -51,31 +51,33 @@ if (isset($_GET) && !empty($_GET)){
 /*
 B° → A radian : A = (PI / 180 * (270 - B)) MODULO 2PI
 */
-echo ("<html><head></head><body><h3>Placer_bouees.php</h3><p>Placement automatique des bouées de régate mobiles<br>(cc)jean.fruitet@free.fr</p>");
+if ($debug || $debug1){
+    echo ("<html><head></head><body><h3>Placer_bouees.php</h3><p>Placement automatique des bouées de régate mobiles<br>(cc)jean.fruitet@free.fr</p>");
+}
 $twd_radian = (M_PI / 180.0) * ((450 - $twd_degre) % 360);
 
-if ($debug1){
+if ($debug){
     $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
     echo "<br />$msg\n";
-    // file_put_contents("debug_test.txt", $msg, FILE_APPEND);
+    file_put_contents("debug_test.txt", $msg);
 }
 
 // Charger les information de site
 // Elles sont dans un fichier DATAPATH_INPUT."nomsite.json"
 
 $filename_input=$site.".json";
-if ($debug1){
-    echo ("Fichier : ".DATAPATH_INPUT.$filename_input."<br>\n");
+if ($debug){
+    echo ("Fichier Input: ".DATAPATH_INPUT.$filename_input."<br>\n");
+    file_put_contents("debug_test.txt", $data, FILE_APPEND);    
 }
 
 if (file_exists(DATAPATH_INPUT.$filename_input)){
     if ($data=file_get_contents(DATAPATH_INPUT.$filename_input)){
-        if ($debug){
-            file_put_contents("debug_test.txt", $data, FILE_APPEND);
-        }
         $dataObject=json_decode($data,false);
         if ($debug){
-            print_r($dataObject);
+            file_put_contents("debug_test.txt", $data, FILE_APPEND);
+        }        
+        if ($debug){
             file_put_contents("debug_test.txt", $dataObject, FILE_APPEND);
         }
     }
@@ -125,7 +127,7 @@ if (!empty($dataObject)){
         $index++;
     }
     
-    if ($debug){    
+    if ($debug1){    
     echo "<br>Zone Concurrents<br>\n";    
     echo "<br>ZC_lon<br>\n";
     print_r($zoneconc_lon);
@@ -250,7 +252,7 @@ if ($debug1){
 /******************************************
  * Début de l'algorithme de positionnement
  * ****************************************/
- calcule_rectangle_bouees_debug();
+ calcule_rectangle_bouees($debug||$debug1);
  
 /******************************************
  * Sauvegarder les position
@@ -269,7 +271,7 @@ if ($handle = fopen(DATAPATH.$filename, "w")){
 
 */
 
-
+if ($debug || $debug1){
 echo ("</body></head></html>");
-
+}
 ?>
