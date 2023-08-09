@@ -266,10 +266,8 @@ if ($debug1){
 
 
 calcule_rectangle_bouees(false);
-// $ObjDistances=json_encode($tab_distances);
-    
 
-if ($debug1){    
+if ($debug1 || true){    
     echo "<br>Points d'intersection trouvés\n";
     for ($i=0;$i<count($tab_distances); $i++){
         echo ("<br>".$tab_distances[$i]);
@@ -278,8 +276,8 @@ if ($debug1){
 
 $distanceecranmin=1000000;
 $sommetmin=0;
-$coordonneesmin=null;
-$intersectionmin=null;
+$coordonneesmin=array();
+$intersectionmin=array();
 $distanceterrainmin=1000000;
 
     for ($i=0;$i<count($tab_distances);$i++){
@@ -288,12 +286,17 @@ $distanceterrainmin=1000000;
         //$tab_d=explode(',',$tab_distances[$i]); 
         //echo "<br>\n";
         //print_r($tab_d);
-        $tab_d=$tab_distances[$i];
-        list($sommet_poly,$coordonnees,$segment_ligne,$intersection,$distanceecran,$distanceterrain)=explode(';',$tab_d);
-        if ($debug1){
-            echo "<br>\n";
-            echo ($sommet_poly.", ".$coordonnees.", ".$segment_ligne.", ".$intersection.", ".$distanceecran.", ".$distanceterrain);
-        }
+        $tab_d=json_decode($tab_distances[$i],false);
+        echo "<br>\n";
+        print_r($tab_d);
+        $sommet_poly=$tab_d->sommet_poly;
+        $coordonnees=$tab_d->coordonnees;
+        $segment_ligne=$tab_d->segment_ligne;
+        $intersection=$tab_d->intersection;
+        $distanceecran=$tab_d->distanceecran;
+        $distanceterrain=$tab_d->distanceterrain;
+        
+        
         if ($distanceecran<$distanceecranmin){
             $distanceecranmin=$distanceecran;
             $sommetmin=$sommet_poly;
@@ -305,11 +308,21 @@ $distanceterrainmin=1000000;
 
 if ($debug1|| true){    
     echo "<br>Minimas trouvés<br>\n";
-    echo ($sommetmin.", ".$coordonneesmin.", ".$intersectionmin.", ".$distanceecranmin.", ".$distanceterrainmin);
+    echo ("Sommet ".$sommetmin.", x0:".$coordonneesmin[0].", y0:".$coordonneesmin[1].", Ix:".$intersectionmin[0].", Iy:".$intersectionmin[1].", Distance (pixels) ".$distanceecranmin.", Distance (m) ".$distanceterrainmin);
     echo "<br>\n";
 }
 
-// 
+// Progresser vers l'Est
+// Droite d'équation x=constante
+/*$tx0y0=explode(',',substr($coordonneesmin,1,strlen($coordonneesmin)-1));
+$x0=$tx0y0[0];
+$y0=$tx0y0[1];
+if ($debug1|| true){    
+    echo "<br>Cordonnées initiales Sommet ".$sommetmin." \n";
+    echo ("(X0,Y0) : (".$x0.",".$y0.")");
+    echo "<br>\n";
+}
+*/
  
 /******************************************
  * Sauvegarder les position

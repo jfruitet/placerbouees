@@ -87,7 +87,7 @@ global $ligne_ysaisie;
                         echo "<br>Intersection entre le sommet  ".$i." [".$xp.",".$yp."] du polygone et le segment C".$index."[".$xc1.",".$yc1."] - C".$index2."[".$xc2.",".$yc2."] au point I[".$xc.",".$yp."]<br>\n";
                         echo "<br> Distance écran = ".$distance1." Distance terrain = ".$distance2."\n";
                     }
-                    $tab_distances[$k]= '"sommet_poly":'.$i.';"coordonnees":['.$xp.','.$yp.'];"segment_ligne":['.$index.','.$index2.'];"intersection":['.$xc.','.$yp.'];"distanceecran":'.$distance1.';"distanceterrain":'.$distance2;
+                    $tab_distances[$k]= '{"sommet_poly":'.$i.',"coordonnees":['.$xp.','.$yp.'],"segment_ligne":['.$index.','.$index2.'],"intersection":['.$xc.','.$yp.'],"distanceecran":'.$distance1.',"distanceterrain":'.$distance2.'}';
                     $k++; 
                 } 
             }                
@@ -110,7 +110,7 @@ global $ligne_ysaisie;
                         echo "<br>Intersection entre le sommet  ".$i." [".$xp.",".$yp."] du polygone et le segment C".$index."[".$xc1.",".$yc1."] - C".$index2."[".$xc2.",".$yc2."] au point I[".$xc.",".$yp."]<br>\n";
                         echo "<br> Distance écran = ".$distance1." Distance terrain = ".$distance2."\n";
                     }
-                    $tab_distances[$k]= '"sommet_poly":'.$i.';"coordonnees":['.$xp.','.$yp.'];"segment_ligne":['.$index.','.$index2.'];"intersection":['.$xc.','.$yp.'];"distanceecran":'.$distance1.';"distanceterrain":'.$distance2;                                        
+                    $tab_distances[$k]= '{"sommet_poly":'.$i.',"coordonnees":['.$xp.','.$yp.'],"segment_ligne":['.$index.','.$index2.'],"intersection":['.$xc.','.$yp.'],"distanceecran":'.$distance1.',"distanceterrain":'.$distance2.'}';                                       
                     $k++; 
                 }             
             }
