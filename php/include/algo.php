@@ -29,7 +29,7 @@
 $tab_distances=null;
 
 // ------------------------------------
-function calcule_rectangle_bouees($debug){
+function calculeTableDistances($debug){
 global $tab_distances;
 $tab_distances=array();
 global $poly_xsaisie; // Tableau des coordonnées écran de la zone de navigation après rotation face au vent
@@ -119,6 +119,15 @@ global $ligne_ysaisie;
     }    
 } 
 
+//---------------------------------
+function intersectionVerticale($x,$x1,$y1,$x2,$y2){  
+    return (round(($x-$x1)*($y2-$y1)/($x2-$x1) + $y1));
+}
 
+
+// ---------------------------------
+ function placerBouees($x1, $y1, $x2, $y2){
+    echo "<br>Rectangle ".$x1.", ".$y1.", ".$x2.", ".$y2."\n";
+ }
 
 ?>
