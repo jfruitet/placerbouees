@@ -457,8 +457,8 @@ if ($debug1){
             }
 if ($debug1){    
     echo "<br>Distance verticale : ".$distanceVerticale."<br>\n";
-    print_r($tab_Intersections);
-    echo "<br>\n";
+    //print_r($tab_Intersections);
+    //echo "<br>\n";
 }
 
             if ($distanceVerticale >= $seuilDistanceVertical){
@@ -466,7 +466,7 @@ if ($debug1){
                 // Passer au placement des bouées
                 placerBouees($numZoneExploree, $x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
                 $numZoneExploree++;
-                //$encore=false; // Traitement termminé
+                $encore=false; // Traitement  1ère passe termminé
             }
             
             break; // Intérieur
@@ -492,7 +492,7 @@ if ($debug1){
                     // Passer au placement des bouées
                     placerBouees($numZoneExploree,$x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
                     $numZoneExploree++;
-                    //$encore=false; // Traitement termminé 
+                    $encore=false; // Traitement 1ère passe termminé 
                 }
                 else{
                     if ($distanceVerticale2 >= $seuilDistanceVertical){
@@ -500,7 +500,7 @@ if ($debug1){
                         // Passer au placement des bouées
                         placerBouees($numZoneExploree,$x0, $tab_Intersections[2], $x, $tab_Intersections[3],$y0);
                         $numZoneExploree++;
-                        //$encore=false; // Traitement termminé 
+                        $encore=false; // Traitement  1ère passe termminé 
                     }
                 }                   
             }                        
@@ -511,7 +511,7 @@ if ($debug1){
 }
 
 if ($debug1 || true){    
-    echo "<br>Distance verticale maximale: ".$maxDistance." Y0:".$yMax0." Y1:".$yMax1;
+    echo "<br><b>Première passe</b>. Distance verticale maximale: ".$maxDistance." Y0:".$yMax0." Y1:".$yMax1;
     echo "<br>\n";
 }
  
@@ -610,8 +610,8 @@ if ($debug1){
             }
 if ($debug1){    
     echo "<br>Distance verticale : ".$distanceVerticale."<br>\n";
-    print_r($tab_Intersections);
-    echo "<br>\n";
+    //print_r($tab_Intersections);
+    //echo "<br>\n";
 }
 
             if ($distanceVerticale >= $seuilDistanceVertical){
@@ -619,7 +619,7 @@ if ($debug1){
                 // Passer au placement des bouées
                 placerBouees($numZoneExploree, $x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
                 $numZoneExploree++;
-                $encore=false; // Traitement termminé
+                //$encore=false; // Traitement termminé
             }
             
             break; // Intérieur
@@ -662,7 +662,7 @@ if ($debug1){
 }
 
 if ($debug1 || true){    
-    echo "<br>Distance verticale maximale: ".$maxDistance." Y0:".$yMax0." Y1:".$yMax1;
+    echo "<br><b>Deuxième passe</b>. Distance verticale maximale: ".$maxDistance." Y0:".$yMax0." Y1:".$yMax1;
     echo "<br>\n";
 }
  
