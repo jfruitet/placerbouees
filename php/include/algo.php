@@ -28,6 +28,7 @@
 **********************************************/
 $tab_distances=null;
 
+// Calcule la distance entre chaque sommet du polygone et la ligne des concurrents
 // ------------------------------------
 function calculeTableDistances($debug){
 global $tab_distances;

@@ -251,6 +251,22 @@ if ($debug1){
 /******************************************
  * Début de l'algorithme de positionnement
  * ****************************************/
+ 
+// Déterminer la boîte englobante des coordonnées de saisie pour accélérer la recherche des rectangles de navigation 
+$xminPoly=1000000; // en pixels
+$xmaxPoly=-1000000; // en pixels
+$yminPoly=1000000; // en pixels
+$ymaxPoly=-1000000; // en pixels
+    foreach ($poly_xsaisie as $x){
+        if ($x<=$xminPoly){ $xminPoly=$x;}
+        if ($x>$xmaxPoly){ $xmaxPoly=$x;}
+    }
+    foreach ($poly_ysaisie as $y){
+        if ($y<$yminPoly){ $yminPoly=$y;}
+        if ($y<$ymaxPoly){ $ymaxPoly=$y;}
+    }
+
+ 
 $distance_H_MillePixels=distanceHorizontalePixels(0,0,1000);
 $distance_V_MillePixels=distanceVerticalePixels(0,0,1000); 
 
@@ -263,7 +279,7 @@ if ($debug1 || true){
     echo "<br>Nombre de \"pixels\" pour une distance verticale de 60 mètres: ".$deltaYpixels."\n";
 }
 
-
+// Calcule la distance entre chaque sommet du polygone et la ligne des concurrents
 calculeTableDistances(false);
 
 if ($debug1){    
@@ -312,15 +328,19 @@ if ($debug1 || true){
     echo "<br>\n";
 }
 
+// Balayer l'axe X par des droites x=constante pour déterminer les points d'intersection avec le plygone.
+// Calculer la distance entre ces points d'intersection
+// Si cette distance est supérieure au seuil enregistrer les points d'intersection.  
+
 // Tracer des droites verticlae (x=cte)
 $seuilDistanceVertical = 50000; // Environ 50m
 $seuilDistanceHorizontal= 10000; // Environ 10m
 
-/*
-$x0=$coordonneesmin[0];
-$y0=$coordonneesmin[1];
-$xC=$intersectionmin[0]; 
-$yC=$intersectionmin[1];
+
+$x0=$coordonneesmin[0]; // abscisse du Sommet le plus proche de la ligne des concurrents
+$y0=$coordonneesmin[1]; // ordonnée 
+$xC=$intersectionmin[0]; // abscisse du point d'intersection de y=$y0 avec la ligne des concurrents
+$yC=$intersectionmin[1]; // ordonnée
 
 
 // Progresser vers l'Est ou vers l'Ouest selon le cas
@@ -330,26 +350,34 @@ if ($x0>=$xC){
 else {
     $sensprogression=-1;
 }
-$posFinX=round($canvasw/2.0); // La valeur maximale pour x
-$incrementX=$sensprogression*1000; // Environ 1m vers l'Est
-$x=$x0+$sensprogression*$seuilDistanceHorizontal; // Démarer la recherche à 30 mètres du sommet
 
-*/
-$posDebX=-round($canvasw/2.0); // La valeur maximale pour x
-$posFinX=round($canvasw/2.0); // La valeur maximale pour x
-$incrementX=1000; // Environ 1m vers l'Est
-$x0=$posDebX;
-$x=$x0+$seuilDistanceHorizontal; // Démarer la recherche à 30 mètres du sommet
+$posDebX=$xminPoly; // La valeur minimale pour x
+$posFinX=$xmaxPoly; // La valeur maximale pour x
+
+$incrementX=$sensprogression*1000; // Environ 1m vers l'Est ou vers l'Ouest
+if ($sensprogression==1){
+    $x0=$posDebX;
+}
+else{
+    $x0=$posFinX;
+}
+
+$x=$x0+$sensprogression*$seuilDistanceHorizontal; // Démarrer la recherche à 10 mètres du sommet
+
 
 if ($debug1 || true){    
+    echo "<br>Progression ".$sensprogression."\n";
     echo "<br>Valeurs de départ <br>\n";
     echo (" x0:".$x0.", x:".$x);
     echo "<br>\n";
 }
 
 // Droite d'équation x=constante
-// Tant que x<canvas/2
+// Tant que x<$posxFin
+
 $encore=true;
+
+// Maximas sur l'écart vertical entre deux points du polygone de navigation
 $maxDistance=0;
 $indexMax=0;
 $xMax=$x;

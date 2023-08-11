@@ -183,7 +183,7 @@ function distanceGeodesique($lon1,$lat1,$lon2,$lat2){
 function distanceEcran2Earth($x1,$y1,$x2,$y2){
     $gcoord1=fromScreenToGeoCoord($x1, $y1);
     $gcoord2=fromScreenToGeoCoord($x2, $y2);
-    return(distanceGeodesique($gcoord1->lon,$gcoord1->lat,$gcoord1->lon,$gcoord2->lat));        
+    return(distanceGeodesique($gcoord1->lon,$gcoord1->lat,$gcoord2->lon,$gcoord2->lat));        
 }
 
 // --------------------------------------
