@@ -256,7 +256,7 @@ $distance_V_MillePixels=distanceVerticalePixels(0,0,1000);
 
 $deltaXpixels=howMuchXPixelsForMeters(30.0);
 $deltaYpixels=howMuchYPixelsForMeters(60.0);
-if ($debug1){
+if ($debug1 || true){
     echo "<br>Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
     echo "<br>Distance verticale pour 1000 \"pixels\": ".$distance_V_MillePixels."\n";
     echo "<br>Nombre de \"pixels\" pour une distance horizontale de 30 mètres: ".$deltaXpixels."\n";
@@ -312,9 +312,11 @@ if ($debug1 || true){
     echo "<br>\n";
 }
 
-$seuilDistanceVertical = 70000; // Environ 60m
-$seuilDistanceHorizontal= 30000; // Environ 30m
+// Tracer des droites verticlae (x=cte)
+$seuilDistanceVertical = 50000; // Environ 50m
+$seuilDistanceHorizontal= 10000; // Environ 10m
 
+/*
 $x0=$coordonneesmin[0];
 $y0=$coordonneesmin[1];
 $xC=$intersectionmin[0]; 
@@ -328,23 +330,33 @@ if ($x0>=$xC){
 else {
     $sensprogression=-1;
 }
-
 $posFinX=round($canvasw/2.0); // La valeur maximale pour x
 $incrementX=$sensprogression*1000; // Environ 1m vers l'Est
 $x=$x0+$sensprogression*$seuilDistanceHorizontal; // Démarer la recherche à 30 mètres du sommet
 
+*/
+$posDebX=-round($canvasw/2.0); // La valeur maximale pour x
+$posFinX=round($canvasw/2.0); // La valeur maximale pour x
+$incrementX=1000; // Environ 1m vers l'Est
+$x0=$posDebX;
+$x=$x0+$seuilDistanceHorizontal; // Démarer la recherche à 30 mètres du sommet
+
 if ($debug1 || true){    
     echo "<br>Valeurs de départ <br>\n";
-    echo (" x0:".$x0.", y0:".$y0.", x:".$x);
+    echo (" x0:".$x0.", x:".$x);
     echo "<br>\n";
 }
 
 // Droite d'équation x=constante
 // Tant que x<canvas/2
 $encore=true;
-$x=$x0+$sensprogression*$incrementX; 
+$maxDistance=0;
+$indexMax=0;
+$xMax=$x;
+$yMax0=50000;
+$yMax1=-50000;
 
-while (($encore) && (abs($x)<abs($posFinX))) { // On cherche les intersections avec le polygone 
+while (($encore) && ($x<=$posFinX)) { // On cherche les intersections avec le polygone 
     $nbintersections=0;           
     $tab_Intersections=array(); // Les valeurs y d'intersection
     if ($debug1 || true){    
@@ -353,16 +365,21 @@ while (($encore) && (abs($x)<abs($posFinX))) { // On cherche les intersections a
         echo "<br>\n";
     }
 
-    for ($i=0; $i<count($poly_ysaisie)-1; $i++){
+    for ($i=0; $i<count($poly_ysaisie); $i++){
         // calculer l'intersection avec le polygone
         $xp1=$poly_xsaisie[$i];
         $yp1=$poly_ysaisie[$i];
-        $i2=$i+1;
+        if ($i<count($poly_ysaisie)-1) {
+            $i2=$i+1;
+        } 
+        else {
+            $i2=0;
+        }
         $xp2=$poly_xsaisie[$i2];
         $yp2=$poly_ysaisie[$i2];
-        if ($debug1 || true){  
+        if ($debug1){  
             echo "<br>Sommet ".$i.": [".$xp1.",".$yp1."]\n";
-            echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
+            // echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
         } 
     
         if ($xp1>$xp2){ // échanger
@@ -381,7 +398,7 @@ while (($encore) && (abs($x)<abs($posFinX))) { // On cherche les intersections a
     }
 
 if ($debug1 || true){    
-    echo "<br><br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
+    echo "<br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
     print_r($tab_Intersections);
     echo "<br>\n";
 }
@@ -390,7 +407,15 @@ if ($debug1 || true){
         case 0 : break; // Sortie du polygone
         case 1 : break; // Sommet, on ne traite pas
         case 2 :  // Calculer la dimension verticale entre deux intersections
-            $distanceVerticale = round(sqrt($tab_Intersections[0]*$tab_Intersections[0]+$tab_Intersections[1]*$tab_Intersections[1]));
+            //$distanceVerticale = round(sqrt($tab_Intersections[0]*$tab_Intersections[0]+$tab_Intersections[1]*$tab_Intersections[1]));
+            $distanceVerticale =abs($tab_Intersections[1]-$tab_Intersections[0]);
+            if ($distanceVerticale>$maxDistance){
+                $maxDistance=$distanceVerticale; 
+                $indexMax=$i;
+                $xMax=$x;
+                $yMax0=$tab_Intersections[0];
+                $yMax1=$tab_Intersections[1];
+            }
 if ($debug1 || true){    
     echo "<br>Distance verticale : ".$distanceVerticale."<br>\n";
     print_r($tab_Intersections);
@@ -400,9 +425,10 @@ if ($debug1 || true){
             if ($distanceVerticale >= $seuilDistanceVertical){
                 // On a un rectangle candidat
                 // Passer au placement des bouées
-                placerBouees($x, $tab_Intersections[0], $tab_Intersections[1]);
+                placerBouees($x-$incrementX, $tab_Intersections[0], $x, $tab_Intersections[1]);
+                $encore=false; // Traitement termminé
             }
-            $encore=false; // Traitement termminé
+            
             break; // Intérieur
         case 3 : // // polygone concave + passage par un sommet ; il faut faire un grand pas vers l'Est (ou vers l'Ouest)
             $x0 = $x;
@@ -417,28 +443,35 @@ if ($debug1 || true){
                 // On traite les deux premiers couples
                 // Ordonner les Y dans le sens croissant
             if (sort($tab_Intersections)){
-                $distanceVerticale = round(sqrt($tab_Intersections[0]*$tab_Intersections[0]+$tab_Intersections[1]*$tab_Intersections[1]));
-                $distanceVerticale2 = round(sqrt($tab_Intersections[2]*$tab_Intersections[2]+$tab_Intersections[3]*$tab_Intersections[3]));               
+                //$distanceVerticale = round(sqrt($tab_Intersections[0]*$tab_Intersections[0]+$tab_Intersections[1]*$tab_Intersections[1]));
+                $distanceVerticale = abs($tab_Intersections[1]-$tab_Intersections[0]);
+                //$distanceVerticale2 = round(sqrt($tab_Intersections[2]*$tab_Intersections[2]+$tab_Intersections[3]*$tab_Intersections[3]));
+                $distanceVerticale2 =  abs($tab_Intersections[3]-$tab_Intersections[2]);              
                 if (($distanceVerticale >= $distanceVerticale2) && ($distanceVerticale >= $seuilDistanceVertical)){
                     // On a un rectangle candidat
                     // Passer au placement des bouées
-                    placerBouees($x0, $tab_Intersections[0], $x, $tab_Intersections[1]);
+                    placerBouees($x-$incrementX, $tab_Intersections[0], $x, $tab_Intersections[1]);
+                    $encore=false; // Traitement termminé 
                 }
                 else{
                     if ($distanceVerticale2 >= $seuilDistanceVertical){
                         // On a un rectangle candidat
                         // Passer au placement des bouées
-                        placerBouees($x0, $tab_Intersections[2], $x, $tab_Intersections[3]);
+                        placerBouees($x-$incrementX, $tab_Intersections[2], $x, $tab_Intersections[3]);
+                        $encore=false; // Traitement termminé 
                     }
                 }                   
-            }
-            $encore=false; // Traitement termminé             
+            }                        
             break;         
     }
     $x0=$x0+$incrementX; // 
     $x=$x+$incrementX; 
 }
 
+if ($debug1 || true){    
+    echo "<br>Distance verticale maximale: ".$maxDistance." Y0:".$yMax0." Y1:".$yMax1;
+    echo "<br>\n";
+}
  
 /******************************************
  * Sauvegarder les position
