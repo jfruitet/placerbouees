@@ -125,10 +125,15 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
     return (round(($x-$x1)*($y2-$y1)/($x2-$x1) + $y1));
 }
 
-
+// Placer des bouées par couples dans un rectangle vertical
+// $yDepart : ordonnées de la ligne de départ (la ligne de distance est minimale avec la ligne des concurrents)
 // ---------------------------------
- function placerBouees($x1, $y1, $x2, $y2){
-    echo "<br>Rectangle ".$x1.", ".$y1.", ".$x2.", ".$y2."\n";
+ function placerBouees($numVerticale,$x1, $y1, $x2, $y2, $yDepart ){
+    echo "<br>Droite verticale N°".$numVerticale." Zone explorées Départ (".$x1.", ".$y1."), Arrivée (".$x2.", ".$y2.")\n";
+    $distanceX=abs($x2-$x1);
+    $distanceY=abs($y2-$y1);
+    echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
+    echo "<br>Ligne de départ Y : ".$yDepart;
  }
 
 ?>
