@@ -6,7 +6,16 @@ Par JF en PHP. (cc) jean.fruitet@free.fr
 ## Présentation
 Le script **placer_bouees.php** se substitue à la page web **placerbouees/index.html** pour
 enregistrer de façon automatique les positions optimales de *n* bouées mobiles sur un plan d'eau
-de régates virtuelles. 
+de régates radiocommandées. 
+
+## Utilisation
+
+*http://localhost/placerbouees/php/placer_bouees.php?site=NOM du Site&twd=60&nbouees
+
+Par exemple pour le site du Plessis :
+
+*http://localhost/placerbouees/php/placer_bouees.php?site=LePlessis&twd=60&nbouees=4*
+
 
 ### Input
 - TWD : direction du vent en degrés
@@ -24,15 +33,15 @@ Il consiste, après une rotation ramenant le site de navigation "face au nord" p
 à trouver un rectangle vertical contenu dans le polygone de navigation "au plus près" de la ligne de déplacement
 des concurrents et de hauteur supérieure à un seuil donné (50 mètres) et de largeur supérieure à 20 mètres.
 
-Les nMax bouées à placer sont alors positinnées en s'appuyant sur les bouées fixes du plan d'eau pour constituer
-- un ligne de départ
+Les nMax bouées à placer sont alors positionnées en s'appuyant sur les bouées fixes du plan d'eau pour constituer
+- une ligne de départ
 - un dog leg au vent
 - une porte sous le vent
-- une ligne d'arrivée (confodue avec la ligne de départ).
+- une ligne d'arrivée (confondue avec la ligne de départ).
 
-Les coordonnées (longitude, lattitudes) des bouées placées sont ensuite enregistrées dans le fichier de sortie.
+Les coordonnées (longitude, latitudes) des bouées placées sont ensuite enregistrées dans le fichier de sortie.
      
-## Serveur
+### Serveur
 Un serveur externe exécute ce code PHP.
 
 Il y a quelques conditions au fonctionnement du serveur :
@@ -41,7 +50,7 @@ Il y a quelques conditions au fonctionnement du serveur :
   3. Dans la version actuelle l'URL du serveur est celle codée en dur dans le code source du script *./js/config.js*.
 
 
-## Sources
+### Sources
 ```
 ./php
     placer_bouees.php
@@ -67,9 +76,9 @@ Il y a quelques conditions au fonctionnement du serveur :
 ```
 
   
-## Data
-### Output : Placer bouées
-Les données produites par *./placrbouees/index.html* sont placées dans le dossier du serveur *./data/*
+### Data
+#### Output : Placer bouées
+Les données produites par *./placerbouees/php/placer_boues.php* sont placées dans le dossier du serveur *./data/*
 
 Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
 et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_aammdd.json*>, par exemple
@@ -78,6 +87,10 @@ et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_
 ## Installation
 - Recopier l'ensemble des sources dans un dossier ./placerbouees/php de votre serveur httpd
 - Modifier le contenu du fichier ./js/config.js pour indiquer l'adresse du serveur.
+
+### Ce qui reste à faire
+
+Automatiser pour tous les sites disponible et toutes les valeurs de la rose des vents...
    
 ## Droits d'utilisation et de modification (License)
 Tous ce projet est en Open source.
