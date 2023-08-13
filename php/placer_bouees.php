@@ -17,6 +17,10 @@ $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
 $data=null;
 $reponse=$reponse_not_ok;
+$xPasse1=0; // les abscisses recherchées pour le placement des bouées
+$xPasse2=0;
+$yMaxPasse1=array();
+$yMaxPasse2=array();
 
 
 // Get the JSON contents
@@ -59,7 +63,9 @@ $twd_radian = (M_PI / 180.0) * ((450 - $twd_degre) % 360);
 if ($debug){
     $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
     echo "<br />$msg\n";
-    file_put_contents("debug_test.txt", $msg);
+    if ($debug) {
+        file_put_contents("debug_test.txt", $msg);
+    }        
 }
 
 // Charger les information de site
@@ -263,20 +269,22 @@ $ymaxPoly=-1000000; // en pixels
     }
     foreach ($poly_ysaisie as $y){
         if ($y<$yminPoly){ $yminPoly=$y;}
-        if ($y<$ymaxPoly){ $ymaxPoly=$y;}
+        if ($y>$ymaxPoly){ $ymaxPoly=$y;}
     }
 
  
 $distance_H_MillePixels=distanceHorizontalePixels(0,0,1000);
 $distance_V_MillePixels=distanceVerticalePixels(0,0,1000); 
 
-$deltaXpixels=howMuchXPixelsForMeters(20.0);
-$deltaYpixels=howMuchYPixelsForMeters(50.0);
+$deltaXpixelsVingtMetres=howMuchXPixelsForMeters(20.0);
+$deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters(50.0);
 if ($debug1){
-    echo "<br>Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
+    echo "Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
     echo "<br>Distance verticale pour 1000 \"pixels\": ".$distance_V_MillePixels."\n";
-    echo "<br>Nombre de \"pixels\" pour une distance horizontale de 20 mètres: ".$deltaXpixels."\n";
-    echo "<br>Nombre de \"pixels\" pour une distance verticale de 50 mètres: ".$deltaYpixels."\n";
+    echo "<br>Nombre de \"pixels\" pour une distance horizontale de 20 mètres: ".$deltaXpixelsVingtMetres."\n";
+    echo "<br>Nombre de \"pixels\" pour une distance verticale de 50 mètres: ".$deltaYpixelsCinquanteMetres."\n";
+    echo "<br>Boîte englobante du polygone : (Xmin,Ymin):(".$xminPoly.",".$yminPoly.") (Xmax, Ymax):(".$xmaxPoly.",".$ymaxPoly.")\n";
+    echo "<br>Largeur : distance(Xmin,Xmax): ".abs($xminPoly-$ymaxPoly)." Hauteur : distance(Ymin,Ymax): ".abs($ymaxPoly-$yminPoly)."\n";
 }
 
 // Calcule la distance entre chaque sommet du polygone et la ligne des concurrents
@@ -322,9 +330,9 @@ $distanceterrainmin=1000000;
         }                     
     }
 
-if ($debug1 || true){    
-    echo "<br>Minimas trouvés<br>\n";
-    echo ("Sommet ".$sommetmin.", x0:".$coordonneesmin[0].", y0:".$coordonneesmin[1].", Ix:".$intersectionmin[0].", Iy:".$intersectionmin[1].", Distance (pixels) ".$distanceecranmin.", Distance (m) ".$distanceterrainmin);
+if ($debug1){    
+    echo "<br><br><b>Distance minimale du polygone à la ligne</b><br>\n";
+    echo ("Sommet du polygone ".$sommetmin.", (x0:".$coordonneesmin[0].", y0:".$coordonneesmin[1].")<br>Intersection avec la ligne : (Ix:".$intersectionmin[0].", Iy:".$intersectionmin[1]."),<br>Distance (pixels) ".$distanceecranmin.", Distance (m) ".$distanceterrainmin);
     echo "<br>\n";
 }
 
@@ -370,22 +378,25 @@ $numZoneExploree=0; // On a besoin de 2 zones contigües pour placer les bouées
 $x=$x0; // Démarrer la recherche à 0 mètres du sommet
 
 if ($debug1){    
-    echo "<br>Progression ".$sensprogression."\n";
-    echo "<br>Valeurs de départ <br>\n";
-    echo (" x0:".$x0.", x:".$x);
-    echo "<br>\n";
+    if ($sensprogression>0){
+        echo "<br>Progression vers l'EST \n";
+    }
+    else{
+        echo "<br>Progression vers l'OUEST \n";
+    }
+    echo "<br>Valeurs de départ: [x0:".$x0."], [x:".$x."]<br>\n";
 }
 
 // Droite d'équation x=constante
 // Tant que x<$posxFin
 
 $encore=true;
-$DistanceH=0;    // Ecart horizontal entre deux droites verticales du rectangle de navigation
+$distanceH=0;    // Ecart horizontal entre deux droites verticales du rectangle de navigation
 $maxDistanceV=0;    // Maximas sur l'écart vertical entre deux points du polygone de navigation
 $indexMax=0;
 $xMax=$x;
-$yMax0=50000;
-$yMax1=-50000;
+$yMaxPasse1[0]=50000;
+$yMaxPasse1[1]=-50000;
 
 while ($encore) { // On cherche les intersections avec le polygone
     if ($sensprogression>0){
@@ -443,31 +454,30 @@ if ($debug1){
     switch ($nbintersections) {
         case 0 : break; // Sortie du polygone
         case 1 : break; // Sommet, on ne traite pas
-        case 2 :  // Intrieur. Calculer la dimension verticale entre deux intersections
+        case 2 :  // Intérieur. Calculer la dimension verticale entre deux intersections
             $distanceVerticale =abs($tab_Intersections[1]-$tab_Intersections[0]);
             if ($distanceVerticale >= $seuilDistanceVertical){
                 // On a un rectangle candidat
-                // Passer au placement des bouées
                 if ($distanceVerticale>$maxDistanceV){
                     $maxDistanceV=$distanceVerticale; 
                     $indexMax=$i;
                     $xMax=$x;
-                    $yMax0=$tab_Intersections[0];
-                    $yMax1=$tab_Intersections[1];
-                    $DistanceH=abs($x0-$x);                
+                    $distanceH=abs($x0-$x);                
                 }
-                if ($debug1 || true){    
-                    echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".abs($x0-$x)."\n";
-                }
-                
-                droiteVerticale($numZoneExploree, $x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
+                if ($debug1){    
+                    echo "<br>2 intersections<br>Distance verticale : ".$distanceVerticale." Distance horizontale(X0,X) : ".$distanceH."\n";
+                }                
+                droiteVerticale($numZoneExploree, $x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);               
                 $numZoneExploree++;
+                $xPasse1=$x;    // Droite verticale trouvée
+                $yMaxPasse1[0]=$tab_Intersections[0];
+                $yMaxPasse1[1]=$tab_Intersections[1];                 
                 $encore=false; // Traitement  1ère passe terminé
             }
             
             break; 
         case 3 : // // polygone concave + passage par un sommet ; il faut faire un grand pas vers l'Est (ou vers l'Ouest)
-            $x0 = $x+$incrementX;
+            $x0=$x+$incrementX;
             $x=$x0+$incrementX;
             break; 
         default : // polygone convexe avec au moins une concavité selon l'axe Nord / Sud
@@ -481,32 +491,36 @@ if ($debug1){
                     $maxDistanceV=max($distanceVerticale, $distanceVerticale2); 
                     $indexMax=$i;
                     $xMax=$x;
-                    $yMax0=$tab_Intersections[0];
-                    $yMax1=$tab_Intersections[1];
-                    $DistanceH=abs($x0-$x);                
+                    $distanceH=abs($x0-$x);                
                 }
                             
                 if (($distanceVerticale >= $distanceVerticale2) && ($distanceVerticale >= $seuilDistanceVertical)){
                     // On a un rectangle candidat
                     // Passer au placement des bouées
-                    if ($debug1 || true){    
-                        echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".$DistanceH."\n";
+                    if ($debug1){    
+                        echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".$distanceH."\n";
                     }
                     
                     droiteVerticale($numZoneExploree,$x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
                     $numZoneExploree++; 
+                    $xPasse1=$x;    // Droite verticale trouvée   
+                    $yMaxPasse1[0]=$tab_Intersections[0];
+                    $yMaxPasse1[1]=$tab_Intersections[1];                
                     $encore=false;                        
                 }
                 else{
                     if ($distanceVerticale2 >= $seuilDistanceVertical){
                         // On a un rectangle candidat
                         // Passer au placement des bouées
-                        if ($debug1 || true){    
-                            echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".$DistanceH."\n";
+                        if ($debug1){    
+                            echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".$distanceH."\n";
                         }
                         
                         droiteVerticale($numZoneExploree,$x0, $tab_Intersections[2], $x, $tab_Intersections[3],$y0);
                         $numZoneExploree++;
+                        $xPasse1=$x;    // Droite verticale trouvée 
+                        $yMaxPasse1[0]=$tab_Intersections[2];
+                        $yMaxPasse1[1]=$tab_Intersections[3];                  
                         $encore=false;
                     }
                 }                   
@@ -516,24 +530,26 @@ if ($debug1){
     $x=$x+$incrementX; 
 }
 
-if ($debug1 || true){    
-    echo "<br><b>Premier passage</b>. Distance verticale maximale: ".$maxDistanceV." Distance  horizontale: ".$DistanceH." Y0:".$yMax0." Y1:".$yMax1;
-    echo "<br>\n";
+if ($debug1){    
+    echo "<br><b>Fin du premier passage</b>.<br>Distance verticale maximale: ".$maxDistanceV." (Y0:".$yMaxPasse0.", Y1:".$yMaxPasse1.")<br>\n";
+    echo "<br>Distance  au point de départ horizontal: ".$distanceH."\n";
 }
  
 
 /***************************************
  * Seconde passe
  * *************************************/
- 
-$x0=$x+$incrementX; // Démarrer la recherche immédiatement à proximité
-$x=$x+$incrementX; // $seuilDistanceHorizontal Largeur minimale de la zone à trouver
 
-if ($debug1){    
+// On veut trouver la plus proche droite verticale élognée d'au moins 20m de $xpasse1
+
+$x0=$x+$incrementX; // Démarrer la recherche immédiatement à proximité
+$x=$x0+$incrementX;
+
+if ($debug1){
+    echo "<br><br><b>Début de la seconde passe</b>";    
     echo "<br>Progression ".$sensprogression."\n";
-    echo "<br>Valeurs de départ <br>\n";
-    echo (" x0:".$x0.", x:".$x);
-    echo "<br>\n";
+    echo "<br>Valeurs de départ de l'exploration (X0:".$x0.")<br>\n";
+    echo "<br>Abscisse de la droite verticale trouvée à la passe N°1 : ".$xPasse1."\n";    // Droite verticale trouvée
 }
 
 // Droite d'équation x=constante
@@ -541,15 +557,16 @@ if ($debug1){
 
 $encore=true;
 
-
-$DistanceH=0;    // Ecart horizontal entre deux droites verticales du rectangle de navigation
+$distanceHPasse1=abs($xPasse1-$x);    // Ecart horizontal avec la droite verticale trouvée à la première passe 
+$distanceH=0;    // Ecart horizontal entre deux droites verticales
 $maxDistanceV=0;    // Maximas sur l'écart vertical entre deux points du polygone de navigation
 $indexMax=0;
 $xMax=$x;
-$yMax0=50000;
-$yMax1=-50000;
+$yMaxPasse2[0]=50000;
+$yMaxPasse2[1]=-50000;
 
 while ($encore) { // On cherche les intersections avec le polygone
+ 
     if ($sensprogression>0){
         $encore = ($x<=$posFinX);
     }
@@ -558,8 +575,8 @@ while ($encore) { // On cherche les intersections avec le polygone
     }     
     $nbintersections=0;           
     $tab_Intersections=array(); // Les valeurs y d'intersection
-    if ($debug1 || true){    
-        echo "<br>Exploration <br>\n";
+    if ($debug1){    
+        echo "<br>Exploration \n";
         echo (" x0:".$x0.", x:".$x);
         echo "<br>\n";
     }
@@ -611,27 +628,29 @@ if ($debug1){
                 $maxDistanceV=$distanceVerticale; 
                 $indexMax=$i;
                 $xMax=$x;
-                $yMax0=$tab_Intersections[0];
-                $yMax1=$tab_Intersections[1];
-                $DistanceH=abs($x0-$x);                
+                $distanceH=abs($x0-$x);               
             }
-
+            $distanceHPasse1=abs($xPasse1-$x); 
             if ($distanceVerticale >= $seuilDistanceVertical){
-                // On a un rectangle candidat
-                // Passer au placement des bouées
-                if ($debug1 || true){    
-                    echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".abs($x0-$x)."\n";
+                // On a une droite candidate
+                if ($debug1){    
+                    echo "<br>Distance verticale : ".$distanceVerticale." horizontale : ".$distanceH."\n";
+                    echo "<br><i>Distance à la droite fournie par la passe N°1</i> : <b>".$distanceHPasse1."</b>\n";
+                    
                 }
                 droiteVerticale($numZoneExploree, $x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
                 $numZoneExploree++;
-                if (abs($x0-$x) >= $seuilDistanceHorizontal){
+                if ($distanceHPasse1 >= $seuilDistanceHorizontal){
                     $encore=false;
+                    $xPasse2=$x;
+                    $yMaxPasse2[0]=$tab_Intersections[0];
+                    $yMaxPasse2[1]=$tab_Intersections[1];                    
                 }              
             }
             
             break; // Intérieur
         case 3 : // polygone concave, passage par un sommet concave; il faut faire un pas de plus
-                $x0 = $x+$incrementX;
+                $x0=$x+$incrementX;
                 $x=$x0+$incrementX;
             break; 
         default : // polygone convexe avec au moins une concavité selon l'axe Nord / Sud
@@ -645,35 +664,40 @@ if ($debug1){
                     $maxDistanceV=max($distanceVerticale, $distanceVerticale2); 
                     $indexMax=$i;
                     $xMax=$x;
-                    $yMax0=$tab_Intersections[0];
-                    $yMax1=$tab_Intersections[1];
-                    $DistanceH=abs($x0-$x);                
+                    $distanceH=abs($x0-$x);  
                 }
+                $distanceHPasse1=abs($xPasse1-$x);               
                             
                 if (($distanceVerticale >= $distanceVerticale2) && ($distanceVerticale >= $seuilDistanceVertical)){
                     // On a un rectangle candidat
                     // Passer au placement des bouées
-                    if ($debug1 || true){    
+                    if ($debug1){    
                         echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".abs($x0-$x)."\n";
                     }
                     
                     droiteVerticale($numZoneExploree,$x0, $tab_Intersections[0], $x, $tab_Intersections[1],$y0);
                     $numZoneExploree++; 
-                    if (abs($x0-$x) >= $seuilDistanceHorizontal){
+                    if ($distanceHPasse1 >= $seuilDistanceHorizontal){
                         $encore=false;
+                        $xPasse2=$x;
+                        $yMaxPasse2[0]=$tab_Intersections[0];
+                        $yMaxPasse2[1]=$tab_Intersections[1];
                     }    
                 }
                 else{
                     if ($distanceVerticale2 >= $seuilDistanceVertical){
                         // On a un rectangle candidat
                         // Passer au placement des bouées
-                        if ($debug1 || true){    
+                        if ($debug1){    
                             echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".abs($x0-$x)."\n";
                         }
                         
                         droiteVerticale($numZoneExploree,$x0, $tab_Intersections[2], $x, $tab_Intersections[3],$y0);
                         $numZoneExploree++;
-                        if (abs($x0-$x) >= $seuilDistanceHorizontal){
+                        if ($distanceHPasse1 >= $seuilDistanceHorizontal){
+                            $xPasse2=$x;
+                            $yMaxPasse2[0]=$tab_Intersections[2];
+                            $yMaxPasse2[1]=$tab_Intersections[3];
                             $encore=false;
                         }    
                     }
@@ -681,13 +705,33 @@ if ($debug1){
             }                        
             break;         
     }
-    //$x0=$x0+$incrementX; // 
     $x=$x+$incrementX; 
 }
 
-if ($debug1 || true){    
-    echo "<br><b>Deuxième passe</b>. Distance verticale maximale: ".$maxDistanceV." Distance  horizontale: ".$DistanceH." Y0:".$yMax0." Y1:".$yMax1;
+if ($debug1){    
+    echo "<br><b>Deuxième passe</b>. Distance verticale maximale: ".$maxDistanceV." Distance  horizontale: ".$distanceHPasse1." Y0:".$yMaxPasse0." Y1:".$yMaxPasse1;
     echo "<br>\n";
+}
+if (($distanceHPasse1>= $deltaXpixelsVingtMetres) && ($maxDistanceV>=$deltaYpixelsCinquanteMetres)){
+    echo "<br><b>Succès</b>\n";
+    echo "<br><i>Droite verticale initiale x=Constante=".$xPasse1."</i>\n";
+    echo "<br><i>Droite verticale finale x=Constante=".$xPasse2."</i>\n";
+    $distanceX=abs($xPasse2-$xPasse1);
+    $distanceY=min(abs($yMaxPasse1[0]-$yMaxPasse1[1]),abs($yMaxPasse2[0]-$yMaxPasse2[1]));
+    echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
+    
+
+
+/******************************************
+ * Placement des bouées 
+ * ****************************************/ 
+
+   if (placer_bouees($xPasse1, $xPasse2, $yMaxPasse1[0],$yMaxPasse1[1],$yMaxPasse2[0],$yMaxPasse2[1])){
+    echo $reponse_ok;
+   }
+}
+else{
+    echo $reponse_not_ok;
 }
  
 /******************************************

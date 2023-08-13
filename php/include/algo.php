@@ -129,11 +129,26 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
 // $yDepart : ordonnées de la ligne de départ (la ligne de distance est minimale avec la ligne des concurrents)
 // ---------------------------------
  function droiteVerticale($numVerticale,$x1, $y1, $x2, $y2, $yDepart ){
-    echo "<br>Droite verticale N°".$numVerticale." Zone explorées Départ (".$x1.", ".$y1."), Arrivée (".$x2.", ".$y2.")\n";
     $distanceX=abs($x2-$x1);
     $distanceY=abs($y2-$y1);
-    echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
-    echo "<br>Ligne de départ Y : ".$yDepart;
  }
 
+
+// Placement des bouées dans le rectangle ad hoc
+// ---------------------------------
+function placer_bouees($x1, $x2, $y1_0, $y1_1, $y2_0, $y2_1){
+    echo "<br><b>Placement des Bouées</b>\n";
+    echo "<br>Droite verticale N°1: ".$x1."<br>Droite verticale N°2: ".$x2."\n";  
+    echo "<br>Droites horizontales Passe 1: ".$y1_0.", ".$y1_1."\n";
+    echo "<br>Droites horizontales Passe 2: ".$y2_0.", ".$y2_1."\n";
+    echo "<br><b>Rectangle utile</b>\n";
+    $minY= max($y1_0, $y2_0);
+    $maxY= min($y1_1, $y2_1);
+    echo "<br> MinY: ".$minY." MaxY: ".$maxY."\n";
+    echo "<br>Hauteur: ".abs($maxY-$minY)." pixels ==  ".distanceEcran2Earth(0,$minY,0,$maxY)." mètres\n";
+    echo "<br>Largeur: ".abs($x1-$x2)." pixels ==  ".distanceEcran2Earth($x1,0,$x2,0)." mètres\n";
+
+}
+ 
+ 
 ?>
