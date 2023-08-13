@@ -137,7 +137,14 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
 function placer_bouees($x1, $x2, $y1_0, $y1_1, $y2_0, $y2_1){
-    echo "<br><b>Placement des Bouées</b>\n";
+global $nbouees;
+    $nboueesFixes= 6-$nbouees;
+    if ($nboueesFixes>0){
+        echo "<br><b>Placement de ".$nbouees." bouées autonomes et de ".$nboueesFixes." bouées fixes.</b>\n";
+    }
+    else{
+        echo "<br><b>Placement de ".$nbouees." bouées autonomes</b>\n";        
+    }
     echo "<br>Droite verticale N°1: ".$x1."<br>Droite verticale N°2: ".$x2."\n";  
     echo "<br>Droites horizontales Passe 1: ".$y1_0.", ".$y1_1."\n";
     echo "<br>Droites horizontales Passe 2: ".$y2_0.", ".$y2_1."\n";

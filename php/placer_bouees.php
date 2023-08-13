@@ -13,13 +13,15 @@ $debug = false;
 $debug1 = false;
 
 $site='';
+$nbouees=6; // nombre max de bouées mobiles à placer.
+
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
 $data=null;
 $reponse=$reponse_not_ok;
 $xPasse1=0; // les abscisses recherchées pour le placement des bouées
 $xPasse2=0;
-$yMaxPasse1=array();
+$yMaxPasse1=array();    // Les ordonnées des droites déterminant le rectangle de placement des bouées 
 $yMaxPasse2=array();
 
 
@@ -48,6 +50,10 @@ if (isset($_GET) && !empty($_GET)){
     if (!empty($_GET['site'])){
         $site=strtolower(str_replace(' ','',urldecode($_GET['site'])));
     }
+    if (!empty($_GET['nbouees'])){
+        $nbouees=$_GET['nbouees'];
+    }
+
 }
 
 

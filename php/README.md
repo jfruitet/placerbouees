@@ -10,7 +10,7 @@ de régates radiocommandées.
 
 ## Utilisation
 
-*http://localhost/placerbouees/php/placer_bouees.php?site=NOM du Site&twd=60&nbouees
+*./placerbouees/php/placer_bouees.php?site=NOMduSite&twd=60&nbouees*
 
 Par exemple pour le site du Plessis :
 
@@ -19,7 +19,7 @@ Par exemple pour le site du Plessis :
 
 ### Input
 - TWD : direction du vent en degrés
-- Nom du site (le fichier nomdusite.json doit être présent dans le dossier *./placerbouees/json/*)
+- Nom du site (le fichier *nomdusite.json* doit être présent dans le dossier *./placerbouees/json/*)
 - nbouees : nombre maximal de bouées autonomes disponibles. 
 
 ### Output
