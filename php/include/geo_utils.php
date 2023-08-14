@@ -27,7 +27,9 @@ $poly_yecran= array();
 $ligne_xecran= array(); // Tableau des coordonnées écran de la ligne de déambulation des concurrents
 $ligne_yecran= array();
 
-$balisesEcran=array(); // Objets balises fixes
+$balisesEcran=array();      // Tableau de Objets balises fixes dans le repère écran
+$balises_xsaisie=array();           // coordonnées des balises fixes dans le repère de saisie
+$balises_ysaisie=array();
 
 $poly_xsaisie= array(); // Tableau des coordonnées écran de la zone de navigation après rotation face au vent
 $poly_ysaisie= array();
@@ -349,6 +351,31 @@ global $ligne_yecran;
     }
 }
 
+// -----------------------------------------------
+function rotation_ecran_Balises($radian){
+global $balisesEcran;   // balises fixes
+global $balises_xsaisie;
+global $balises_ysaisie;
+$balises_xsaisie=array();
+$balises_ysaisie=array();
+        
+    $balises_xsaisie= array(); // Tableau des coordonnées écran de la zone de navigation après rotation face au vent
+    $balises_ysaisie= array();
+    $index=0;
+    while ($index<count($balisesEcran)){
+        $balises_xsaisie[$index]= setDisplayToSaisieX($balisesEcran[$index]->x,$balisesEcran[$index]->y, $radian);
+        $balises_ysaisie[$index]= setDisplayToSaisieY($balisesEcran[$index]->x,$balisesEcran[$index]->y, $radian);
+        $index++;
+    }
+    
+    // Debug
+    echo "<br><b>Coordonnées des Balises dans l'écran de saisie</b>\n";
+    for ($index=0; $index<count($balises_xsaisie); $index++){
+        echo "<br>Balise ".$index." Id:".$balisesEcran[$index]->id."  Nom: ".$balisesEcran[$index]->name." X:".$balises_xsaisie[$index]." Y:".$balises_ysaisie[$index]."\n";
+    }
+    echo "<br><br>\n";
+}
+
 
 
 
@@ -581,7 +608,7 @@ function init_ecran_bouees_fixes(){
         $balisesEcran=array();
         for ($index=0; $index<count($balises_name); $index++) {
             // retourn un tableau d'objets                                 
-            $balisesEcran[$index]=(json_decode('{"id":'.$index.',"x":'.get_Xecran_lon($balises_lon[$index]).',"y":'.get_Yecran_lat($balises_lat[$index]).',"name":"'.$balises_name[$index]+'"}', false));
+            $balisesEcran[$index]=(json_decode('{"id":'.$index.',"x":'.get_Xecran_lon($balises_lon[$index]).',"y":'.get_Yecran_lat($balises_lat[$index]).',"name":"'.$balises_name[$index].'"}', false));
         }     
     }   
 }

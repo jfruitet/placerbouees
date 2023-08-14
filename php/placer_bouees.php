@@ -168,6 +168,7 @@ if (!empty($dataObject)){
  * Transformation en coordonnées "écran" pour accélerer l'algorithme 
  * *****************************************************************/
 init_ecran_ZN();
+init_ecran_bouees_fixes();
 
 if ($debug1){
     echo "<br>Polygone de navigation<br>\n<table border=\"1\">\n<tr>\n";
@@ -207,6 +208,7 @@ if ($debug1){
 // Ecart entre les bouées de départ, d'arrivée, porte, dog leg : entre 10 m et 20m
 
 rotation_ecran_ZN($twd_radian);
+rotation_ecran_Balises($twd_radian);
 
 if ($debug1){
     echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
@@ -719,20 +721,27 @@ if ($debug1){
     echo "<br>\n";
 }
 if (($distanceHPasse1>= $deltaXpixelsVingtMetres) && ($maxDistanceV>=$deltaYpixelsCinquanteMetres)){
-    echo "<br><b>Succès</b>\n";
-    echo "<br><i>Droite verticale initiale x=Constante=".$xPasse1."</i>\n";
-    echo "<br><i>Droite verticale finale x=Constante=".$xPasse2."</i>\n";
+    echo "<b>Succès</b>\n";
+    $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f, Nombre de bouées mobiles:%d\n",$site,$twd_degre, $twd_radian, $nbouees);
+    echo "<br />$msg\n";
+    echo "<br><br><b>Distance minimale du polygone à la ligne</b>\n";
+    echo "<br>Sommet du polygone ".$sommetmin.", (x0:".$coordonneesmin[0].", y0:".$coordonneesmin[1].")";
+    echo "<br>Intersection avec la ligne des concurrents: (Ix:".$intersectionmin[0].", Iy:".$intersectionmin[1].")";
+    echo "<br>Distance (pixels) ".$distanceecranmin.", Distance (m) ".$distanceterrainmin;
+    echo "<br><br>Recherche d'un rectangle inclus\n";    
+    echo "<br><i>Droite verticale initiale x=".$xPasse1."</i>\n";
+    echo "<br><i>Droite verticale finale x=".$xPasse2."</i>\n";
     $distanceX=abs($xPasse2-$xPasse1);
     $distanceY=min(abs($yMaxPasse1[0]-$yMaxPasse1[1]),abs($yMaxPasse2[0]-$yMaxPasse2[1]));
     echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
-    
+    echo "<br />\n";
 
 
 /******************************************
  * Placement des bouées 
  * ****************************************/ 
 
-   if (placer_bouees($xPasse1, $xPasse2, $yMaxPasse1[0],$yMaxPasse1[1],$yMaxPasse2[0],$yMaxPasse2[1])){
+   if (placer_bouees($xPasse1, $xPasse2, $yMaxPasse1[0],$yMaxPasse1[1],$yMaxPasse2[0],$yMaxPasse2[1],$intersectionmin[1])){
     echo $reponse_ok;
    }
 }

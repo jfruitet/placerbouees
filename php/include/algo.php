@@ -136,8 +136,32 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
 
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
-function placer_bouees($x1, $x2, $y1_0, $y1_1, $y2_0, $y2_1){
-global $nbouees;
+function placer_bouees($x1, $x2, $y1_0, $y1_1, $y2_0, $y2_1,$ligneDepartY){
+global $nbouees;   
+global $balises_xsaisie;
+global $balises_ysaisie;
+global $balisesEcran;   // Objet balises fixes dans les coordonnées écran initial (avant rotation face au vent)
+$balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
+
+    echo "<br>Balises fixes<br>\n<table border=\"1\"><tr>\n";
+    for ($index=0; $index<count($balisesEcran); $index++){
+        echo "<td>".$balisesEcran[$index]->id."</td>";
+    }
+    echo "</tr><tr>\n";
+    for ($index=0; $index<count($balisesEcran); $index++){
+        echo "<td>".$balisesEcran[$index]->name."</td>";
+    }
+    echo "</tr><tr>\n";
+    for ($index=0; $index<count($balises_xsaisie); $index++){
+        echo "<td>".$balises_xsaisie[$index]."</td>";
+    }
+    echo "</tr><tr>\n";
+    for ($index=0; $index<count($balises_ysaisie); $index++){
+        echo "<td>".$balises_ysaisie[$index]."</td>";
+    }
+    echo "</tr></table>\n";
+    
+
     $nboueesFixes= 6-$nbouees;
     if ($nboueesFixes>0){
         echo "<br><b>Placement de ".$nbouees." bouées autonomes et de ".$nboueesFixes." bouées fixes.</b>\n";
@@ -145,16 +169,67 @@ global $nbouees;
     else{
         echo "<br><b>Placement de ".$nbouees." bouées autonomes</b>\n";        
     }
+    echo "<br>Ligne de départ horizontale initiale: Y=".$ligneDepartY;
     echo "<br>Droite verticale N°1: ".$x1."<br>Droite verticale N°2: ".$x2."\n";  
     echo "<br>Droites horizontales Passe 1: ".$y1_0.", ".$y1_1."\n";
     echo "<br>Droites horizontales Passe 2: ".$y2_0.", ".$y2_1."\n";
+
+    // Commencer par calculer le rectangle utile    
     echo "<br><b>Rectangle utile</b>\n";
-    $minY= max($y1_0, $y2_0);
-    $maxY= min($y1_1, $y2_1);
+    $minY1= min($y1_0, $y1_1);
+    $maxY1= max($y1_0, $y1_1);
+    $minY2= min($y2_0, $y2_1);
+    $maxY2= max($y2_0, $y2_1);
+    $maxY=min($maxY1, $maxY2);
+    $minY=max($minY1, $minY2);   
     echo "<br> MinY: ".$minY." MaxY: ".$maxY."\n";
     echo "<br>Hauteur: ".abs($maxY-$minY)." pixels ==  ".distanceEcran2Earth(0,$minY,0,$maxY)." mètres\n";
     echo "<br>Largeur: ".abs($x1-$x2)." pixels ==  ".distanceEcran2Earth($x1,0,$x2,0)." mètres\n";
+    echo "<br>Coordonnées du rectangle utile<br>Point supérieur gauche (".$x1.",".$maxY."), Point inférieur droit (".$x2.",".$minY.")\n";
+    
+    // Recherche des bouées fixes incluses dans ce rectangle
 
+    echo "<br>Balises fixes incluses dans le rectangle utile<br>\n<table border=\"1\"><tr><td>Id</td>\n";
+    for ($index=0; $index<count($balisesEcran); $index++){
+        echo "<td>".$balisesEcran[$index]->id."</td>";
+    }
+    echo "</tr><tr><td>Nom</td>\n";
+    for ($index=0; $index<count($balisesEcran); $index++){
+        echo "<td>".$balisesEcran[$index]->name."</td>";
+    }
+    echo "</tr><tr><td>X</td>\n";
+    for ($index=0; $index<count($balises_xsaisie); $index++){
+        if (($balises_xsaisie[$index]>=$x1) && ($balises_xsaisie[$index]<=$x2)){
+            echo "<td bgcolor=\"yellow\">".$balises_xsaisie[$index]."</td>";
+            
+        }
+        else{ 
+            echo "<td>".$balises_xsaisie[$index]."</td>";
+        }    
+    }
+    echo "</tr><tr><td>Y</td>\n";
+    for ($index=0; $index<count($balises_ysaisie); $index++){
+        if (($balises_ysaisie[$index]>=$minY) && ($balises_ysaisie[$index]<=$maxY)){
+            echo "<td bgcolor=\"green\">".$balises_ysaisie[$index]."</td>";
+        }
+        else{ 
+            echo "<td>".$balises_ysaisie[$index]."</td>";
+        }            
+    }
+    echo "</tr></table>\n";
+    $k=0;    
+    for ($index=0; $index<count($balises_xsaisie); $index++){
+        if (($balises_xsaisie[$index]>=$x1) && ($balises_xsaisie[$index]<=$x2)
+            && ($balises_ysaisie[$index]>=$minY) && ($balises_ysaisie[$index]<=$maxY)){
+            $balisesIn[$k]=$index;            
+            $k++;
+        }
+    }
+    echo "<br>Balises incluses<br>\n";
+    print_r($balisesIn);
+    echo "<br>\n";
+    
+      
 }
  
  
