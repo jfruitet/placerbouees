@@ -12,7 +12,8 @@ include ("./include/algo.php");
 $debug = false;
 $debug1 = false;
 
-$site='';
+$nomSite=''; // Pour les données sauvegardées 
+$site='';   // pour le nom de fichier de sauvegare
 $nbouees=6; // nombre max de bouées mobiles à placer.
 
 $reponse_ok = '{"ok":1}';
@@ -48,7 +49,8 @@ if (isset($_GET) && !empty($_GET)){
         }        
     }
     if (!empty($_GET['site'])){
-        $site=strtolower(str_replace(' ','',urldecode($_GET['site'])));
+        $nomSite=str_replace(' ','',urldecode($_GET['site']));
+        $site=strtolower($nomSite);
     }
     if (!empty($_GET['nbouees'])){
         $nbouees=$_GET['nbouees'];
@@ -741,30 +743,34 @@ if (($distanceHPasse1>= $deltaXpixelsVingtMetres) && ($maxDistanceV>=$deltaYpixe
  * Placement des bouées 
  * ****************************************/ 
 
-   if (placer_bouees($xPasse1, $xPasse2, $yMaxPasse1[0],$yMaxPasse1[1],$yMaxPasse2[0],$yMaxPasse2[1],$intersectionmin[1])){
-    echo $reponse_ok;
-   }
-}
-else{
-    echo $reponse_not_ok;
-}
- 
+   placer_bouees($xPasse1, $xPasse2, $yMaxPasse1[0],$yMaxPasse1[1],$yMaxPasse2[0],$yMaxPasse2[1],$intersectionmin[1]);
+   
+
+
 /******************************************
  * Sauvegarder les position
  * ****************************************/ 
-
-
-// Sauvegarder les information de site
-// Elles sont placer dans un fichier DATAPATH_OUTPUT.
-
-/*    
-$filename_output="robonav_".$site."_".$twd_deg."_".date("Ymd").".json";
-if ($handle = fopen(DATAPATH.$filename, "w")){
-    fwrite($handle, $data);
-    fclose($handle);
+    $data='{"site":"'.$nomSite.'","twd":'.$twd_degre.',"boueesfixes":[';
+    //echo "<br>Bouées fixes retenues pour le parcours\n";
+    for ($index=0; $index<count($boueesFixesParcours)-1; $index++){        
+        $data.=$boueesFixesParcours[$index].',';
+    }
+    $data.=$boueesFixesParcours[$index].'],"boueesmobiles":[';
+    //echo "<br>Bouées mobiles ajoutéesau parcours\n";
+    for ($index=0; $index<count($boueesMobilesParcours)-1; $index++){        
+        $data.=$boueesMobilesParcours[$index].',';
+    }     
+    $data.=$boueesMobilesParcours[$index].']}';
+    
+    echo "<br>Data<br>\n";
+    echo $data;
+    
+    $filename_output="robonav_".$nomSite."_".$twd_degre."_".date("Ymd").".json";
+    if ($handle = fopen(DATAPATH_OUTPUT.$filename_output, "w")){
+        fwrite($handle, $data);
+        fclose($handle);
+    }
 }
-
-*/
 
 if ($debug || $debug1){
     echo ("</body></head></html>");

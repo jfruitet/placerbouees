@@ -146,7 +146,8 @@ global $tableBoueesFixesSaisieParcours;
 $tableBoueesFixesSaisieParcours=array();
 global $boueesFixesParcours; // Le tableau des bouées fixes à enregistrer
 $boueesFixesParcours=array();
-    
+global $boueesMobilesParcours;
+$boueesMobilesParcours=array();    
 
 $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
 
@@ -375,14 +376,174 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
         $lon=get_lon_Xecran($ecranX);
         $lat=get_lat_Yecran($ecranY);
         // Formater la sortie
-        $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.',"lon":'.$lon.',"lat":'.$lat.'"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
+        $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.',"lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
     }  
     // Debug
     echo "<br>Bouées fixes retenues pour le parcours\n";
     for ($index=0; $index<count($boueesFixesParcours); $index++){        
         echo "<br>".$boueesFixesParcours[$index];
     }
+    
+    // Compléter les bouées fixes avec des bouées mobiles alignées
+    // "boueesmobiles":[{"boueefixe":false,"id":0,"lon":-1.4742839383621993,"lat":47.24373879203094,"color":"yellow","fillcolor":"green"},
+    
+    $tab_BoueesMobiles = array();
+    $tab_BoueesMobiles['dog_leg1']=new stdClass();
+    //$tab_BoueesMobiles['dog_leg1']->fixe=false;
+    $tab_BoueesMobiles['dog_leg2']=new stdClass();
+    //$tab_BoueesMobiles['dog_leg2']->fixe=false;
+    $tab_BoueesMobiles['depart_tribord']=new stdClass();
+    //$tab_BoueesMobiles['depart_tribord']->fixe=false;
+    $tab_BoueesMobiles['depart_babord']=new stdClass();
+    //$tab_BoueesMobiles['depart_babord']->fixe=false;
+    $tab_BoueesMobiles['porte_tribord']=new stdClass();
+    //$tab_BoueesMobiles['porte_tribord']->fixe=false;
+    $tab_BoueesMobiles['porte_babord']=new stdClass();
+    //$tab_BoueesMobiles['porte_babord']->fixe=false;
+    
+    for ($index=0; $index<count($tableBoueesFixesSaisieParcours); $index++){       
+        if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg1"){
+            $tab_BoueesMobiles['dog_leg1']->fixe=true;
+            if (isset($tab_BoueesMobiles['dog_leg2']->fixe) && ($tab_BoueesMobiles['dog_leg2']->fixe==false)){
+                $tab_BoueesMobiles['dog_leg2']->xs=$x1+4000;
+                $tab_BoueesMobiles['dog_leg2']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
+                $tab_BoueesMobiles['dog_leg2']->color="navy";
+                $tab_BoueesMobiles['dog_leg2']->fillcolor="red";
+            }     
+        }
+        else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg2"){
+            $tab_BoueesMobiles['dog_leg2']->fixe=true;
+            if (isset($tab_BoueesMobiles['dog_leg1']->fixe) && ($tab_BoueesMobiles['dog_leg1']->fixe==false)){
+                $tab_BoueesMobiles['dog_leg1']->xs=$x2-4000;
+                $tab_BoueesMobiles['dog_leg1']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
+                $tab_BoueesMobiles['dog_leg1']->color="navy";
+                $tab_BoueesMobiles['dog_leg1']->fillcolor="red";
+            }                  
+        }        
+        else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteBabord"){
+            $tab_BoueesMobiles['porte_babord']->fixe=true;
+            if (isset($tab_BoueesMobiles['porte_tribord']->fixe) && ($tab_BoueesMobiles['porte_tribord']->fixe==false)){
+                $tab_BoueesMobiles['porte_tribord']->xs=$x1+4000;
+                $tab_BoueesMobiles['porte_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
+                $tab_BoueesMobiles['porte_tribord']->color="purple";
+                $tab_BoueesMobiles['porte_tribord']->fillcolor="green";                
+            }             
+        }
+        else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteTribord"){
+            $tab_BoueesMobiles['porte_tribord']->fixe=true;
+            if (isset($tab_BoueesMobiles['porte_babord']->fixe) && ($tab_BoueesMobiles['porte_babord']->fixe==false)){
+                $tab_BoueesMobiles['porte_babord']->xs=$x2-4000;
+                $tab_BoueesMobiles['porte_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
+                $tab_BoueesMobiles['porte_babord']->color="purple";
+                $tab_BoueesMobiles['porte_babord']->fillcolor="red";                 
+            }             
+        }
+        else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartBabord"){
+            $tab_BoueesMobiles['depart_babord']->fixe=true;
+            if (isset($tab_BoueesMobiles['depart_tribord']->fixe) && ($tab_BoueesMobiles['depart_tribord']->fixe==false)){
+                $tab_BoueesMobiles['depart_tribord']->xs=$x2-4000;
+                $tab_BoueesMobiles['depart_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
+                $tab_BoueesMobiles['depart_tribord']->color="yellow";
+                $tab_BoueesMobiles['depart_tribord']->fillcolor="green";                   
+            }             
+        }
+        else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartTribord"){
+            $tab_BoueesMobiles['depart_tribord']->fixe=true;
+            if (isset($tab_BoueesMobiles['depart_babord']->fixe) && ($tab_BoueesMobiles['depart_babord']->fixe==false)){
+                $tab_BoueesMobiles['depart_babord']->xs=$x+4000;
+                $tab_BoueesMobiles['depart_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
+                $tab_BoueesMobiles['depart_babord']->color="yellow";
+                $tab_BoueesMobiles['depart_babord']->fillcolor="red";                   
+            }             
+        }        
+    }
+    
+    echo "<br><br>Bouées mobiles<br>\n";
+    print_r($tab_BoueesMobiles);
+
+    
+    $k=0;
+    foreach( $tab_BoueesMobiles as $key => $value){
+        if (!isset($value->fixe)){
+            echo "<br> Creer la bouee\n";
+            if ($key=="dog_leg1"){
+                $ecranX=setSaisieToDisplayX($x2-4000,$maxY, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x2-4000,$maxY, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"navy","fillcolor":"red"}';        
+                $k++;                
+            }
+            else if ($key=="dog_leg2"){
+                $ecranX=setSaisieToDisplayX($x1+4000,$maxY, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x1+4000,$maxY, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"navy","fillcolor":"red"}';        
+                $k++;                            
+            }
+            else if ($key=="porte_tribord"){
+                $ecranX=setSaisieToDisplayX($x1+4000,$minY, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x1+4000,$minY, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"purple","fillcolor":"green"}';        
+                $k++;                            
+            }        
+            else if ($key=="porte_babord"){
+                $ecranX=setSaisieToDisplayX($x2-4000,$minY, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x2-4000,$minY, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"purple","fillcolor":"red"}';        
+                $k++;  
+            }                       
+            else if ($key=="depart_tribord"){
+                $ecranX=setSaisieToDisplayX($x2-4000, ($minY+$maxY)/2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x2-4000, ($minY+$maxY)/2, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"yellow","fillcolor":"green"}';        
+                $k++;  
+            }        
+            else if ($key=="depart_babord"){
+                $ecranX=setSaisieToDisplayX($x1+4000, ($minY+$maxY)/2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x1+4000, ($minY+$maxY)/2, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"yellow","fillcolor":"red"}';        
+                $k++;  
+            }          
+        }
+        else if (isset($value) && isset($value->fixe) && ($value->fixe==false) 
+            && isset($value->xs) && isset($value->ys) && isset($value->color) && isset($value->fillcolor)){
+                // completer 
+                echo "<br> Key:".$key."<br>\n";
+                print_r($value);
+                echo "<br>\n";                                
+                $ecranX=setSaisieToDisplayX($value->xs,$value->ys, $twd_radian);
+                $ecranY=setSaisieToDisplayY($value->xs,$value->ys, $twd_radian);
+                $lon=get_lon_Xecran($ecranX);
+                $lat=get_lat_Yecran($ecranY);
+                // Formater la sortie
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"'.$value->color.'","fillcolor":"'.$value->fillcolor.'"}';
+                $k++;              
+        }
+    }  
+
+    // Debug
+    echo "<br>Liste des bouées mobiles ajoutées au parcours\n";
+    for ($index=0; $index<count($boueesMobilesParcours); $index++){        
+        echo "<br>".$boueesMobilesParcours[$index];
+    }     
 }
+ 
  
  
 ?>
