@@ -112,7 +112,7 @@ function rectangle_englobantZN(){
         }
     }
     else {
-        echo("geo_utils.php :: ligne 79 :: zonenav_lat vide\n");  
+        //echo("geo_utils.php :: ligne 79 :: zonenav_lat vide\n");  
     }  
     if (($zoneconc_lat != null) && (count($zoneconc_lat)>0)){
         $index=0;
@@ -125,7 +125,7 @@ function rectangle_englobantZN(){
         }
     }  
     else{
-        echo("geo_utils.php :: ligne 92 :: zoneconc_lat vide\n");
+        //echo("geo_utils.php :: ligne 92 :: zoneconc_lat vide\n");
     }    
   
     // Pour avoir des figures homothétiques sans cisaillement 
@@ -367,13 +367,6 @@ $balises_ysaisie=array();
         $balises_ysaisie[$index]= setDisplayToSaisieY($balisesEcran[$index]->x,$balisesEcran[$index]->y, $radian);
         $index++;
     }
-    
-    // Debug
-    echo "<br><b>Coordonnées des Balises dans l'écran de saisie</b>\n";
-    for ($index=0; $index<count($balises_xsaisie); $index++){
-        echo "<br>Balise ".$index." Id:".$balisesEcran[$index]->id."  Nom: ".$balisesEcran[$index]->name." X:".$balises_xsaisie[$index]." Y:".$balises_ysaisie[$index]."\n";
-    }
-    echo "<br><br>\n";
 }
 
 
@@ -441,8 +434,8 @@ function get_lat_MouseYecran2($y){
 function screen2earth2($xcoord, $ycoord) {   
   $lon = round(get_lon_MouseXecran($xcoord)*100000)/100000; // 5 décimales
   $lat = round(get_lat_MouseYecran($ycoord)*100000)/100000;
-  echo (" lon <i>".$lon."</i>");
-  echo (" lat <i>".$lat+"</i><br>\n");
+  //echo (" lon <i>".$lon."</i>");
+  //echo (" lat <i>".$lat+"</i><br>\n");
 }
 
 

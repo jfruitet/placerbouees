@@ -1,8 +1,9 @@
 <?php
-// Lecture de la liste des plans d'eau disponibles pour la régate radiocommandée 
-// Utilise simpleXml
+// Lecture du fichier de données associé à un plan d'eau 
+// Les données ont été créées soit par ./placerbouees/index.html (placement manuel)
+// soit par ./placerbouees/php/placer_bouees.php (placement automatique)
 
-define("DATAPATH", "../data/");
+include ("./include/config.php");
 
 $debug = true;
 $reponse_ok = '{"ok":1}';
@@ -36,8 +37,8 @@ else{
 //--------------------------
 function getjson($file){ 
 global $reponse_not_ok;
-    if (file_exists(DATAPATH.$file)){
-        if ($data=file_get_contents(DATAPATH.$file)){
+    if (file_exists(DATAPATH_OUTPUT.$file)){
+        if ($data=file_get_contents(DATAPATH_OUTPUT.$file)){
             return $data;
         }
     } 
@@ -46,9 +47,9 @@ global $reponse_not_ok;
 
 //--------------------------
 function getdir($expression){
-// Il ne faut matcher les extensions des fihciers .json
+// Il ne faut matcher les extensions des fichiers .json
 global $reponse_not_ok;
-    $dossier = opendir(DATAPATH);
+    $dossier = opendir(DATAPATH_OUTPUT);
     if (empty($dossier)){
         return $reponse_not_ok;
     }
@@ -78,7 +79,7 @@ global $reponse_not_ok;
 function getdirNotWind($expression, $nottwd){
 // Il ne faut matcher les fichier ne contenant pas twd avec l'extension .json
 global $reponse_not_ok;
-    $dossier = opendir(DATAPATH);
+    $dossier = opendir(DATAPATH_OUTPUT);
     if (empty($dossier)){
         return $reponse_not_ok;
     }

@@ -2,7 +2,7 @@
 // Lecture de la liste des plans d'eau disponibles pour la régate radiocommandée 
 // Utilise simpleXml
 
-define("DATAPATH", "../json/");
+include ("./include/config.php");
 
 $debug = true;
 $reponse_ok = array("ok"=>1);
@@ -61,10 +61,10 @@ echo $reponse;
 function  get_plans_eau($index=0){
     global $file;
     global $data;    
-    if (($index>0) && file_exists(DATAPATH.$file)){
+    if (($index>0) && file_exists(DATAPATH_INPUT.$file)){
         $index--; // index = id -1 
         // afficher_selectionner($data);
-        if ($data=xml2array(DATAPATH.$file, $arr = array())){
+        if ($data=xml2array(DATAPATH_INPUT.$file, $arr = array())){
             return '{"id":'.$data['site'][$index]['id'].',"nom":"'.$data['site'][$index]['name'].'","ville":"'.$data['site'][$index]['city'].'","zipcode":"'.$data['site'][$index]['zipcode'].'","pays":"'.$data['site'][$index]['country'].'","lon":'.$data['site'][$index]['lon'].',"lat":'.$data['site'][$index]['lat'].',"club":"'.$data['site'][$index]['club'].'","url":"'.$data['site'][$index]['url'].'","jsonfile":"'.$data['site'][$index]['json'].'"}';            
         }
     } 
@@ -76,9 +76,9 @@ function get_all_plans_eau(){
     global $file;
     global $data;    
 
-    if (file_exists(DATAPATH.$file)){
+    if (file_exists(DATAPATH_INPUT.$file)){
         // afficher_selectionner($data);
-        return xml2array(DATAPATH.$file, $arr = array());
+        return xml2array(DATAPATH_INPUT.$file, $arr = array());
     } 
 }
 
@@ -88,7 +88,7 @@ function xml2array($element, $arr = array()){
     if (is_string($element))
     {
         $element = (strlen($element) > 5 && substr($element, -4) === '.xml') 
-            ? simplexml_load_file(DATAPATH.$element)
+            ? simplexml_load_file(DATAPATH_INPUT.$element)
             : simplexml_load_string($element);
     }
     $iter = 0;

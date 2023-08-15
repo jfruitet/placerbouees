@@ -1,7 +1,8 @@
 <?php
 // enregistre un fichier JSON de placement de bouées 
+// Les données sont fournies par un appel POST par un script Ajax 
 
-define("DATAPATH", "../data/");
+include ("./include/config.php");
 
 $debug = false;
 $mydata = new stdClass();
@@ -34,7 +35,7 @@ if (isset($data) && (!empty($data)))
     $mydata = json_decode($data,true);
     //print_r($mydata);
     $filename="robonav_".$mydata['site']."_".$mydata['twd']."_".date("Ymd").".json";
-    if ($handle = fopen(DATAPATH.$filename, "w")){
+    if ($handle = fopen(DATAPATH_OUTPUT.$filename, "w")){
         fwrite($handle, $data);
         fclose($handle);
     }

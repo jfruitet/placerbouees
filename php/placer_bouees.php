@@ -1,24 +1,25 @@
 <?php
-// Calcul du placement de bouées de régate en fonction de la direction du vent
-// Ce code est tout à fait inachevé...
-// A suivre.
+// Calcul du placement de bouées de régate sur un site en fonction de la direction du vent
+// Ce code est pratiquement complet...
 
-define("DATAPATH_INPUT", "../json/"); // Les données seront lues dans ce dossier.
-define("DATAPATH_OUTPUT", "../data/"); // Les données seront sauvegardées dans ce dossier.
-
+include ("./include/config.php");
 include ("./include/geo_utils.php");
 include ("./include/algo.php");
 
 $debug = false;
 $debug1 = false;
 
-$nomSite=''; // Pour les données sauvegardées 
-$site='';   // pour le nom de fichier de sauvegare
+$nomSite=''; // Pour les données sauvegardées
+$nomSite2=''; // Pour le nom de fichier des données saugegardees 
+$site='';   // pour le nom de fichier de données importées concernant les données du site
 $nbouees=6; // nombre max de bouées mobiles à placer.
 
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
+
 $data=null;
+$dataObject=null;
+
 $reponse=$reponse_not_ok;
 $xPasse1=0; // les abscisses recherchées pour le placement des bouées
 $xPasse2=0;
@@ -49,8 +50,9 @@ if (isset($_GET) && !empty($_GET)){
         }        
     }
     if (!empty($_GET['site'])){
-        $nomSite=str_replace(' ','',urldecode($_GET['site']));
-        $site=strtolower($nomSite);
+        $nomSite=urldecode($_GET['site']);
+        $nomSite2=str_replace(' ','',$nomSite);
+        $site=strtolower($nomSite2);
     }
     if (!empty($_GET['nbouees'])){
         $nbouees=$_GET['nbouees'];
@@ -96,6 +98,10 @@ if (file_exists(DATAPATH_INPUT.$filename_input)){
         }
     }
 } 
+else {
+    echo $reponse_not_ok;
+    exit; 
+}
 
 /******************************************
  * Chargement des données en input 
@@ -160,9 +166,13 @@ if (!empty($dataObject)){
     echo "<br>balises_lon<br>\n";
     print_r($balises_lon);
     echo "<br>balises_lat<br>\n";
-    print_r($balises_lat);
-    }    
+    print_r($balises_lat);   
     echo "<br>\n";
+    }
+}
+else {
+    echo $reponse_not_ok;
+    exit; 
 }
 
 
@@ -211,6 +221,14 @@ if ($debug1){
 
 rotation_ecran_ZN($twd_radian);
 rotation_ecran_Balises($twd_radian);
+
+if ($debug1){
+    echo "<br><b>Coordonnées des Balises dans l'écran de saisie</b>\n";
+    for ($index=0; $index<count($balises_xsaisie); $index++){
+        echo "<br>Balise ".$index." Id:".$balisesEcran[$index]->id."  Nom: ".$balisesEcran[$index]->name." X:".$balises_xsaisie[$index]." Y:".$balises_ysaisie[$index]."\n";
+    }
+    echo "<br><br>\n";
+}
 
 if ($debug1){
     echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
@@ -315,21 +333,13 @@ $intersectionmin=array();
 $distanceterrainmin=1000000;
 
     for ($i=0;$i<count($tab_distances);$i++){
-        // list($sommet_poly,$coordonnees,$intersection,$distanceecran,$distanceterrain)=json_encode($tab_distances[$i]);
-        //echo ($sommet_poly.",".$coordonnees.",".$intersection.",".$distanceecran.",".$distanceterrain);
-        //$tab_d=explode(',',$tab_distances[$i]); 
-        //echo "<br>\n";
-        //print_r($tab_d);
         $tab_d=json_decode($tab_distances[$i],false);
-        //echo "<br>\n";
-        //print_r($tab_d);
         $sommet_poly=$tab_d->sommet_poly;
         $coordonnees=$tab_d->coordonnees;
         $segment_ligne=$tab_d->segment_ligne;
         $intersection=$tab_d->intersection;
         $distanceecran=$tab_d->distanceecran;
-        $distanceterrain=$tab_d->distanceterrain;
-        
+        $distanceterrain=$tab_d->distanceterrain;       
         
         if ($distanceecran<$distanceecranmin){
             $distanceecranmin=$distanceecran;
@@ -346,7 +356,7 @@ if ($debug1){
     echo "<br>\n";
 }
 
-// Balayer l'axe X par des droites x=constante pour déterminer les points d'intersection avec le plygone.
+// Balayer l'axe X par des droites x=constante pour déterminer les points d'intersection avec le polygone de navigation.
 // Calculer la distance entre ces points d'intersection
 // Si cette distance est supérieure au seuil enregistrer les points d'intersection.  
 
@@ -723,21 +733,22 @@ if ($debug1){
     echo "<br>\n";
 }
 if (($distanceHPasse1>= $deltaXpixelsVingtMetres) && ($maxDistanceV>=$deltaYpixelsCinquanteMetres)){
-    echo "<b>Succès</b>\n";
-    $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f, Nombre de bouées mobiles:%d\n",$site,$twd_degre, $twd_radian, $nbouees);
-    echo "<br />$msg\n";
-    echo "<br><br><b>Distance minimale du polygone à la ligne</b>\n";
-    echo "<br>Sommet du polygone ".$sommetmin.", (x0:".$coordonneesmin[0].", y0:".$coordonneesmin[1].")";
-    echo "<br>Intersection avec la ligne des concurrents: (Ix:".$intersectionmin[0].", Iy:".$intersectionmin[1].")";
-    echo "<br>Distance (pixels) ".$distanceecranmin.", Distance (m) ".$distanceterrainmin;
-    echo "<br><br>Recherche d'un rectangle inclus\n";    
-    echo "<br><i>Droite verticale initiale x=".$xPasse1."</i>\n";
-    echo "<br><i>Droite verticale finale x=".$xPasse2."</i>\n";
     $distanceX=abs($xPasse2-$xPasse1);
     $distanceY=min(abs($yMaxPasse1[0]-$yMaxPasse1[1]),abs($yMaxPasse2[0]-$yMaxPasse2[1]));
-    echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
-    echo "<br />\n";
-
+    if ($debug1){
+        echo "<b>Succès</b>\n";
+        $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f, Nombre de bouées mobiles:%d\n",$site,$twd_degre, $twd_radian, $nbouees);
+        echo "<br />$msg\n";
+        echo "<br><br><b>Distance minimale du polygone à la ligne</b>\n";
+        echo "<br>Sommet du polygone ".$sommetmin.", (x0:".$coordonneesmin[0].", y0:".$coordonneesmin[1].")";
+        echo "<br>Intersection avec la ligne des concurrents: (Ix:".$intersectionmin[0].", Iy:".$intersectionmin[1].")";
+        echo "<br>Distance (pixels) ".$distanceecranmin.", Distance (m) ".$distanceterrainmin;
+        echo "<br><br>Recherche d'un rectangle inclus\n";    
+        echo "<br><i>Droite verticale initiale x=".$xPasse1."</i>\n";
+        echo "<br><i>Droite verticale finale x=".$xPasse2."</i>\n";
+        echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
+        echo "<br />\n";
+    }
 
 /******************************************
  * Placement des bouées 
@@ -745,6 +756,9 @@ if (($distanceHPasse1>= $deltaXpixelsVingtMetres) && ($maxDistanceV>=$deltaYpixe
 
    placer_bouees($xPasse1, $xPasse2, $yMaxPasse1[0],$yMaxPasse1[1],$yMaxPasse2[0],$yMaxPasse2[1],$intersectionmin[1]);
    
+    if ($debug || $debug1){
+        echo ("</body></head></html>");
+    }
 
 
 /******************************************
@@ -752,27 +766,38 @@ if (($distanceHPasse1>= $deltaXpixelsVingtMetres) && ($maxDistanceV>=$deltaYpixe
  * ****************************************/ 
     $data='{"site":"'.$nomSite.'","twd":'.$twd_degre.',"boueesfixes":[';
     //echo "<br>Bouées fixes retenues pour le parcours\n";
-    for ($index=0; $index<count($boueesFixesParcours)-1; $index++){        
-        $data.=$boueesFixesParcours[$index].',';
+    if (!empty($boueesFixesParcours)){
+        for ($index=0; $index<count($boueesFixesParcours)-1; $index++){        
+            $data.=$boueesFixesParcours[$index].',';
+        }
+        $data.=$boueesFixesParcours[$index].'],"boueesmobiles":[';
     }
-    $data.=$boueesFixesParcours[$index].'],"boueesmobiles":[';
+    else{
+        $data.='],"boueesmobiles":[';
+    }
     //echo "<br>Bouées mobiles ajoutéesau parcours\n";
-    for ($index=0; $index<count($boueesMobilesParcours)-1; $index++){        
-        $data.=$boueesMobilesParcours[$index].',';
-    }     
-    $data.=$boueesMobilesParcours[$index].']}';
+    if (!empty($boueesMobilesParcours)){
+        for ($index=0; $index<count($boueesMobilesParcours)-1; $index++){        
+            $data.=$boueesMobilesParcours[$index].',';
+        }     
+        $data.=$boueesMobilesParcours[$index].']}';
+    }
+    else{
+        $data.=']}';
+    }
+    //echo "<br>Data<br>\n";
+    //echo $data;
     
-    echo "<br>Data<br>\n";
-    echo $data;
-    
-    $filename_output="robonav_".$nomSite."_".$twd_degre."_".date("Ymd").".json";
+    $filename_output="robonav_".$nomSite2."_".$twd_degre."_".date("Ymd").".json";
     if ($handle = fopen(DATAPATH_OUTPUT.$filename_output, "w")){
         fwrite($handle, $data);
         fclose($handle);
     }
+}   
+else {
+    echo $reponse_not_ok;
 }
 
-if ($debug || $debug1){
-    echo ("</body></head></html>");
-}
+echo $reponse_ok;
+
 ?>

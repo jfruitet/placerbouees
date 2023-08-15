@@ -6,7 +6,7 @@ let myList = document.getElementById('mylist'); // La liste des sites à charger
 let tFichiers=[]; // tableau des fichiers proposés au chargement
 
 let boueesMobiles=[];
-let boueesFixes=[];
+let boueesFixesParcours=[];
 
 
 
@@ -311,8 +311,14 @@ function ajax_GetData(url, mystr){
         fetch(url+"?"+mystr, myInitGet)
         .then(response => response.json()) 
         .then((data) => {
-                boueesFixes=data.boueesfixes;
+                siteCharge=data.site;
+                twdChargee=data.twd;
+                boueesFixesParcours=data.boueesfixes;
+                addBoueesFixesParcours2Map();
+                
                 boueesMobiles=data.boueesmobiles;
+                addBoueesMobiles2Map();
+                document.getElementById("mapinfo").innerHTML=siteCharge+" TWD:"+ twdChargee;
 /*
                 if (boueesMobiles.length>0){
                     for (var item=0; item<boueesMobiles.length; item++){
@@ -325,7 +331,8 @@ function ajax_GetData(url, mystr){
                     } 
                 }    
 */               
-                addBoueesMobiles2Map();
+
+                
             }
         )           
         .catch(error => console.debug("Erreur : "+error));
@@ -338,7 +345,7 @@ function getThatData(nf){
     //console.debug("Chargement des bouées\n");
     //console.debug("Fichier\n"+ nf);
     boueesMobiles.length=0;
-    boueesFixes.lengt=0;
+    boueesFixesParcours.length=0;
     var url= url_serveur+'getdata.php';
     let myfile="file="+nf;  
     ajax_GetData(url,  myfile);     

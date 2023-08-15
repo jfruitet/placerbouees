@@ -1,8 +1,9 @@
 <?php
-// Lecture de la liste des plans d'eau disponibles pour la régate radiocommandée 
-// Utilise simpleXml
+// Script à supprimer
+// Lecture d'un fichier passé en paramètres 
+// N'a aucune spécialisation sauf le dossier du fichier cherché
 
-define("DATAPATH", "../json/");
+include ("./include/config.php");
 
 $debug = true;
 $reponse_ok = '{"ok":1}';
@@ -31,8 +32,8 @@ echo $reponse;
 
 //--------------------------
 function getjson($file){ 
-    if (file_exists(DATAPATH.$file)){
-        if ($data=file_get_contents(DATAPATH.$file)){
+    if (file_exists(DATAPATH_INPUT.$file)){
+        if ($data=file_get_contents(DATAPATH_INPUT.$file)){
             return $data;
         }
     } 

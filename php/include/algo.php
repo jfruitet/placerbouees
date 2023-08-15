@@ -137,6 +137,7 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
 function placer_bouees($x1, $x2, $y1_0, $y1_1, $y2_0, $y2_1,$ligneDepartY){
+global $debug1;
 global $twd_radian;
 global $nbouees;   
 global $balises_xsaisie;
@@ -151,6 +152,7 @@ $boueesMobilesParcours=array();
 
 $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
 
+if ($debug1){
     echo "<br>Balises fixes<br>\n<table border=\"1\"><tr>\n";
     for ($index=0; $index<count($balisesEcran); $index++){
         echo "<td>".$balisesEcran[$index]->id."</td>";
@@ -168,9 +170,10 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
         echo "<td>".$balises_ysaisie[$index]."</td>";
     }
     echo "</tr></table>\n";
-    
+}
 
     $nboueesFixes= 6-$nbouees;
+if ($debug1){   
     if ($nboueesFixes>0){
         echo "<br><b>Placement de ".$nbouees." bouées autonomes et de ".$nboueesFixes." bouées fixes.</b>\n";
     }
@@ -181,23 +184,25 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
     echo "<br>Droite verticale N°1: ".$x1."<br>Droite verticale N°2: ".$x2."\n";  
     echo "<br>Droites horizontales Passe 1: ".$y1_0.", ".$y1_1."\n";
     echo "<br>Droites horizontales Passe 2: ".$y2_0.", ".$y2_1."\n";
-
+}
     // Commencer par calculer le rectangle utile    
-    echo "<br><b>Rectangle utile</b>\n";
+if ($debug1){    echo "<br><b>Rectangle utile</b>\n"; }
     $minY1= min($y1_0, $y1_1);
     $maxY1= max($y1_0, $y1_1);
     $minY2= min($y2_0, $y2_1);
     $maxY2= max($y2_0, $y2_1);
     $maxY=min($maxY1, $maxY2);
     $minY=max($minY1, $minY2);   
+if ($debug1){    
     echo "<br> MinY: ".$minY." MaxY: ".$maxY."\n";
     echo "<br>Hauteur: ".abs($maxY-$minY)." pixels ==  ".distanceEcran2Earth(0,$minY,0,$maxY)." mètres\n";
     echo "<br>Largeur: ".abs($x1-$x2)." pixels ==  ".distanceEcran2Earth($x1,0,$x2,0)." mètres\n";
     echo "<br>Coordonnées du rectangle utile<br>Point supérieur gauche (".$x1.",".$maxY."), Point inférieur droit (".$x2.",".$minY.")\n";
-    
+}    
     // Recherche des bouées fixes incluses dans ce rectangle
 
-    echo "<br>Balises fixes incluses dans le rectangle utile<br>\n<table border=\"1\"><tr><td>Id</td>\n";
+if ($debug1){    
+    echo "<br>Balises fixes incluses dans le rectangle utile<br>\n<table border=\"1\"><tr><td>Id</td>\n"; 
     for ($index=0; $index<count($balisesEcran); $index++){
         echo "<td>".$balisesEcran[$index]->id."</td>";
     }
@@ -225,6 +230,7 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
         }            
     }
     echo "</tr></table>\n";
+}    
     $k=0;    
     for ($index=0; $index<count($balises_xsaisie); $index++){
         if (($balises_xsaisie[$index]>=$x1) && ($balises_xsaisie[$index]<=$x2)
@@ -233,10 +239,11 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
             $k++;
         }
     }
+if ($debug1){    
     echo "<br>Balises incluses<br>\n";
     print_r($balisesIn);
     echo "<br>\n";
-    
+}
     // Pour les bouées fixes, vérifier si elles peuvent être affectées à une position sur le parcours
     // Alignement horizontal. Il y a 3 zones : 
     // Dog leg au vent : y> 3 * Hauteur / 4
@@ -258,24 +265,24 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
         if ($balises_ysaisie[$balisesIn[$index]]<=$quartHauteur){ // Porte sous le vent
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Porte tribord 
-                echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";
+                if ($debug1){ echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $porte_tribord=true;
             }
             else{
                 // Porte bâbord
-                echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";                 
+                if ($debug1){echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $porte_babord=true;
             } 
         } 
         else if ($balises_ysaisie[$balisesIn[$index]]>=3*$quartHauteur){ // Dog Leg ?
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Dog leg bâbord 2
-                echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";
+                if ($debug1){ echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $dog_leg2=true;                 
             }
             else{
                 // Dog leg bâbord 1
-                echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";                 
+                if ($debug1){ echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $dog_leg1=true;                 
             }         
         }
@@ -284,20 +291,21 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
             // Entre deux : Départ ?
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Départ / Arrivée bâbord
-                echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";                                 
+                if ($debug1){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
                 $depart_babord=true;                 
             }
             else{
                 // Départ / Arrivée tribord
-                echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";                                                 
+                if ($debug1){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                                 
                 $depart_tibord=true;
             }                     
         }
+if ($debug1){        
         echo "<br>Distance au bord gauche ".abs($balises_xsaisie[$balisesIn[$index]]-$x1)."\n";
         echo "<br>Distance au bord droit ".abs($balises_xsaisie[$balisesIn[$index]]-$x2)."\n";
         echo "<br>Distance au bord supérieur ".abs($balises_ysaisie[$balisesIn[$index]]-$maxY)."\n";
         echo "<br>Distance au bord inférieur ".abs($balises_ysaisie[$balisesIn[$index]]-$minY)."<br>\n";   
-        
+}        
         if ($porte_tribord){
             if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<5000){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteTribord"}', false);
@@ -339,11 +347,12 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
     } 
     
     // Afficher les balises retenues
+if ($debug1){
     echo "<br>Balises retenues\n";
     for ($index=0; $index<count($tableBoueesFixesSaisieParcours); $index++){
         echo "<br>".json_encode($tableBoueesFixesSaisieParcours[$index])."\n";
     }  
-    
+}    
     // Convertir ces balises en Longitude, Latitude
     // {"site":"LePlessis","twd":60,"boueesfixes":[{"boueefixe":true,"id":4,"lon":-1.4743316798018502,"lat":47.24381872961287,"color":"yellow","fillcolor":"red"},{"boueefixe":true,"id":7,"lon":-1.4739890647643559,"lat":47.24395125770921,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":6,"lon":-1.4737391242861835,"lat":47.24383766219806,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":10,"lon":-1.4736127498871077,"lat":47.24355156979959,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":8,"lon":-1.4739385150047255,"lat":47.24372196306633,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":6,"lon":-1.4737391242861835,"lat":47.24383766219806,"color":"blue","fillcolor":"red"}],"boueesmobiles":[{"boueefixe":false,"id":0,"lon":-1.4742839383621993,"lat":47.24373879203094,"color":"yellow","fillcolor":"green"},{"boueefixe":false,"id":1,"lon":-1.474222155322651,"lat":47.24367147617248,"color":"purple","fillcolor":"green"},{"boueefixe":false,"id":2,"lon":-1.4741659889230618,"lat":47.24359995307286,"color":"purple","fillcolor":"red"},{"boueefixe":false,"id":3,"lon":-1.4737700158059577,"lat":47.24388183823017,"color":"blue","fillcolor":"red"}]}
     
@@ -379,11 +388,12 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
         $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.',"lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
     }  
     // Debug
+if ($debug1){
     echo "<br>Bouées fixes retenues pour le parcours\n";
     for ($index=0; $index<count($boueesFixesParcours); $index++){        
         echo "<br>".$boueesFixesParcours[$index];
     }
-    
+}    
     // Compléter les bouées fixes avec des bouées mobiles alignées
     // "boueesmobiles":[{"boueefixe":false,"id":0,"lon":-1.4742839383621993,"lat":47.24373879203094,"color":"yellow","fillcolor":"green"},
     
@@ -457,15 +467,16 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
             }             
         }        
     }
-    
+
+if ($debug1){    
     echo "<br><br>Bouées mobiles<br>\n";
     print_r($tab_BoueesMobiles);
-
+}
     
     $k=0;
     foreach( $tab_BoueesMobiles as $key => $value){
         if (!isset($value->fixe)){
-            echo "<br> Creer la bouee\n";
+            //echo "<br> Creer la bouee\n";
             if ($key=="dog_leg1"){
                 $ecranX=setSaisieToDisplayX($x2-4000,$maxY, $twd_radian);
                 $ecranY=setSaisieToDisplayY($x2-4000,$maxY, $twd_radian);
@@ -524,9 +535,11 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
         else if (isset($value) && isset($value->fixe) && ($value->fixe==false) 
             && isset($value->xs) && isset($value->ys) && isset($value->color) && isset($value->fillcolor)){
                 // completer 
+if ($debug1){
                 echo "<br> Key:".$key."<br>\n";
                 print_r($value);
-                echo "<br>\n";                                
+                echo "<br>\n";
+}                                                
                 $ecranX=setSaisieToDisplayX($value->xs,$value->ys, $twd_radian);
                 $ecranY=setSaisieToDisplayY($value->xs,$value->ys, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
@@ -538,10 +551,12 @@ $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
     }  
 
     // Debug
+if ($debug1){    
     echo "<br>Liste des bouées mobiles ajoutées au parcours\n";
     for ($index=0; $index<count($boueesMobilesParcours); $index++){        
         echo "<br>".$boueesMobilesParcours[$index];
-    }     
+    }    
+}     
 }
  
  

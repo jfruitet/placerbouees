@@ -295,7 +295,7 @@ function displayMap(){
             "Info": baliseSite,
             "Zone Nav.":zonenav, 
             "Concurrents": zoneconcurrents, 
-            "Bouées ancrées": balises
+            "Balises ancrées": balises
         }      
              
         map.removeControl(layerControl);    // L'ancien contrôle est remplacé
@@ -311,8 +311,9 @@ function displayMap(){
             div.innerHTML += "<h4>Légende</h4>";
             div.innerHTML += '<i style="background: #0000aa"></i><span>ZN</span><br>';
             div.innerHTML += '<i style="background: #aaaa33"></i><span>ZC</span><br>';
-            div.innerHTML += '<i class="icon" style="background-image: url(./images/dot.png);background-repeat: no-repeat;"></i><span>Bouées</span><br>'; 
-            div.innerHTML += '<i class="icon2" style="background-image: url(./images/marker-icon-small3.png);background-repeat: no-repeat;"></i><span>Balises</span><br>'; 
+            div.innerHTML += '<i class="icon" style="background-image: url(./images/dot.png);background-repeat: no-repeat;"></i><span>Balises ancrées</span><br>'; 
+            div.innerHTML += '<i class="icon" style="background-image: url(./images/bouee12x14_violet_rouge.svg);background-repeat: no-repeat;"></i><span>Bouées</span><br>';
+ 
             return div;
         };
 
