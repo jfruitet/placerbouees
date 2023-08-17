@@ -50,7 +50,7 @@
 		<club>CAP Sport et Nature</club>
         <email></email>
 		<url>https://www.capsn.org/voile-radiocommandee/</url>
-		<json>planeauduchene.json</json>
+		<json>plandeauduchene.json</json>
 	</site>	
 	<site>
 		<id>5</id>
@@ -63,7 +63,7 @@
 		<club>Mini-Flotte Trignac</club>
         <email>miniflotte@miniflottetrignac.fr</email>
 		<url>https://miniflottetrignac.fr/</url>
-		<json>lemprunt.json</json>
+		<json>plandeaudelemprunt.json</json>
 	</site>	
     	<site>
 		<id>6</id>
@@ -76,7 +76,7 @@
 		<club>SNOS</club>
         <email>contactsnosvoile@gmail.com</email>
 		<url>https://www.snos-voile.com/</url>
-		<json>boisjoalland.json</json>
+		<json>etangduboisjoalland.json</json>
 	</site>	
 
 </sites>
