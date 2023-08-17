@@ -28,6 +28,18 @@
 **********************************************/
 $tab_distances=null;
 
+
+function tab_echange(&$tab1, &$tab2){
+// echange les contenus d'un tableau de deux éléments
+    $aux=$tab1[0];
+    $tab1[0]=$tab2[0];
+    $tab2[0]=$aux;
+    $aux=$tab1[1];
+    $tab1[1]=$tab2[1];
+    $tab2[1]=$aux;    
+}
+
+ 
 // Calcule la distance entre chaque sommet du polygone et la ligne des concurrents
 // ------------------------------------
 function calculeTableDistances($debug){
@@ -125,19 +137,458 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
     return (round(($x-$x1)*($y2-$y1)/($x2-$x1) + $y1));
 }
 
-// Placer des bouées par couples dans un rectangle vertical
-// $yDepart : ordonnées de la ligne de départ (la ligne de distance est minimale avec la ligne des concurrents)
-// ---------------------------------
- function droiteVerticale($numVerticale,$x1, $y1, $x2, $y2, $yDepart ){
-    $distanceX=abs($x2-$x1);
-    $distanceY=abs($y2-$y1);
- }
+
+// On balaye le polygone avec des droite verticale pour trouver un rectangle de navigation 
+// suffisemment haut et large 
+// Donnees en output 
+// ($x1, $x2, $y1, $y2)
+
+// ------------------------------------------
+function rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression){
+global $debug2;
+global $x1;
+global $x2;
+global $y1;
+global $y2; 
+global $intersectionmin;
+global $intersectionmax;
+global $coordonneesmin;
+global $coordonneesmax;
+global $poly_xsaisie;
+global $poly_ysaisie;
+global $distance_H_MillePixels;
+global $distance_V_MillePixels; 
+global $deltaXpixelsSite;
+global $deltaYpixelsSite;
+global $xPasse1;
+global $xPasse2;
+
+
+/**************************************
+ *     Première passe
+ **************************************/
+    $numZoneExploree=0; // On a besoin de 2 zones contigües pour placer les bouées
+      
+    $x=$xInitial; // Démarrer la recherche à 0 mètres du sommet
+
+    if ($debug2){    
+        if ($sensprogression>0){
+            echo "<br>Progression vers l'EST \n";
+        }
+        else{
+            echo "<br>Progression vers l'OUEST \n";
+        }
+        echo "<br>Valeurs de départ: Droite verticale [x0:".$xInitial."], Droite verticale suivante [x:".$x."]<br>\n";
+    }
+    
+    // Droite d'équation x=constante
+    // Tant que x<$posxFin
+
+    $encore=true;
+    $distanceH=0;    // Ecart horizontal entre deux droites verticales du rectangle de navigation
+    $maxDistanceV=0;    // Maximas sur l'écart vertical entre deux points du polygone de navigation
+    $indexMax=0;
+    $xMax=$x;
+    $yMaxPasse1[0]=1000000; // Enregistre les minima et maxima de l'intersection de la droite verticale avec le polygone  
+    $yMaxPasse1[1]=-1000000;
+
+    while ($encore) { // On cherche les intersections avec le polygone
+        if ($sensprogression>0){
+            $encore = ($x<=$xFinal);
+        }
+        else{
+            $encore = ($x>=$xFinal);    
+        }     
+        $nbintersections=0;           
+        $tab_Intersections=array(); // Les valeurs y d'intersection
+        if (false){    
+            echo "<br>Exploration <br>\n";
+            echo (" x0:".$xInitial.", x:".$x);
+            echo "<br>\n";
+        }
+
+        for ($i=0; $i<count($poly_ysaisie); $i++){
+            // calculer l'intersection de la droite verticale avec le polygone pour un segment entre deux sommets consécutifs
+            $xp1=$poly_xsaisie[$i]; // sommet i
+            $yp1=$poly_ysaisie[$i];
+            if ($i<count($poly_ysaisie)-1) { // indice du sommet suivant
+                $i2=$i+1;
+            } 
+            else {
+                $i2=0;
+            }
+            $xp2=$poly_xsaisie[$i2];    // sommet suivant
+            $yp2=$poly_ysaisie[$i2];
+            if (false){  
+                echo "<br>Sommet ".$i.": [".$xp1.",".$yp1."]\n";
+                echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
+            } 
+    
+            if ($xp1>$xp2){ // Ordonner les sommets pour faciliter le test d'intersection
+                $aux=$xp2;
+                $xp2=$xp1;
+                $xp1=$aux;
+                $aux=$yp2;
+                $yp2=$yp1;
+                $yp1=$aux;
+            }      
+    
+            if (($x>=$xp1) && ($x<$xp2)) { // Intersection possible 
+                $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2); 
+                $nbintersections++;
+            }             
+        }
+
+    if (false){    
+        echo "<br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
+        print_r($tab_Intersections);
+        echo "<br>\n";
+    }
+    
+    switch ($nbintersections) {
+        case 0 : break; // Sortie du polygone
+        case 1 : break; // Sommet, on ne traite pas
+        case 2 :  // Intérieur. Calculer la dimension verticale entre deux intersections
+            $distanceVerticale =abs($tab_Intersections[1]-$tab_Intersections[0]);
+            //$deltaXpixelsSite=howMuchXPixelsForMeters(20.0);
+            //$deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters(50.0);
+            if ($distanceVerticale >= $deltaYpixelsSite){
+                // On a un rectangle candidat
+                if ($distanceVerticale>$maxDistanceV){
+                    $maxDistanceV=$distanceVerticale; 
+                    $indexMax=$i;
+                    $xMax=$x;
+                    $distanceH=abs($xInitial-$x);                
+                }
+                if ($debug2){    
+                    echo "<br>2 intersections<br>Distance verticale : ".$distanceVerticale." Distance horizontale(X0,X) : ".$distanceH."\n";
+                }                
+                $numZoneExploree++;
+                $xPasse1=$x;    // Droite verticale trouvée
+                $yMaxPasse1[0]=$tab_Intersections[0];
+                $yMaxPasse1[1]=$tab_Intersections[1];                 
+                $encore=false; // Traitement  1ère passe terminé
+            }
+            
+            break; 
+        case 3 : // // polygone concave + passage par un sommet ; il faut faire un grand pas vers l'Est (ou vers l'Ouest)
+            $xInitial=$x+$incrementX;
+            $x=$xInitial+$incrementX;
+            break; 
+        default : // polygone convexe avec au moins une concavité selon l'axe Nord / Sud
+                // On traite les deux premiers couples
+                // Ordonner les Y dans le sens croissant
+            if (sort($tab_Intersections)){
+                $distanceVerticale = abs($tab_Intersections[1]-$tab_Intersections[0]);
+                $distanceVerticale2 =  abs($tab_Intersections[3]-$tab_Intersections[2]);  
+
+                if (($distanceVerticale>$maxDistanceV) || ($distanceVerticale2>$maxDistanceV)){
+                    $maxDistanceV=max($distanceVerticale, $distanceVerticale2); 
+                    $indexMax=$i;
+                    $xMax=$x;
+                    $distanceH=abs($xInitial-$x);                
+                }
+                            
+                if (($distanceVerticale >= $distanceVerticale2) && ($distanceVerticale >= $deltaYpixelsSite)){
+                    // On a un rectangle candidat
+                    // Passer au placement des bouées
+                    if ($debug2){    
+                        echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".$distanceH."\n";
+                    }
+
+                    $numZoneExploree++; 
+                    $xPasse1=$x;    // Droite verticale trouvée   
+                    $yMaxPasse1[0]=$tab_Intersections[0];
+                    $yMaxPasse1[1]=$tab_Intersections[1];                
+                    $encore=false;                        
+                }
+                else{
+                    if ($distanceVerticale2 >= $deltaYpixelsSite){
+                        // On a un rectangle candidat
+                        // Passer au placement des bouées
+                        if ($debug2){    
+                            echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".$distanceH."\n";
+                        }
+
+                        $numZoneExploree++;
+                        $xPasse1=$x;    // Droite verticale trouvée 
+                        $yMaxPasse1[0]=$tab_Intersections[2];
+                        $yMaxPasse1[1]=$tab_Intersections[3];                  
+                        $encore=false;
+                    }
+                }                   
+            }                        
+            break;             
+        }
+        $x=$x+$incrementX; 
+    }
+
+    if ($debug2){    
+        echo "<br><b>Fin du premier passage</b>.<br>Distance verticale maximale: ".$maxDistanceV." (Y0:".$yMaxPasse1[0].", Y1:".$yMaxPasse1[1].")<br>\n";
+        echo "<br>Distance  au point de départ horizontal: ".$distanceH."\n";
+    }
+ 
+
+/***************************************
+ * Seconde passe
+ * *************************************/
+
+    // On veut trouver la plus proche droite verticale élognée d'au moins 20m de $xpasse1
+
+    $xInitial=$x+$incrementX; // Démarrer la recherche immédiatement à proximité
+    $x=$xInitial+$incrementX;
+
+    if ($debug2){
+        echo "<br><br><b>Début de la seconde passe</b>";    
+        echo "<br>Progression ".$sensprogression."\n";
+        echo "<br>Valeurs de départ de l'exploration (X0:".$xInitial.")<br>\n";
+        echo "<br>Abscisse de la droite verticale trouvée à la passe N°1 : ".$xPasse1."\n";    // Droite verticale trouvée
+    }
+
+    // Droite d'équation x=constante
+    // Tant que x<$posxFin
+
+    $encore=true;
+
+    $distanceHPasse1=abs($xPasse1-$x);    // Ecart horizontal avec la droite verticale trouvée à la première passe 
+    $distanceH=0;    // Ecart horizontal entre deux droites verticales
+    $maxDistanceV=0;    // Maximas sur l'écart vertical entre deux points du polygone de navigation
+    $indexMax=0;
+    $xMax=$x;
+    $yMaxPasse2[0]=1000000;
+    $yMaxPasse2[1]=-1000000;
+
+    while ($encore) { // On cherche les intersections avec le polygone
+ 
+        if ($sensprogression>0){
+            $encore = ($x<=$xFinal);
+        }
+        else{
+            $encore = ($x>=$xInitial);    
+        }     
+        $nbintersections=0;           
+        $tab_Intersections=array(); // Les valeurs y d'intersection
+        if (false){    
+            echo "<br>Exploration \n";
+            echo (" x0:".$xInitial.", x:".$x);
+            echo "<br>\n";
+        }
+
+        for ($i=0; $i<count($poly_ysaisie); $i++){
+            // calculer l'intersection avec le polygone
+            $xp1=$poly_xsaisie[$i];
+            $yp1=$poly_ysaisie[$i];
+            if ($i<count($poly_ysaisie)-1) {
+                $i2=$i+1;
+            } 
+            else {
+                $i2=0;
+            }
+            $xp2=$poly_xsaisie[$i2];
+            $yp2=$poly_ysaisie[$i2];
+            if (false){  
+                echo "<br>Sommet ".$i.": [".$xp1.",".$yp1."]\n";
+                echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
+            } 
+    
+            if ($xp1>$xp2){ // échanger pur faciliter le test d'intersection
+                $aux=$xp2;
+                $xp2=$xp1;
+                $xp1=$aux;
+                $aux=$yp2;
+                $yp2=$yp1;
+                $yp1=$aux;
+            }      
+    
+            if (($x>=$xp1) && ($x<$xp2)) { // Intersection possible 
+                $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2);
+                $nbintersections++;
+            }             
+        }
+
+        if (false){    
+            echo "<br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
+            print_r($tab_Intersections);
+            echo "<br>\n";
+        }
+    
+        switch ($nbintersections) {
+            case 0 : break; // Sortie du polygone
+        case 1 : break; // Sommet, on ne traite pas
+        case 2 :  // Calculer la dimension verticale entre deux intersections
+            $distanceVerticale =abs($tab_Intersections[1]-$tab_Intersections[0]);
+            if ($distanceVerticale>$maxDistanceV){
+                $maxDistanceV=$distanceVerticale; 
+                $indexMax=$i;
+                $xMax=$x;
+                $distanceH=abs($xInitial-$x);               
+            }
+            $distanceHPasse1=abs($xPasse1-$x); 
+            if ($distanceVerticale >= $deltaYpixelsSite){
+                // On a une droite candidate
+                if ($debug2){    
+                    echo "<br>Distance verticale : ".$distanceVerticale." horizontale : ".$distanceH."\n";
+                    echo "<br><i>Distance à la droite fournie par la passe N°1</i> : <b>".$distanceHPasse1."</b>\n";
+                    
+                }
+
+                $numZoneExploree++;
+                if ($distanceHPasse1 >= $deltaXpixelsSite){
+                    $encore=false;
+                    $xPasse2=$x;
+                    $yMaxPasse2[0]=$tab_Intersections[0];
+                    $yMaxPasse2[1]=$tab_Intersections[1];                    
+                }              
+            }
+            
+            break; // Intérieur
+        case 3 : // polygone concave, passage par un sommet concave; il faut faire un pas de plus
+                $xInitial=$x+$incrementX;
+                $x=$xInitial+$incrementX;
+            break; 
+        default : // polygone convexe avec au moins une concavité selon l'axe Nord / Sud
+                // On traite les deux premiers couples
+                // Ordonner les Y dans le sens croissant
+            if (sort($tab_Intersections)){
+                $distanceVerticale = abs($tab_Intersections[1]-$tab_Intersections[0]);
+                $distanceVerticale2 =  abs($tab_Intersections[3]-$tab_Intersections[2]);  
+
+                if (($distanceVerticale>$maxDistanceV) || ($distanceVerticale2>$maxDistanceV)){
+                    $maxDistanceV=max($distanceVerticale, $distanceVerticale2); 
+                    $indexMax=$i;
+                    $xMax=$x;
+                    $distanceH=abs($xInitial-$x);  
+                }
+                $distanceHPasse1=abs($xPasse1-$x);               
+                            
+                if (($distanceVerticale >= $distanceVerticale2) && ($distanceVerticale >= $deltaYpixelsSite)){
+                    // On a un rectangle candidat
+                    // Passer au placement des bouées
+                    if ($debug2){    
+                        echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".abs($xInitial-$x)."\n";
+                    }
+
+                    $numZoneExploree++; 
+                    if ($distanceHPasse1 >= $deltaXpixelsSite){
+                        $encore=false;
+                        $xPasse2=$x;
+                        $yMaxPasse2[0]=$tab_Intersections[0];
+                        $yMaxPasse2[1]=$tab_Intersections[1];
+                    }    
+                }
+                else{
+                    if ($distanceVerticale2 >= $deltaYpixelsSite){
+                        // On a un rectangle candidat
+                        // Passer au placement des bouées
+                        if ($debug2){    
+                            echo "<br>Distance verticale : ".$distanceVerticale." Distance horizontale : ".abs($xInitial-$x)."\n";
+                        }
+                        
+                        //droiteVerticale($numZoneExploree,$xInitial, $tab_Intersections[2], $x, $tab_Intersections[3],$y0);
+                        $numZoneExploree++;
+                        if ($distanceHPasse1 >= $deltaXpixelsSite){
+                            $xPasse2=$x;
+                            $yMaxPasse2[0]=$tab_Intersections[2];
+                            $yMaxPasse2[1]=$tab_Intersections[3];
+                            $encore=false;
+                        }    
+                    }
+                }                   
+            }                        
+            break;         
+        }
+        $x=$x+$incrementX; 
+    }
+
+    if ($debug2){    
+        echo "<br><b>Deuxième passe</b>. Distance verticale maximale: ".$maxDistanceV." Distance  horizontale: ".$distanceHPasse1." Y0:".$yMaxPasse2[0]." Y1:".$yMaxPasse2[1];
+        echo "<br>\n";
+    }
+    
+    if (($distanceHPasse1>= $deltaXpixelsSite) && ($maxDistanceV>=$deltaYpixelsSite)){
+        $distanceX=abs($xPasse2-$xPasse1);
+        $distanceY=min(abs($yMaxPasse1[0]-$yMaxPasse1[1]),abs($yMaxPasse2[0]-$yMaxPasse2[1]));
+    
+        if ($debug2){
+            echo "<b>Succès APPARENT</b>\n";
+            echo "<br><br>Recherche d'un rectangle inclus\n";    
+            echo "<br><i>Droite verticale initiale x=".$xPasse1."</i>\n";
+            echo "<br><i>Droite verticale finale x=".$xPasse2."</i>\n";
+            echo "<br><i>Droite horizontale initiale inférieure y=".$yMaxPasse1[0]."</i>\n";
+            echo "<br><i>Droite horizontale initiale supérieure y=".$yMaxPasse1[1]."</i>\n";        
+            echo "Distance initiale verticale DY1: ".abs($yMaxPasse1[1]-$yMaxPasse1[0])."</i>\n";
+            echo "<br><i>Droite horizontale finale inférieure y=".$yMaxPasse2[0]."</i>\n";
+            echo "<br><i>Droite horizontale finale supérieure y=".$yMaxPasse2[1]."</i>\n";      
+            echo "Distance finale verticale DY2: ".abs($yMaxPasse2[1]-$yMaxPasse2[0])."</i>\n";           
+            echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
+            echo "<br />\n";
+        }
+    }
+    
+/******************************************
+ * Placement des bouées 
+ * ****************************************/ 
+    $testxPasse1=$xPasse1;
+    $testxPasse2=$xPasse2;
+    
+     // Préparation des données en entrée : on ordonne pour facilter le test d'intériorité
+    if ($xPasse1>=$xPasse2){
+        $aux=$testxPasse1;
+        $testxPasse1=$testxPasse2;
+        $testxPasse2=$aux;       
+        tab_echange($yMaxPasse1,$yMaxPasse2);     
+        // Après échange
+        echo "<br>Après échange\n";
+            echo "<br><i>Droite verticale initiale x=".$testxPasse1."</i>\n";
+            echo "<br><i>Droite verticale finale x=".$testxPasse2."</i>\n";
+            echo "<br><i>Droite horizontale initiale inférieure y=".$yMaxPasse1[0]."</i>\n";
+            echo "<br><i>Droite horizontale initiale supérieure y=".$yMaxPasse1[1]."</i>\n";   
+            echo "Distance initiale verticale DY1: ".abs($yMaxPasse1[1]-$yMaxPasse1[0])."</i>\n";
+            echo "<br><i>Droite horizontale finale inférieure y=".$yMaxPasse2[0]."</i>\n";
+            echo "<br><i>Droite horizontale finale supérieure y=".$yMaxPasse2[1]."</i>\n";      
+            echo "Distance finale verticale DY2: ".abs($yMaxPasse2[1]-$yMaxPasse2[0])."</i>\n";                                   
+    }
+
+    $minY1= min($yMaxPasse1[0], $yMaxPasse1[1]);   
+    $minY2= min($yMaxPasse2[0], $yMaxPasse2[1]);
+    $maxY1= max($yMaxPasse1[0], $yMaxPasse1[1]);
+    $maxY2= max($yMaxPasse2[0], $yMaxPasse2[1]);
+    
+    if ($debug2){
+        echo "<br>minY1:".$minY1.", maxY1:".$maxY1." DistanceV1:".abs($maxY1-$minY1)." \n";
+        echo "<br>minY2:".$minY2.", maxY2:".$maxY2." DistanceV2:".abs($maxY2-$minY2)."\n";
+    }    
+    
+    $minY= max($minY1, $minY2);
+    $maxY= min($maxY1, $maxY2);
+
+    if ($debug2){
+        echo "<br><br><b>Après préparation des données</b>\n";
+        echo "<br>minX:".$xPasse1.", maxX:".$xPasse2."\n";
+        echo "<br>minY:".$minY.", maxY:".$maxY."\n";
+        echo "<br>Distance utile verticale DistanceV: ".abs($maxY-$minY)."\n";
+    }    
+
+    
+    if ($minY>=$maxY){
+        if ($debug2){
+            echo "<br>Echec : Rectangle utile vide<br>\n";
+        }    
+        return false;        
+    }
+    $x1=$xPasse1;
+    $x2=$xPasse2;
+    $y1=$minY;
+    $y2=$maxY; 
+    return true;
+}
 
 
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
-function placer_bouees($x1, $x2, $y1_0, $y1_1, $y2_0, $y2_1,$ligneDepartY){
-global $debug1;
+function placer_bouees($x1, $x2, $y1, $y2){
+global $debug2;
+global $debug2; // Ajout de points clés pour la vérification de l'algorithme
 global $twd_radian;
 global $nbouees;   
 global $balises_xsaisie;
@@ -152,7 +603,11 @@ $boueesMobilesParcours=array();
 
 $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
 
-if ($debug1){
+if ($debug2){
+    echo "<br><br><b>placer_bouees</b> ::Données en entrée\n";
+    echo ($x1.", ".$x2.", ".$y1.", ".$y2."\n");
+    echo "<br>\n";
+
     echo "<br>Balises fixes<br>\n<table border=\"1\"><tr>\n";
     for ($index=0; $index<count($balisesEcran); $index++){
         echo "<td>".$balisesEcran[$index]->id."</td>";
@@ -173,35 +628,31 @@ if ($debug1){
 }
 
     $nboueesFixes= 6-$nbouees;
-if ($debug1){   
+if ($debug2){   
     if ($nboueesFixes>0){
         echo "<br><b>Placement de ".$nbouees." bouées autonomes et de ".$nboueesFixes." bouées fixes.</b>\n";
     }
     else{
         echo "<br><b>Placement de ".$nbouees." bouées autonomes</b>\n";        
     }
-    echo "<br>Ligne de départ horizontale initiale: Y=".$ligneDepartY;
     echo "<br>Droite verticale N°1: ".$x1."<br>Droite verticale N°2: ".$x2."\n";  
-    echo "<br>Droites horizontales Passe 1: ".$y1_0.", ".$y1_1."\n";
-    echo "<br>Droites horizontales Passe 2: ".$y2_0.", ".$y2_1."\n";
+    echo "<br>Droites horizontales Inférieure : ".$y1."\n";
+    echo "<br>Droites horizontales Supérieure : ".$y2."\n";
 }
     // Commencer par calculer le rectangle utile    
-if ($debug1){    echo "<br><b>Rectangle utile</b>\n"; }
-    $minY1= min($y1_0, $y1_1);
-    $maxY1= max($y1_0, $y1_1);
-    $minY2= min($y2_0, $y2_1);
-    $maxY2= max($y2_0, $y2_1);
-    $maxY=min($maxY1, $maxY2);
-    $minY=max($minY1, $minY2);   
-if ($debug1){    
-    echo "<br> MinY: ".$minY." MaxY: ".$maxY."\n";
-    echo "<br>Hauteur: ".abs($maxY-$minY)." pixels ==  ".distanceEcran2Earth(0,$minY,0,$maxY)." mètres\n";
+if ($debug2){    
+    echo "<br><b>Rectangle utile</b>\n"; 
+}
+    
+if ($debug2){    
+    echo "<br> MinY: ".$y1." MaxY: ".$y2."\n";
+    echo "<br>Hauteur: ".abs($y2-$y1)." pixels ==  ".distanceEcran2Earth(0,$y1,0,$y2)." mètres\n";
     echo "<br>Largeur: ".abs($x1-$x2)." pixels ==  ".distanceEcran2Earth($x1,0,$x2,0)." mètres\n";
-    echo "<br>Coordonnées du rectangle utile<br>Point supérieur gauche (".$x1.",".$maxY."), Point inférieur droit (".$x2.",".$minY.")\n";
+    echo "<br>Coordonnées du rectangle utile<br>Point supérieur gauche (".$x1.",".$y2."), Point inférieur droit (".$x2.",".$y1.")\n";
 }    
     // Recherche des bouées fixes incluses dans ce rectangle
 
-if ($debug1){    
+if ($debug2){    
     echo "<br>Balises fixes incluses dans le rectangle utile<br>\n<table border=\"1\"><tr><td>Id</td>\n"; 
     for ($index=0; $index<count($balisesEcran); $index++){
         echo "<td>".$balisesEcran[$index]->id."</td>";
@@ -222,7 +673,7 @@ if ($debug1){
     }
     echo "</tr><tr><td>Y</td>\n";
     for ($index=0; $index<count($balises_ysaisie); $index++){
-        if (($balises_ysaisie[$index]>=$minY) && ($balises_ysaisie[$index]<=$maxY)){
+        if (($balises_ysaisie[$index]>=$y1) && ($balises_ysaisie[$index]<=$y2)){
             echo "<td bgcolor=\"green\">".$balises_ysaisie[$index]."</td>";
         }
         else{ 
@@ -231,19 +682,25 @@ if ($debug1){
     }
     echo "</tr></table>\n";
 }    
+
+    // Ne traiter que les balises incluses dans le rectangle sélectionné
+
     $k=0;    
     for ($index=0; $index<count($balises_xsaisie); $index++){
         if (($balises_xsaisie[$index]>=$x1) && ($balises_xsaisie[$index]<=$x2)
-            && ($balises_ysaisie[$index]>=$minY) && ($balises_ysaisie[$index]<=$maxY)){
+            && ($balises_ysaisie[$index]>=$y1) && ($balises_ysaisie[$index]<=$y2)){
             $balisesIn[$k]=$index;            
             $k++;
         }
     }
-if ($debug1){    
+    
+    
+if ($debug2){    
     echo "<br>Balises incluses<br>\n";
     print_r($balisesIn);
     echo "<br>\n";
 }
+ 
     // Pour les bouées fixes, vérifier si elles peuvent être affectées à une position sur le parcours
     // Alignement horizontal. Il y a 3 zones : 
     // Dog leg au vent : y> 3 * Hauteur / 4
@@ -257,7 +714,7 @@ if ($debug1){
     $dog_leg1=false;
     $dog_leg2=false;
     
-    $quartHauteur=abs($maxY-$minY) / 4;
+    $quartHauteur=abs($y2-$y1) / 4;
     $demiLargeur=abs($x1-$x2) / 2;
     
     $k=0; 
@@ -265,24 +722,24 @@ if ($debug1){
         if ($balises_ysaisie[$balisesIn[$index]]<=$quartHauteur){ // Porte sous le vent
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Porte tribord 
-                if ($debug1){ echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
+                if ($debug2){ echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $porte_tribord=true;
             }
             else{
                 // Porte bâbord
-                if ($debug1){echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
+                if ($debug2){echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $porte_babord=true;
             } 
         } 
         else if ($balises_ysaisie[$balisesIn[$index]]>=3*$quartHauteur){ // Dog Leg ?
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Dog leg bâbord 2
-                if ($debug1){ echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
+                if ($debug2){ echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $dog_leg2=true;                 
             }
             else{
                 // Dog leg bâbord 1
-                if ($debug1){ echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
+                if ($debug2){ echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $dog_leg1=true;                 
             }         
         }
@@ -291,55 +748,56 @@ if ($debug1){
             // Entre deux : Départ ?
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Départ / Arrivée bâbord
-                if ($debug1){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
+                if ($debug2){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
                 $depart_babord=true;                 
             }
             else{
                 // Départ / Arrivée tribord
-                if ($debug1){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                                 
+                if ($debug2){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                                 
                 $depart_tibord=true;
             }                     
         }
-if ($debug1){        
+
+if ($debug2){        
         echo "<br>Distance au bord gauche ".abs($balises_xsaisie[$balisesIn[$index]]-$x1)."\n";
         echo "<br>Distance au bord droit ".abs($balises_xsaisie[$balisesIn[$index]]-$x2)."\n";
-        echo "<br>Distance au bord supérieur ".abs($balises_ysaisie[$balisesIn[$index]]-$maxY)."\n";
-        echo "<br>Distance au bord inférieur ".abs($balises_ysaisie[$balisesIn[$index]]-$minY)."<br>\n";   
+        echo "<br>Distance au bord supérieur ".abs($balises_ysaisie[$balisesIn[$index]]-$y2)."\n";
+        echo "<br>Distance au bord inférieur ".abs($balises_ysaisie[$balisesIn[$index]]-$y1)."<br>\n";   
 }        
         if ($porte_tribord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<5000){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteTribord"}', false);
                 $k++;
             }        
         }
         if ($porte_babord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<5000){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteBabord"}', false);
                 $k++;
             }        
         }
         // Depart / Arrivée
         if ($depart_tribord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<5000){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DepartTribord"}', false);
                 $k++;
             }        
         }
         if ($depart_babord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<5000){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DepartBabord"}', false);
                 $k++;
             }        
         }
         // Dog Leg bâbord
         if ($dog_leg1){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<5000){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DogLeg1"}', false);
                 $k++;
             }        
         }
         if ($dog_leg2){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<5000){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DogLeg2"}', false);
                 $k++;
             }        
@@ -347,12 +805,17 @@ if ($debug1){
     } 
     
     // Afficher les balises retenues
-if ($debug1){
+if ($debug2){
     echo "<br>Balises retenues\n";
     for ($index=0; $index<count($tableBoueesFixesSaisieParcours); $index++){
         echo "<br>".json_encode($tableBoueesFixesSaisieParcours[$index])."\n";
     }  
 }    
+
+// Ajouter des points remarquables pour tester l'algoritme
+
+
+
     // Convertir ces balises en Longitude, Latitude
     // {"site":"LePlessis","twd":60,"boueesfixes":[{"boueefixe":true,"id":4,"lon":-1.4743316798018502,"lat":47.24381872961287,"color":"yellow","fillcolor":"red"},{"boueefixe":true,"id":7,"lon":-1.4739890647643559,"lat":47.24395125770921,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":6,"lon":-1.4737391242861835,"lat":47.24383766219806,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":10,"lon":-1.4736127498871077,"lat":47.24355156979959,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":8,"lon":-1.4739385150047255,"lat":47.24372196306633,"color":"black","fillcolor":"green"},{"boueefixe":true,"id":6,"lon":-1.4737391242861835,"lat":47.24383766219806,"color":"blue","fillcolor":"red"}],"boueesmobiles":[{"boueefixe":false,"id":0,"lon":-1.4742839383621993,"lat":47.24373879203094,"color":"yellow","fillcolor":"green"},{"boueefixe":false,"id":1,"lon":-1.474222155322651,"lat":47.24367147617248,"color":"purple","fillcolor":"green"},{"boueefixe":false,"id":2,"lon":-1.4741659889230618,"lat":47.24359995307286,"color":"purple","fillcolor":"red"},{"boueefixe":false,"id":3,"lon":-1.4737700158059577,"lat":47.24388183823017,"color":"blue","fillcolor":"red"}]}
     
@@ -388,7 +851,7 @@ if ($debug1){
         $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.',"lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
     }  
     // Debug
-if ($debug1){
+if ($debug2){
     echo "<br>Bouées fixes retenues pour le parcours\n";
     for ($index=0; $index<count($boueesFixesParcours); $index++){        
         echo "<br>".$boueesFixesParcours[$index];
@@ -415,7 +878,7 @@ if ($debug1){
         if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg1"){
             $tab_BoueesMobiles['dog_leg1']->fixe=true;
             if (isset($tab_BoueesMobiles['dog_leg2']->fixe) && ($tab_BoueesMobiles['dog_leg2']->fixe==false)){
-                $tab_BoueesMobiles['dog_leg2']->xs=$x1+4000;
+                $tab_BoueesMobiles['dog_leg2']->xs=$x1+ECART_BORDURE;
                 $tab_BoueesMobiles['dog_leg2']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['dog_leg2']->color="navy";
                 $tab_BoueesMobiles['dog_leg2']->fillcolor="red";
@@ -424,7 +887,7 @@ if ($debug1){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg2"){
             $tab_BoueesMobiles['dog_leg2']->fixe=true;
             if (isset($tab_BoueesMobiles['dog_leg1']->fixe) && ($tab_BoueesMobiles['dog_leg1']->fixe==false)){
-                $tab_BoueesMobiles['dog_leg1']->xs=$x2-4000;
+                $tab_BoueesMobiles['dog_leg1']->xs=$x2-ECART_BORDURE;
                 $tab_BoueesMobiles['dog_leg1']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['dog_leg1']->color="navy";
                 $tab_BoueesMobiles['dog_leg1']->fillcolor="red";
@@ -433,7 +896,7 @@ if ($debug1){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteBabord"){
             $tab_BoueesMobiles['porte_babord']->fixe=true;
             if (isset($tab_BoueesMobiles['porte_tribord']->fixe) && ($tab_BoueesMobiles['porte_tribord']->fixe==false)){
-                $tab_BoueesMobiles['porte_tribord']->xs=$x1+4000;
+                $tab_BoueesMobiles['porte_tribord']->xs=$x1+ECART_BORDURE;
                 $tab_BoueesMobiles['porte_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['porte_tribord']->color="purple";
                 $tab_BoueesMobiles['porte_tribord']->fillcolor="green";                
@@ -442,7 +905,7 @@ if ($debug1){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteTribord"){
             $tab_BoueesMobiles['porte_tribord']->fixe=true;
             if (isset($tab_BoueesMobiles['porte_babord']->fixe) && ($tab_BoueesMobiles['porte_babord']->fixe==false)){
-                $tab_BoueesMobiles['porte_babord']->xs=$x2-4000;
+                $tab_BoueesMobiles['porte_babord']->xs=$x2-ECART_BORDURE;
                 $tab_BoueesMobiles['porte_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['porte_babord']->color="purple";
                 $tab_BoueesMobiles['porte_babord']->fillcolor="red";                 
@@ -451,7 +914,7 @@ if ($debug1){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartBabord"){
             $tab_BoueesMobiles['depart_babord']->fixe=true;
             if (isset($tab_BoueesMobiles['depart_tribord']->fixe) && ($tab_BoueesMobiles['depart_tribord']->fixe==false)){
-                $tab_BoueesMobiles['depart_tribord']->xs=$x2-4000;
+                $tab_BoueesMobiles['depart_tribord']->xs=$x2-ECART_BORDURE;
                 $tab_BoueesMobiles['depart_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['depart_tribord']->color="yellow";
                 $tab_BoueesMobiles['depart_tribord']->fillcolor="green";                   
@@ -460,7 +923,7 @@ if ($debug1){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartTribord"){
             $tab_BoueesMobiles['depart_tribord']->fixe=true;
             if (isset($tab_BoueesMobiles['depart_babord']->fixe) && ($tab_BoueesMobiles['depart_babord']->fixe==false)){
-                $tab_BoueesMobiles['depart_babord']->xs=$x+4000;
+                $tab_BoueesMobiles['depart_babord']->xs=$x1+ECART_BORDURE;
                 $tab_BoueesMobiles['depart_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['depart_babord']->color="yellow";
                 $tab_BoueesMobiles['depart_babord']->fillcolor="red";                   
@@ -468,7 +931,7 @@ if ($debug1){
         }        
     }
 
-if ($debug1){    
+if ($debug2){    
     echo "<br><br>Bouées mobiles<br>\n";
     print_r($tab_BoueesMobiles);
 }
@@ -478,8 +941,8 @@ if ($debug1){
         if (!isset($value->fixe)){
             //echo "<br> Creer la bouee\n";
             if ($key=="dog_leg1"){
-                $ecranX=setSaisieToDisplayX($x2-4000,$maxY, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x2-4000,$maxY, $twd_radian);
+                $ecranX=setSaisieToDisplayX($x2-ECART_BORDURE,$y2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x2-ECART_BORDURE,$y2, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -487,8 +950,8 @@ if ($debug1){
                 $k++;                
             }
             else if ($key=="dog_leg2"){
-                $ecranX=setSaisieToDisplayX($x1+4000,$maxY, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x1+4000,$maxY, $twd_radian);
+                $ecranX=setSaisieToDisplayX($x1+ECART_BORDURE,$y2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x1+ECART_BORDURE,$y2, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -496,8 +959,8 @@ if ($debug1){
                 $k++;                            
             }
             else if ($key=="porte_tribord"){
-                $ecranX=setSaisieToDisplayX($x1+4000,$minY, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x1+4000,$minY, $twd_radian);
+                $ecranX=setSaisieToDisplayX($x1+ECART_BORDURE,$y1, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x1+ECART_BORDURE,$y1, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -505,8 +968,8 @@ if ($debug1){
                 $k++;                            
             }        
             else if ($key=="porte_babord"){
-                $ecranX=setSaisieToDisplayX($x2-4000,$minY, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x2-4000,$minY, $twd_radian);
+                $ecranX=setSaisieToDisplayX($x2-ECART_BORDURE,$y1, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x2-ECART_BORDURE,$y1, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -514,8 +977,8 @@ if ($debug1){
                 $k++;  
             }                       
             else if ($key=="depart_tribord"){
-                $ecranX=setSaisieToDisplayX($x2-4000, ($minY+$maxY)/2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x2-4000, ($minY+$maxY)/2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($x2-ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x2-ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -523,8 +986,8 @@ if ($debug1){
                 $k++;  
             }        
             else if ($key=="depart_babord"){
-                $ecranX=setSaisieToDisplayX($x1+4000, ($minY+$maxY)/2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x1+4000, ($minY+$maxY)/2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($x1+ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($x1+ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -535,7 +998,7 @@ if ($debug1){
         else if (isset($value) && isset($value->fixe) && ($value->fixe==false) 
             && isset($value->xs) && isset($value->ys) && isset($value->color) && isset($value->fillcolor)){
                 // completer 
-if ($debug1){
+if ($debug2){
                 echo "<br> Key:".$key."<br>\n";
                 print_r($value);
                 echo "<br>\n";
@@ -551,7 +1014,7 @@ if ($debug1){
     }  
 
     // Debug
-if ($debug1){    
+if ($debug2){    
     echo "<br>Liste des bouées mobiles ajoutées au parcours\n";
     for ($index=0; $index<count($boueesMobilesParcours); $index++){        
         echo "<br>".$boueesMobilesParcours[$index];

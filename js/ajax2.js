@@ -237,7 +237,8 @@ function getDataWindBoueeSite(twd,site) {
     if ((site!==undefined) && (site.length>0)){
         //console.debug("Chargement du plan d'eau\n"+ nomDuSite);
         //console.debug("Fichier\n"+ fichierACharger);
-        let expressionACharger= "robonav_"+site.replace(/\s+/g, '')+"_"+twd;       
+        let expressionACharger= "robonav_"+site.replace(/\s+|'/g, '')+"_"+twd;   
+        console.debug(expressionACharger);    
         let url= url_serveur+'getdata.php';
         let myfile="expression="+expressionACharger;    
         //console.debug(expressionACharger);        
@@ -295,7 +296,7 @@ function getDataBoueeSite(twd, site) {
     if ((site!==undefined) && (site.length>0)){
         //console.debug("Chargement du plan d'eau\n"+ nomDuSite);
         //console.debug("Fichier\n"+ fichierACharger);
-        let expressionACharger= "robonav_"+site.replace(/\s+/g, '');       
+        let expressionACharger= "robonav_"+site.replace(/\s+|'/g, '');       
         let url= url_serveur+'getdata.php';
         let myfile="expression="+expressionACharger+"&nottwd="+twd;    
         //console.debug(expressionACharger);        
@@ -355,6 +356,7 @@ function getThatData(nf){
 //--------------------------
 function majDataBouees(){
     document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
+    console.debug(nomDuSite);
     getDataWindBoueeSite(twd,nomDuSite);
     document.getElementById("datanotwind").innerHTML="pour les autres directions du vent";
     getDataBoueeSite(twd,nomDuSite);
