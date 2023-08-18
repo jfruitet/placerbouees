@@ -14,6 +14,8 @@ $nomSite=''; // Pour les données sauvegardées
 $nomSite2=''; // Pour le nom de fichier des données saugegardees 
 $site='';   // pour le nom de fichier de données importées concernant les données du site
 $nbouees=6; // nombre max de bouées mobiles à placer.
+$ecartBoueesXmetres=10;
+$ecartBoueesYmetres=50;
 
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
@@ -26,7 +28,8 @@ $xPasse1=0; // les abscisses recherchées pour le placement des bouées
 $xPasse2=0;
 $yMaxPasse1=array();    // Les ordonnées des droites déterminant le rectangle de placement des bouées 
 $yMaxPasse2=array();
-
+$twd_radian=0.0;
+$twd_degre=90;
 
 // Get the JSON contents
 if (isset($_SERVER['REQUEST_METHOD']) && (strtoupper($_SERVER['REQUEST_METHOD']) !== 'GET')) {
@@ -59,7 +62,12 @@ if (isset($_GET) && !empty($_GET)){
     if (!empty($_GET['nbouees'])){
         $nbouees=$_GET['nbouees'];
     }
-
+    if (!empty($_GET['ecartBoueesX'])){
+        $ecartBoueesXmetres=$_GET['ecartBoueesX'];
+    }
+    if (!empty($_GET['ecartBoueesY'])){
+        $ecartBoueesYmetres=$_GET['ecartBoueesY'];
+    }
 }
 
 
@@ -307,11 +315,11 @@ $ymaxPoly=-1000000; // en pixels
 $distance_H_MillePixels=distanceHorizontalePixels(0,0,1000);
 $distance_V_MillePixels=distanceVerticalePixels(0,0,1000); 
 
-$deltaXpixelsDixMetres=howMuchXPixelsForMeters(10.0);
-$deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters(50.0);
+$deltaXpixelsDixMetres=howMuchXPixelsForMeters($ecartBoueesXmetres);
+$deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres);
 
-$deltaXpixelsSite= min(round(abs($xmaxPoly-$xminPoly)/4.0),$deltaXpixelsDixMetres);
-$deltaYpixelsSite=min(round(abs($ymaxPoly-$yminPoly)/2.0),$deltaYpixelsCinquanteMetres);
+$deltaXpixelsSite=min(round(abs($xmaxPoly-$xminPoly)/4.0),$deltaXpixelsDixMetres);
+$deltaYpixelsSite=min(round(abs($ymaxPoly-$yminPoly)/3.0),$deltaYpixelsCinquanteMetres);
 
 if ($debug1|| true){
     echo "Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
@@ -372,7 +380,7 @@ if ($debug1){
 
 // Tracer des droites verticlae (x=cte)
 
-
+/*
 $x0=$coordonneesmin[0]; // abscisse du Sommet le plus proche de la ligne des concurrents
 $y0=$coordonneesmin[1]; // ordonnée 
 $xC=$intersectionmin[0]; // abscisse du point d'intersection de y=$y0 avec la ligne des concurrents
@@ -397,6 +405,16 @@ else{
     $xFinal=$xminPoly;
 }
 
+*/
+// on va balayer tout le plan d'eau sans se préoccuper de la distance à la zone des concurrents
+// <br>Boîte englobante du polygone : (Xmin,Ymin):(".$xminPoly.",".$yminPoly.") (Xmax, Ymax):(".$xmaxPoly.",".$ymaxPoly.")\n";
+
+$x0=$xminPoly;
+$sensprogression=1;
+$incrementX=$sensprogression*1000; // Environ 1m vers l'Est ou vers l'Ouest
+$xInitial=$xminPoly;
+$xFinal=$xmaxPoly;
+    
 $encore=true;
 $succes=false;
 while ($encore && !$succes){
@@ -415,7 +433,7 @@ while ($encore && !$succes){
 
 
 if ($succes){
-    placer_bouees($x1, $x2, $y1, $y2);
+    placer_bouees($x1, $x2, $y1, $y2); // Attention à l'ordre
 
     if ($debug || $debug1){
         echo ("</body></head></html>");

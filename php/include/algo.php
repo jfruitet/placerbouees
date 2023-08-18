@@ -134,7 +134,12 @@ global $ligne_ysaisie;
 
 //---------------------------------
 function intersectionVerticale($x,$x1,$y1,$x2,$y2){  
-    return (round(($x-$x1)*($y2-$y1)/($x2-$x1) + $y1));
+    if ($x1==$x2) {
+        return $y1;
+    }
+    else {
+        return (round(($x-$x1)*($y2-$y1)/($x2-$x1) + $y1));
+    }   
 }
 
 
@@ -146,6 +151,7 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
 // ------------------------------------------
 function rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression){
 global $debug2;
+global $twd_degre;
 global $x1;
 global $x2;
 global $y1;
@@ -162,7 +168,8 @@ global $deltaXpixelsSite;
 global $deltaYpixelsSite;
 global $xPasse1;
 global $xPasse2;
-
+global $deltaXpixelsDixMetres;
+global $deltaYpixelsCinquanteMetres;
 
 /**************************************
  *     Première passe
@@ -172,6 +179,7 @@ global $xPasse2;
     $x=$xInitial; // Démarrer la recherche à 0 mètres du sommet
 
     if ($debug2){    
+        echo "<br>Rechercher Rectangle<br><b>Données en entrée</b> : Incrémentx:".$incrementX.", xInitial:".$xInitial.", xFinal:".$xFinal.", Sens progression:".$sensprogression."\n";
         if ($sensprogression>0){
             echo "<br>Progression vers l'EST \n";
         }
@@ -224,22 +232,13 @@ global $xPasse2;
                 echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
             } 
     
-            if ($xp1>$xp2){ // Ordonner les sommets pour faciliter le test d'intersection
-                $aux=$xp2;
-                $xp2=$xp1;
-                $xp1=$aux;
-                $aux=$yp2;
-                $yp2=$yp1;
-                $yp1=$aux;
-            }      
-    
-            if (($x>=$xp1) && ($x<$xp2)) { // Intersection possible 
+            if (($x>=min($xp1, $xp2)) && ($x>=max($xp1, $xp2))) { // Intersection possible 
                 $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2); 
                 $nbintersections++;
-            }             
+            }
         }
 
-    if (false){    
+    if ($debug2){    
         echo "<br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
         print_r($tab_Intersections);
         echo "<br>\n";
@@ -390,20 +389,11 @@ global $xPasse2;
                 echo "<br>Sommet ".$i.": [".$xp1.",".$yp1."]\n";
                 echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
             } 
-    
-            if ($xp1>$xp2){ // échanger pur faciliter le test d'intersection
-                $aux=$xp2;
-                $xp2=$xp1;
-                $xp1=$aux;
-                $aux=$yp2;
-                $yp2=$yp1;
-                $yp1=$aux;
-            }      
-    
-            if (($x>=$xp1) && ($x<$xp2)) { // Intersection possible 
-                $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2);
+      
+            if (($x>=min($xp1, $xp2)) && ($x>=max($xp1, $xp2))) { // Intersection possible 
+                $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2); 
                 $nbintersections++;
-            }             
+            }
         }
 
         if (false){    
@@ -528,33 +518,16 @@ global $xPasse2;
 /******************************************
  * Placement des bouées 
  * ****************************************/ 
-    $testxPasse1=$xPasse1;
-    $testxPasse2=$xPasse2;
+    $xMinPasse=min($xPasse1, $xPasse2);
+    $xMaxPasse=max($xPasse1, $xPasse2);
     
-     // Préparation des données en entrée : on ordonne pour facilter le test d'intériorité
-    if ($xPasse1>=$xPasse2){
-        $aux=$testxPasse1;
-        $testxPasse1=$testxPasse2;
-        $testxPasse2=$aux;       
-        tab_echange($yMaxPasse1,$yMaxPasse2);     
-        // Après échange
-        echo "<br>Après échange\n";
-            echo "<br><i>Droite verticale initiale x=".$testxPasse1."</i>\n";
-            echo "<br><i>Droite verticale finale x=".$testxPasse2."</i>\n";
-            echo "<br><i>Droite horizontale initiale inférieure y=".$yMaxPasse1[0]."</i>\n";
-            echo "<br><i>Droite horizontale initiale supérieure y=".$yMaxPasse1[1]."</i>\n";   
-            echo "Distance initiale verticale DY1: ".abs($yMaxPasse1[1]-$yMaxPasse1[0])."</i>\n";
-            echo "<br><i>Droite horizontale finale inférieure y=".$yMaxPasse2[0]."</i>\n";
-            echo "<br><i>Droite horizontale finale supérieure y=".$yMaxPasse2[1]."</i>\n";      
-            echo "Distance finale verticale DY2: ".abs($yMaxPasse2[1]-$yMaxPasse2[0])."</i>\n";                                   
-    }
-
     $minY1= min($yMaxPasse1[0], $yMaxPasse1[1]);   
     $minY2= min($yMaxPasse2[0], $yMaxPasse2[1]);
     $maxY1= max($yMaxPasse1[0], $yMaxPasse1[1]);
     $maxY2= max($yMaxPasse2[0], $yMaxPasse2[1]);
     
     if ($debug2){
+        echo "<br>xPasse1:".$xPasse1.", xPasse2:".$xPasse2."\n";
         echo "<br>minY1:".$minY1.", maxY1:".$maxY1." DistanceV1:".abs($maxY1-$minY1)." \n";
         echo "<br>minY2:".$minY2.", maxY2:".$maxY2." DistanceV2:".abs($maxY2-$minY2)."\n";
     }    
@@ -564,7 +537,7 @@ global $xPasse2;
 
     if ($debug2){
         echo "<br><br><b>Après préparation des données</b>\n";
-        echo "<br>minX:".$xPasse1.", maxX:".$xPasse2."\n";
+        echo "<br>xMinPasse:".$xMinPasse.", xMaxPasse:".$xMaxPasse.", DistanceHorizontale:".abs($xMaxPasse-$xMinPasse)." \n";                
         echo "<br>minY:".$minY.", maxY:".$maxY."\n";
         echo "<br>Distance utile verticale DistanceV: ".abs($maxY-$minY)."\n";
     }    
@@ -576,10 +549,60 @@ global $xPasse2;
         }    
         return false;        
     }
-    $x1=$xPasse1;
-    $x2=$xPasse2;
-    $y1=$minY;
-    $y2=$maxY; 
+    
+
+    if (abs($xMaxPasse-$xMinPasse)>$deltaXpixelsDixMetres){
+        // Réduire l'ampleur de la zone
+        $xmin=$xMinPasse+ECART_BORDURE;
+        $xmax=$xMinPasse+$deltaXpixelsDixMetres;         
+    }
+    else{
+        $xmin=$xMinPasse+ECART_BORDURE;
+        $xmax=$xMaxPasse-ECART_BORDURE;
+    }
+    
+
+    if (abs($maxY-$minY)>$deltaYpixelsCinquanteMetres){
+        // Réduire l'ampleur de la zone
+        $ymin=$minY+ECART_BORDURE;
+        $ymax=$minY+$deltaYpixelsCinquanteMetres;         
+    }    
+    else{
+        $ymin=$minY+ECART_BORDURE;
+        $ymax=$maxY+ECART_BORDURE;             
+    }
+    
+    // Préparer les données 
+    if ($twd_degre>=0 && $twd_degre<=90){
+        // X croissant, y croissant
+        $x1=$xmin;
+        $x2=$xmax;
+        $y1=$ymin;
+        $y2=$ymax; 
+    }
+    else if ($twd_degre>90 && $twd_degre<=180){
+        // X croissant, y décroissant
+        $x1=$xmin;
+        $x2=$xmax;
+        $y1=$ymax;
+        $y2=$ymin; 
+    }
+    else if ($twd_degre>180 && $twd_degre<=200){
+        // X décroissant, y décroissant
+        $x1=$xmax;
+        $x2=$xmin;
+        $y1=$ymax;
+        $y2=$ymin; 
+    }
+    else if ($twd_degre>270 && $twd_degre<360){
+        // X décroissant, y croissant
+        $x1=$xmax;
+        $x2=$xmin;
+        $y1=$ymin;
+        $y2=$ymax; 
+    }
+
+    
     return true;
 }
 
