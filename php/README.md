@@ -38,7 +38,7 @@ Il consiste, après une rotation ramenant le site de navigation "face au nord" p
 à trouver un rectangle vertical contenu dans le polygone de navigation "au plus près" de la ligne de déplacement
 des concurrents et de hauteur supérieure à un seuil donné (50 mètres) et de largeur supérieure à 10 mètres.
 
-Les nMax bouées à placer sont alors positionnées en s'appuyant sur les bouées fixes du plan d'eau pour constituer
+Les nMax bouées à placer sont alors positionnées par couple en s'appuyant sur les bouées fixes du plan d'eau pour constituer
 - une ligne de départ
 - un dog leg au vent
 - une porte sous le vent
@@ -46,10 +46,14 @@ Les nMax bouées à placer sont alors positionnées en s'appuyant sur les bouée
 
 Les coordonnées (longitude, latitudes) des bouées placées sont ensuite enregistrées dans le fichier de sortie.
 
-Dans la version actuelle le placement proposé n'est absolument pas optimal. On en jugera en utilisant la page web *.:placerbouees/chargerbouees.html* 
+Dans la version actuelle le placement proposé n'est absolument pas optimal. On en jugera en utilisant la page web *.placerbouees/chargerbouees.html* 
 
-Pour rendre l'algorithme un peu plus efficient il faudrait ajouter des informations de contexte, par exemple la zone de navigation préférentielle si le plan d'eau est vaste. 
-Le programme ne teint pas vraiment compte non plus de la circulation des concurrents, bine que ces informations soient disponibles dans les données importées.
+Pour rendre l'algorithme un peu plus efficient il faudrait ajouter des informations de contexte, par exemple la zone de navigation préférentielle 
+si le plan d'eau est vaste, ou des zones d'exclusion. 
+
+On pourrait aussi indiquer au programme que la distance maximale de la rive à la bouée la plus éloignée ne doit pas excéder un certain seuil...
+
+Le programme ne tient pas vraiment compte non plus de la circulation des concurrents, bien que cette information soit disponible dans les données importées.
 
 A suivre...
      
@@ -106,7 +110,13 @@ et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_
 
 ### Ce qui reste à faire
 
-Automatiser pour tous les sites disponibles et toutes les valeurs de la rose des vents...
+	.1 Pouvoir corriger sous éditeur un placement non optimal ;
+	.2 Proposer plusieurs "solutions" de placement automatique pour une direction de vent données ;
+	.3 Proposer des parcours autres que DogLeg au vent + porte sous le vent (parcours type IOM avec 6 bouées) ;
+
+Enfin écrire un script en PHP qui génère un placement automatique pour tous les sites disponibles et toutes les valeurs de la rose des vents...
+
+Mais il faut avant cela améliorer le placement automatique.
    
 ## Droits d'utilisation et de modification (License)
 Tous ce projet est en Open source.

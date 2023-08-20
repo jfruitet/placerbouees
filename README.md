@@ -1,4 +1,4 @@
-# Placement automatique de bouées autonomes de régates de voiliers radiocommandés
+# Placement de bouées autonomes de régates de voiliers radiocommandés
 
 ## Présentation
 Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 
@@ -17,12 +17,12 @@ La page web *./placerbouees/index.html* permet d'affecter des positions GPS sur 
 
 La page web *./placerbouees/chargerbouees.html* affiche ces bouées autonomes sur une carte OpenStreetMap.
 
-Le script *./placerbouees/php/placer_bouees.php* positionne automatiquement une "*contellation*" de bouées sur un plan d'eau en fonction de l'orientation du vent.
+Le script *./placerbouees/php/placer_bouees.php* positionne automatiquement une "*constellation*" de bouées sur un plan d'eau en fonction de l'orientation du vent.
 Voir *./placerbouees/php/README.md*
 
-En sortie un fichier de nom **robonav_*NomDuPlanDEau*_*twd*_aaaammjj_*auto*.json**, compatible avec *./placerbouees/chargerbouees.html*, est placé dans le dossier *./placerbouees/data/* .
+En sortie un fichier de nom *robonav_NomDuPlanDEau_twd_aaaammjj_auto.json*, compatible avec *./placerbouees/chargerbouees.html*, est placé dans le dossier *./placerbouees/data/* .
 
-## Page index.html
+## Page index.html : éditeur de placement
 
 ### Ecran
 #### Partie supérieure
@@ -77,13 +77,14 @@ ces coordonnées sont disponibles pour la page Web **chargerbouees.html** et pou
 
 L'adresse du serveur est écrite en dur dans le fichier ./js/config.js, à modifier si vous passez sur un serveur public.
 
-## Page chargerbouees.html
+## Page chargerbouees.html : afficheur de placement
 ### Ecran
 #### Partie supérieure
  - Sélection d'un site de navigation.
- - Saisie de la direction du vent et du site 
+ - Saisie de la direction du vent 
 
 Le fichier XML des sites renseignés est placé dans le dossier ./json/
+
 Les fichiers de position des balises mobiles par site et par direction du vent sont placés dans le dossier *./data/*
 
 #### Partie inférieure 
@@ -93,20 +94,22 @@ Les fichiers de position des balises mobiles par site et par direction du vent s
     - Liste des fichiers de position disponibles pour ce site et ce choix de direction du vent
     - Autres fichiers de position pour ce site
 - A droite
-    - Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents, des bouées ancrées (bouées fixes, à demeure) et des bouées mobiles à leur position GPS.
+    - Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, 
+de la zone de déambulation des concurrents, des balises ancrées (bouées fixes, à demeure), éventuellement des bouées fixes mobilisées 
+pour le parcours, et enfin des bouées mobiles placées à leur position GPS.
 
 ## Connexion avec un serveur externe
 Un serveur externe stocke et retourne tous les fichiers utiles à l'application :
 - Fichier .XML des sites enregistrés
-- Fichiers .json des données de plan d'eai
-- Fichiers .json coordonnées géographiques (Longitude, Latitude) des bouées et balises constituant un parcours de régate pour une direction de vent donnée ; 
-    Ces dernier sont les mêmes que ceux utilisés par l'applet **RoBoNav** de pilotage des balises autonomes.
+- Fichiers .json des données de plan d'eau
+- Fichiers .json fournissant les coordonnées géographiques (Longitude, Latitude) des bouées et balises constituant un parcours de régate pour une direction de vent donnée ; 
+    Ces données sont celles que l'applet **RoBoNav** de pilotage des balises autonomes envoie à la constellation à positionner sur le plan d'eau.
 
 ### Fonctionnement du serveur
 Il y a quelques conditions au fonctionnement du serveur :
   1. La connexion Web doit être activée (ou les *Données mobiles* activées)
   2. Le serveur doit être activé.
-  3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source du script *./js/config.js*.
+  3. Dans la version actuelle l'URL du serveur est codée en dur dans le code source des scripts *./js/config.js* et *./php/include/config.php*.
 
 ## Edition des sites
 
@@ -123,8 +126,9 @@ dans le fichier <*nomdusite.json*> sous éditeur texte type **PSPad**.
 
 ### Chaîne de production des données 
 
-C'est l'application placerbouees/index.html qui produit les fichiers d'entrée de l'application ./placerbouees/chargerbouees.html
+C'est l'application *.placerbouees/index.html* qui produit les fichiers d'entrée de l'application *./placerbouees/chargerbouees.html*
 
+Le script PHP  *./placerbouees/php/placer_bouees.php* réalise cette tâche de façon automatique (mais non optimale !:>))
 
 ## Sources
 ```
@@ -183,26 +187,29 @@ C'est l'application placerbouees/index.html qui produit les fichiers d'entrée d
 
   
 ## Data
-### Output : Placer bouées
+### Output : Placer des bouées "à la main"
 Les données produites par *./placerbouees/index.html* sont placées dans le dossier du serveur *./data/*
 
 Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
 et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_yyyymmdd.json*>, par exemple
 <*robonav_LePlessis_45_20230803.json*>, pour l'étang du Plessis et un vent de direction 45°
 
-### Input : Charger bouées
+### Input : Afficher les bouées in situ
 Les données ci-dessus sont lues dans le dossier du serveur *./data/* 
   
 ## Ce qui reste à faire
 - Interfacer l'application **PlacerBouees** avec le projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS ; 
-cela consiste à implanter l'application **ChargerBouees** sur smartphone.
+cela consiste à importer dans l'applet **RoBoNav** pour smartphones les fichiers *robonav_NomDuPlanDEau_twd_aaaammjj.json* 
+et *robonav_NomDuPlanDEau_twd_aaaammjj_auto.json*.
+
+**RoBoNav** se chargeant ensuite d'affeceter leurs positions GPS au bouées mobiles;
 
 ### Difficultés rencontrées
 Il m'a fallu réactualiser complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques, bien oubliées, je dois dire...
 
 Je me suis appuyé sur l'excellente librairie javascript **LeafLet** pour la création des cartes **OpenStreetMap**, ainsi que sur les dizaines de contributions disponibles en ligne sur les forums ad hoc.
 
-L'adaptation à une langue différente du français ne me paraît pas trop compliquée car il y a très peu de chaînes à traduire...
+L'adaptation à une langue différente du français ne me paraît pas trop compliquée car il y a très peu de texte à traduire...
 
 
 ## Installation
