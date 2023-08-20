@@ -1,6 +1,6 @@
 // JavaScript Document
 
-
+// Fonctions de conversion du monde vers l'écran, de l'écran vers la saisie, et retour
 
 /******************************************
  *  Mouse To Canvas

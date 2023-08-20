@@ -248,6 +248,23 @@ var mesMarkersFixesParcours; // Objet des markers fixes du parcours affichés su
   iconAnchor: [10,-4]
 });      
    
+   
+// Afficher le rectangle où sont placées les bouées
+// -------------------------------
+function addRectangleParcours2Map(rectangle){
+    if (rectangle!==undefined){
+        // define rectangle geographical bounds
+        var latlngs = [
+            [rectangle.lat1, rectangle.lon1],
+            [rectangle.lat1, rectangle.lon2],
+            [rectangle.lat2, rectangle.lon2],
+            [rectangle.lat2, rectangle.lon1]
+        ];
+
+        var polygon = L.polygon(latlngs, {color: "#ff7800", weight: 0.5}).addTo(map);
+    }
+
+}   
 
 // Ajouter à la map les bouees mobiles après chargement du fichier ./data/robonav_LePlessis_45*.json
 

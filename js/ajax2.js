@@ -9,7 +9,6 @@ let boueesMobiles=[];
 let boueesFixesParcours=[];
 
 
-
 let myInitGet = {
     method: "GET",
     headers: {"Content-Type": "application/json;charset=UTF-8"},
@@ -238,7 +237,7 @@ function getDataWindBoueeSite(twd,site) {
         //console.debug("Chargement du plan d'eau\n"+ nomDuSite);
         //console.debug("Fichier\n"+ fichierACharger);
         let expressionACharger= "robonav_"+site.replace(/\s+|'/g, '')+"_"+twd;   
-        console.debug(expressionACharger);    
+        //console.debug(expressionACharger);    
         let url= url_serveur+'getdata.php';
         let myfile="expression="+expressionACharger;    
         //console.debug(expressionACharger);        
@@ -316,7 +315,13 @@ function ajax_GetData(url, mystr){
                 twdChargee=data.twd;
                 boueesFixesParcours=data.boueesfixes;
                 addBoueesFixesParcours2Map();
-                
+                /*
+                // Non fonctionnel
+                if (data.rectangle !== undefined){
+                    console.debug(data.rectangle);
+                    addRectangleParcours2Map(data.rectangle);
+                }
+                */
                 boueesMobiles=data.boueesmobiles;
                 addBoueesMobiles2Map();
                 document.getElementById("mapinfo").innerHTML=siteCharge+" TWD:"+ twdChargee;
