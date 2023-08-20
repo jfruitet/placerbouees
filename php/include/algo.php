@@ -152,10 +152,15 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
 function rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression){
 global $debug2;
 global $twd_degre;
+global $twd_radian;
 global $x1;
 global $x2;
 global $y1;
 global $y2; 
+global $x1Lon;
+global $y1Lat;
+global $x2Lon;
+global $y2Lat;
 global $intersectionmin;
 global $intersectionmax;
 global $coordonneesmin;
@@ -530,6 +535,7 @@ global $deltaYpixelsCinquanteMetres;
         echo "<br>xPasse1:".$xPasse1.", xPasse2:".$xPasse2."\n";
         echo "<br>minY1:".$minY1.", maxY1:".$maxY1." DistanceV1:".abs($maxY1-$minY1)." \n";
         echo "<br>minY2:".$minY2.", maxY2:".$maxY2." DistanceV2:".abs($maxY2-$minY2)."\n";
+        echo "<br>DeltaXpixelsDixmètres=".$deltaXpixelsDixMetres." DeltaXpixelsSite=".$deltaXpixelsSite."\n";
     }    
     
     $minY= max($minY1, $minY2);
@@ -540,6 +546,7 @@ global $deltaYpixelsCinquanteMetres;
         echo "<br>xMinPasse:".$xMinPasse.", xMaxPasse:".$xMaxPasse.", DistanceHorizontale:".abs($xMaxPasse-$xMinPasse)." \n";                
         echo "<br>minY:".$minY.", maxY:".$maxY."\n";
         echo "<br>Distance utile verticale DistanceV: ".abs($maxY-$minY)."\n";
+        echo "<br>DeltaYpixelsCinquantemètres=".$deltaYpixelsCinquanteMetres." DeltaYpixelsSite=".$deltaYpixelsSite."\n";        
     }    
 
     
@@ -550,27 +557,20 @@ global $deltaYpixelsCinquanteMetres;
         return false;        
     }
     
-
-    if (abs($xMaxPasse-$xMinPasse)>$deltaXpixelsDixMetres){
+    $xmin=$xMinPasse;
+    $xmax=$xMaxPasse;
+    if (abs($xMaxPasse-$xMinPasse)>$deltaXpixelsSite){
         // Réduire l'ampleur de la zone
-        $xmin=$xMinPasse+ECART_BORDURE;
-        $xmax=$xMinPasse+$deltaXpixelsDixMetres;         
+        $xmax=$xMinPasse+$deltaXpixelsSite;        
     }
-    else{
-        $xmin=$xMinPasse+ECART_BORDURE;
-        $xmax=$xMaxPasse-ECART_BORDURE;
-    }
-    
 
-    if (abs($maxY-$minY)>$deltaYpixelsCinquanteMetres){
+    $ymin=$minY;
+    $ymax=$maxY; 
+    if (abs($maxY-$minY)>$deltaXpixelsSite){
         // Réduire l'ampleur de la zone
-        $ymin=$minY+ECART_BORDURE;
-        $ymax=$minY+$deltaYpixelsCinquanteMetres;         
+        $ymax=$minY+$deltaYpixelsSite;         
     }    
-    else{
-        $ymin=$minY+ECART_BORDURE;
-        $ymax=$maxY+ECART_BORDURE;             
-    }
+
     
     // Préparer les données 
     if ($twd_degre>=0 && $twd_degre<=90){
@@ -602,7 +602,12 @@ global $deltaYpixelsCinquanteMetres;
         $y2=$ymax; 
     }
 
-    
+    // Coordonnées du rectangle où sont placées les bouées
+    $x1Lon=get_lon_Xecran(setSaisieToDisplayX($x1,$y1, $twd_radian));
+    $y1Lat=get_lat_Yecran(setSaisieToDisplayY($x1,$y1, $twd_radian));    
+    $x2Lon=get_lon_Xecran(setSaisieToDisplayX($x2,$y2, $twd_radian));
+    $y2Lat=get_lat_Yecran(setSaisieToDisplayY($x2,$y2, $twd_radian)); 
+
     return true;
 }
 
@@ -610,8 +615,8 @@ global $deltaYpixelsCinquanteMetres;
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
 function placer_bouees($x1, $x2, $y1, $y2){
-global $debug2;
-global $debug2; // Ajout de points clés pour la vérification de l'algorithme
+
+global $debug2; 
 global $twd_radian;
 global $nbouees;   
 global $balises_xsaisie;
@@ -622,7 +627,7 @@ $tableBoueesFixesSaisieParcours=array();
 global $boueesFixesParcours; // Le tableau des bouées fixes à enregistrer
 $boueesFixesParcours=array();
 global $boueesMobilesParcours;
-$boueesMobilesParcours=array();    
+$boueesMobilesParcours=array();   
 
 $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
 
@@ -658,9 +663,9 @@ if ($debug2){
     else{
         echo "<br><b>Placement de ".$nbouees." bouées autonomes</b>\n";        
     }
-    echo "<br>Droite verticale N°1: ".$x1."<br>Droite verticale N°2: ".$x2."\n";  
-    echo "<br>Droites horizontales Inférieure : ".$y1."\n";
-    echo "<br>Droites horizontales Supérieure : ".$y2."\n";
+    echo "<br>Droite verticale X1: ".$x1."<br>Droite verticale X2: ".$x2."\n";  
+    echo "<br>Droites horizontales Y1: ".$y1."\n";
+    echo "<br>Droites horizontales Y2 : ".$y2."\n";
 }
     // Commencer par calculer le rectangle utile    
 if ($debug2){    
@@ -668,10 +673,10 @@ if ($debug2){
 }
     
 if ($debug2){    
-    echo "<br> MinY: ".$y1." MaxY: ".$y2."\n";
+    echo "<br> Y1: ".$y1." Y1: ".$y2."\n";
     echo "<br>Hauteur: ".abs($y2-$y1)." pixels ==  ".distanceEcran2Earth(0,$y1,0,$y2)." mètres\n";
     echo "<br>Largeur: ".abs($x1-$x2)." pixels ==  ".distanceEcran2Earth($x1,0,$x2,0)." mètres\n";
-    echo "<br>Coordonnées du rectangle utile<br>Point supérieur gauche (".$x1.",".$y2."), Point inférieur droit (".$x2.",".$y1.")\n";
+    echo "<br>Coordonnées du rectangle utile<br>Point inférieur gauche (".$x1.",".$y1."), Point supérieur droit (".$x2.",".$y2.")\n";
 }    
     // Recherche des bouées fixes incluses dans ce rectangle
 
@@ -1037,12 +1042,12 @@ if ($debug2){
     }  
 
     // Debug
-if ($debug2){    
-    echo "<br>Liste des bouées mobiles ajoutées au parcours\n";
-    for ($index=0; $index<count($boueesMobilesParcours); $index++){        
-        echo "<br>".$boueesMobilesParcours[$index];
-    }    
-}     
+    if ($debug2){    
+        echo "<br>Liste des bouées mobiles ajoutées au parcours\n";
+        for ($index=0; $index<count($boueesMobilesParcours); $index++){        
+            echo "<br>".$boueesMobilesParcours[$index];
+        }    
+    }     
 }
  
  

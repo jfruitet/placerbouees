@@ -1,8 +1,9 @@
 <?php
-// Calcul du placement de bouées de régate sur un site en fonction de la direction du vent
-// Ce code est pratiquement complet...
+// Placement automatique de bouées de régate sur un site en fonction de la direction du vent
+// Ce code est pratiquement complet... et assez peu efficient !
 
 include ("./include/config.php");
+include ("./include/saisie.php");
 include ("./include/geo_utils.php");
 include ("./include/algo.php");
 
@@ -30,6 +31,16 @@ $yMaxPasse1=array();    // Les ordonnées des droites déterminant le rectangle 
 $yMaxPasse2=array();
 $twd_radian=0.0;
 $twd_degre=90;
+
+// Coordonnées du rectangle où placer les bouées
+$x1=0.0;
+$y1=0.0;
+$x2=0.0;
+$y2=0.0;
+$x1Lon=0.0;
+$y1Lat=0.0;
+$x2Lon=0.0;
+$y2Lat=0.0;
 
 // Get the JSON contents
 if (isset($_SERVER['REQUEST_METHOD']) && (strtoupper($_SERVER['REQUEST_METHOD']) !== 'GET')) {
@@ -411,7 +422,7 @@ else{
 
 $x0=$xminPoly;
 $sensprogression=1;
-$incrementX=$sensprogression*1000; // Environ 1m vers l'Est ou vers l'Ouest
+$incrementX=$sensprogression*INCREMENT; // Environ 1m vers l'Est ou vers l'Ouest
 $xInitial=$xminPoly;
 $xFinal=$xmaxPoly;
     
@@ -421,7 +432,7 @@ while ($encore && !$succes){
     // nouvelle recherche
     $succes= rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression); 
     if (!$succes){
-        $x0+=$sensprogression * 10000;
+        $x0+=$sensprogression * GRAND_INCREMENT;
         if ($sensprogression==1){
             $encore= ($x0 <= $xFinal);
         }
@@ -432,7 +443,7 @@ while ($encore && !$succes){
 }
 
 
-if ($succes){
+if ($succes){    
     placer_bouees($x1, $x2, $y1, $y2); // Attention à l'ordre
 
     if ($debug || $debug1){
@@ -452,18 +463,21 @@ if ($succes){
         $data.=$boueesFixesParcours[$index].'],"boueesmobiles":[';
     }
     else{
-        $data.='],"boueesmobiles":[';
+        $data.=']';
     }
     //echo "<br>Bouées mobiles ajoutéesau parcours\n";
+    $data.=',"boueesmobiles":[';
     if (!empty($boueesMobilesParcours)){
         for ($index=0; $index<count($boueesMobilesParcours)-1; $index++){        
             $data.=$boueesMobilesParcours[$index].',';
         }     
-        $data.=$boueesMobilesParcours[$index].']}';
+        $data.=$boueesMobilesParcours[$index].']';
     }
     else{
-        $data.=']}';
+        $data.=']';
     }
+    $data.='}';
+
     //echo "<br>Data<br>\n";
     //echo $data;
     
@@ -472,11 +486,12 @@ if ($succes){
         fwrite($handle, $data);
         fclose($handle);
     }
+    echo $reponse_ok;
 }   
 else {
     echo $reponse_not_ok;
 }
 
-echo $reponse_ok;
+
 
 ?>
