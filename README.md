@@ -1,12 +1,14 @@
-# Placement et affichage de bouées autonomes de régates de voiliers radiocommandés
+# Placement automatique de bouées autonomes de régates de voiliers radiocommandés
 
 ## Présentation
-Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
+Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 
+entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
 
-Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation de bouées asservies chacune à une position GPS.
+Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation 
+de bouées asservies chacune à une position GPS.
 
-Les pages **Web** :  *placerbouees/index.html* et *./placerbouees/chargerbouees.html*  sont des 
-composantes de ce projet. 
+Les pages **Web** :  *placerbouees/index.html* et *./placerbouees/chargerbouees.html*  sont des composantes de ce projet.
+ 
 
 ### Développement
 Par JF en javascript et PHP. (cc) jean.fruitet@free.fr
@@ -14,6 +16,11 @@ Par JF en javascript et PHP. (cc) jean.fruitet@free.fr
 La page web *./placerbouees/index.html* permet d'affecter des positions GPS sur une carte OpenStreetMap à des balises mobiles autonomes, en fonction de la direction du vent.
 
 La page web *./placerbouees/chargerbouees.html* affiche ces bouées autonomes sur une carte OpenStreetMap.
+
+Le script *./placerbouees/php/placer_bouees.php* positionne automatiquement une "*contellation*" de bouées sur un plan d'eau en fonction de l'orientation du vent.
+Voir *./placerbouees/php/README.md*
+
+En sortie un fichier de nom **robonav_*NomDuPlanDEau*_*twd*_aaaammjj_*auto*.json**, compatible avec *./placerbouees/chargerbouees.html*, est placé dans le dossier *./placerbouees/data/* .
 
 ## Page index.html
 
@@ -154,6 +161,13 @@ C'est l'application placerbouees/index.html qui produit les fichiers d'entrée d
     placer-bouees.php
     plans_eau.php
     sauverbouees.php
+	placer_bouees.php
+	./include
+		config.php
+		saisie.php
+		geo_utils.php
+		algo.php
+		
 ./images
 
 ./json
@@ -170,19 +184,18 @@ C'est l'application placerbouees/index.html qui produit les fichiers d'entrée d
   
 ## Data
 ### Output : Placer bouées
-Les données produites par *./placrbouees/index.html* sont placées dans le dossier du serveur *./data/*
+Les données produites par *./placerbouees/index.html* sont placées dans le dossier du serveur *./data/*
 
 Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
-et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_aammdd.json*>, par exemple
+et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_yyyymmdd.json*>, par exemple
 <*robonav_LePlessis_45_20230803.json*>, pour l'étang du Plessis et un vent de direction 45°
 
 ### Input : Charger bouées
 Les données ci-dessus sont lues dans le dossier du serveur *./data/* 
   
 ## Ce qui reste à faire
-- Interfacer l'application **PlacerBouees** avec le projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS ; cela consiste à implnater l'application **ChargerBouees** sur smartphone.
-- Automatiser le placement des bouées en fonction d'un site et d'une direction du vent.
-    - La plupart des fonctions nécessaires sont déjà présentes, il suffit d'implanter l'algorithme décrit par ailleurs. 
+- Interfacer l'application **PlacerBouees** avec le projet **RoBoNav** de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS ; 
+cela consiste à implanter l'application **ChargerBouees** sur smartphone.
 
 ### Difficultés rencontrées
 Il m'a fallu réactualiser complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques, bien oubliées, je dois dire...
