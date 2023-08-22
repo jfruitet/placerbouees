@@ -315,13 +315,13 @@ function ajax_GetData(url, mystr){
                 twdChargee=data.twd;
                 boueesFixesParcours=data.boueesfixes;
                 addBoueesFixesParcours2Map();
-                /*
-                // Non fonctionnel
+                
+                // Test
                 if (data.rectangle !== undefined){
-                    console.debug(data.rectangle);
+                    //console.debug(data.rectangle);
                     addRectangleParcours2Map(data.rectangle);
                 }
-                */
+                
                 boueesMobiles=data.boueesmobiles;
                 addBoueesMobiles2Map();
                 document.getElementById("mapinfo").innerHTML=siteCharge+" TWD:"+ twdChargee;
