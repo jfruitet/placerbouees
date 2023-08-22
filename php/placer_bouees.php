@@ -9,7 +9,8 @@ include ("./include/algo.php");
 
 $debug = false;
 $debug1 = false;
-$debug2 = true;
+$debug2 = false;
+$debug3 = true;
 
 $nomSite=''; // Pour les données sauvegardées
 $nomSite2=''; // Pour le nom de fichier des données saugegardees 
@@ -32,11 +33,11 @@ $yMaxPasse2=array();
 $twd_radian=0.0;
 $twd_degre=90;
 
-// Coordonnées du rectangle où placer les bouées
-$x1=0.0;
-$y1=0.0;
-$x2=0.0;
-$y2=0.0;
+// Coordonnées relatives du rectangle où placer les bouées
+$xouest=0;
+$xest=$canvasw;
+$ysud=$canvash;
+$ynord=0; 
 $x1Lon=0.0;
 $y1Lat=0.0;
 $x2Lon=0.0;
@@ -84,16 +85,15 @@ if (isset($_GET) && !empty($_GET)){
 
 // Le calcul commence
 /*
-B° → A radian : A = (PI / 180 * (270 - B)) MODULO 2PI
+B° → A radian : A = ( [(450 - B) MODULO 2PI] * PI / 90.0)
 */
-if ($debug || $debug1){
+if ($debug || $debug1 || $debug2 || $debug3){
     echo ("<html><head></head><body><h3>Placer_bouees.php</h3><p>Placement automatique des bouées de régate mobiles<br>(cc)jean.fruitet@free.fr</p>");
 }
-$twd_radian = (M_PI / 180.0) * ((450 - $twd_degre) % 360);
-//$twd_radian = (M_PI / 180.0) * ((270 - $twd_degre) % 360);
-// $twd_radian = get_radian_repere_direct($twd_degre);
 
-if ($debug){
+$twd_radian = get_radian_repere_direct($twd_degre);
+
+if ($debug || $debug1 || $debug2 || $debug3){
     $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
     echo "<br />$msg\n";
     if ($debug) {
@@ -204,26 +204,27 @@ if ($debug1){
 init_ecran_ZN();
 init_ecran_bouees_fixes();
 
-if ($debug1){
-    echo "<br>Polygone de navigation<br>\n<table border=\"1\">\n<tr>\n";
+if ($debug2){
+    echo "<br>Polygone de navigation en coordonées écran<br>\n<table border=\"1\">\n<tr><th>X</th>\n";
     foreach ($poly_xecran as $x){
         echo "<td>".$x."</td>";
     }
-    echo "</tr><tr>\n";
+    echo "</tr><tr><th>Y</th>\n";
     foreach ($poly_yecran as $y){
         echo "<td>".$y."</td>";
     }
     echo "</tr>\n</table>\n<br>\n";
 
-    echo "Ligne des concurrents<br>\n<table border=\"1\">\n<tr>\n";
+    echo "Ligne des concurrents<br>\n<table border=\"1\">\n<tr><th>X</th>\n";
     foreach ($ligne_xecran as $x){
         echo "<td>".$x."</td>";
     }
-    echo "</tr><tr>\n";
+    echo "</tr><tr><th>Y</th>\n";
     foreach ($ligne_yecran as $y){
         echo "<td>".$y."</td>";
     }
     echo "</tr>\n</table>\n";
+
 }
 
 /******************************************
@@ -252,22 +253,22 @@ if ($debug1){
     echo "<br><br>\n";
 }
 
-if ($debug1){
-    echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
+if ($debug2){
+    echo "<br>Polygone de navigation  APRES rotation <br>\n<table border=\"1\">\n<tr><th>X</th>\n";
     foreach ($poly_xsaisie as $x){
         echo "<td>".$x."</td>";
     }
-    echo "</tr><tr>\n";
+    echo "</tr><tr><th>Y</th>\n";
     foreach ($poly_ysaisie as $y){
         echo "<td>".$y."</td>";
     }
     echo "</tr>\n</table><br>\n";
 
-    echo "Ligne des concurrents   APRES rotation <br>\n<table border=\"1\">\n<tr>\n";
+    echo "Ligne des concurrents   APRES rotation <br>\n<table border=\"1\">\n<tr><th>X</th>\n";
     foreach ($ligne_xsaisie as $x){
         echo "<td>".$x."</td>";
     }
-    echo "</tr><tr>\n";
+    echo "</tr><tr><th>Y</th>\n";
     foreach ($ligne_ysaisie as $y){
         echo "<td>".$y."</td>";
     }
@@ -275,7 +276,7 @@ if ($debug1){
 }
  
 // Vérification
-if ($debug1){
+if ($debug2){
     echo "<br>VERIFICATION DES TRANSFORMATIONS<br>\n";
     echo "<br>Milieu (lon,lat) : ".$milieu_lon.", ".$milieu_lat."\n";
     
@@ -297,6 +298,43 @@ if ($debug1){
     $milieu_lon2=get_lon_Xecran($ecranX2);
     $milieu_lat2=get_lat_Yecran($ecranY2);
     echo "<br>Retour en coordonnées géographiques<br>Milieu (lon,lat) : ".$milieu_lon2.", ".$milieu_lat2."\n";   
+    
+    $t_ecranX=array();
+    $t_ecranY=array();
+    for ($i=0; $i<count($poly_xsaisie); $i++){
+        $t_ecranX[$i]=setSaisieToDisplayX($poly_xsaisie[$i], $poly_ysaisie[$i], $twd_radian);
+        $t_ecranY[$i]=setSaisieToDisplayY($poly_xsaisie[$i], $poly_ysaisie[$i], $twd_radian);
+    }
+    echo "<br>Polygone de navigation  APRES rotation inverse <br>\n<table border=\"1\">\n<tr><th>X</th>\n";
+    foreach ($t_ecranX as $x){
+        echo "<td>".$x."</td>";
+    }
+    echo "</tr><tr><th>Y</th>\n";
+    foreach ($t_ecranY as $y){
+        echo "<td>".$y."</td>";
+    }
+    echo "</tr>\n</table><br>\n";
+
+
+    echo "<br>Coordonnées géographiques initiales de la zone de navigation <br>\n<table border=\"1\">\n<tr><th>Lon</th>\n";
+    foreach ($zonenav_lon as $x){
+        echo "<td>".$x."</td>";
+    }    
+    echo "</tr><tr><th>Lat</th>\n";
+    foreach ($zonenav_lat as $y){
+        echo "<td>".$y."</td>";
+    }
+    echo "</tr>\n</table><br>\n";
+ 
+    echo "<br>Retour en coordonnées géographiques après transformation <br>\n<table border=\"1\">\n<tr><th>Lon</th>\n";
+    foreach ($t_ecranX as $x){
+        echo "<td>".get_lon_Xecran($x)."</td>";
+    }
+    echo "</tr><tr><th>Lat</th>\n";
+    foreach ($t_ecranY as $y){
+        echo "<td>".get_lat_Yecran($y)."</td>";
+    }
+    echo "</tr>\n</table><br>\n";
 }    
 
 if ($debug1){
@@ -332,7 +370,7 @@ $deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres);
 $deltaXpixelsSite=min(round(abs($xmaxPoly-$xminPoly)/4.0),$deltaXpixelsDixMetres);
 $deltaYpixelsSite=min(round(abs($ymaxPoly-$yminPoly)/3.0),$deltaYpixelsCinquanteMetres);
 
-if ($debug1|| true){
+if ($debug2){
     echo "Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
     echo "<br>Distance verticale pour 1000 \"pixels\": ".$distance_V_MillePixels."\n";
     echo "<br>Nombre de \"pixels\" pour une distance horizontale de 10 mètres: ".$deltaXpixelsDixMetres."\n";
@@ -444,11 +482,7 @@ while ($encore && !$succes){
 
 
 if ($succes){    
-    placer_bouees($x1, $x2, $y1, $y2); // Attention à l'ordre
-
-    if ($debug || $debug1){
-        echo ("</body></head></html>");
-    }
+    placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre
 
 
 /******************************************
@@ -476,8 +510,38 @@ if ($succes){
     else{
         $data.=']';
     }
+    
+    // Rectangle parcours
+    
+    if (!empty($exitLonLat)){
+            $data.=',"rectangle":[';
+            $i=0;
+            while ($i<count($exitLonLat)-1){
+                $data.='{"lon":'.$exitLonLat[$i]->lon.',"lat":'.$exitLonLat[$i]->lat.'},';
+                $i++;      
+            }
+            
+            $data.='{"lon":'.$exitLonLat[$i]->lon.',"lat":'.$exitLonLat[$i]->lat.'}';
+            $data.=']';
+    }    
+    
+    // Test
+    /*
+    //Retour en coordonnées géographiques après transformation <br>\n<table border=\"1\">\n<tr><th>Lon</th>\n";
+    if (!empty($t_ecranX) && !empty($t_ecranY)){
+            $data.=',"rectangle":[';
+            $i=0;
+            while ($i<count($t_ecranX)-1){
+                $data.='{"lon":'.get_lon_Xecran($t_ecranX[$i]).',"lat":'.get_lat_Yecran($t_ecranY[$i]).'},';
+                $i++;      
+            }
+            $data.='{"lon":'.get_lon_Xecran($t_ecranX[$i]).',"lat":'.get_lat_Yecran($t_ecranY[$i]).'}';
+            $data.=']';
+    }
+    */
+    
     $data.='}';
-
+    
     //echo "<br>Data<br>\n";
     //echo $data;
     
@@ -492,6 +556,10 @@ else {
     echo $reponse_not_ok;
 }
 
+
+if ($debug || $debug1 || $debug2 || $debug3){
+        echo ("</body></head></html>");
+}
 
 
 ?>

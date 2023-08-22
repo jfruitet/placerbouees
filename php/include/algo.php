@@ -138,7 +138,7 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
         return $y1;
     }
     else {
-        return (round(($x-$x1)*($y2-$y1)/($x2-$x1) + $y1));
+        return (($x-$x1)*($y2-$y1)/($x2-$x1) + $y1);
     }   
 }
 
@@ -153,14 +153,13 @@ function rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogre
 global $debug2;
 global $twd_degre;
 global $twd_radian;
-global $x1;
-global $x2;
-global $y1;
-global $y2; 
-global $x1Lon;
-global $y1Lat;
-global $x2Lon;
-global $y2Lat;
+global $xouest;
+global $xest;
+global $ysud;
+global $ynord; 
+
+global $exitLonLat; // Pour debug
+
 global $intersectionmin;
 global $intersectionmax;
 global $coordonneesmin;
@@ -214,7 +213,7 @@ global $deltaYpixelsCinquanteMetres;
         }     
         $nbintersections=0;           
         $tab_Intersections=array(); // Les valeurs y d'intersection
-        if (false){    
+        if ($debug2){    
             echo "<br>Exploration <br>\n";
             echo (" x0:".$xInitial.", x:".$x);
             echo "<br>\n";
@@ -232,12 +231,13 @@ global $deltaYpixelsCinquanteMetres;
             }
             $xp2=$poly_xsaisie[$i2];    // sommet suivant
             $yp2=$poly_ysaisie[$i2];
-            if (false){  
-                echo "<br>Sommet ".$i.": [".$xp1.",".$yp1."]\n";
-                echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
-            } 
-    
-            if (($x>=min($xp1, $xp2)) && ($x>=max($xp1, $xp2))) { // Intersection possible 
+   
+            if (($x>min($xp1, $xp2)) && ($x<max($xp1, $xp2))) { // Intersection possible 
+                if ($debug2){  
+                    echo "<br>Intersection verticale avec le segment de Sommet ".$i.": [".$xp1.",".$yp1."]\n";
+                    echo " et de Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
+                } 
+             
                 $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2); 
                 $nbintersections++;
             }
@@ -395,7 +395,7 @@ global $deltaYpixelsCinquanteMetres;
                 echo "<br>Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
             } 
       
-            if (($x>=min($xp1, $xp2)) && ($x>=max($xp1, $xp2))) { // Intersection possible 
+            if (($x>min($xp1, $xp2)) && ($x<max($xp1, $xp2))) { // Intersection possible 
                 $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2); 
                 $nbintersections++;
             }
@@ -557,22 +557,34 @@ global $deltaYpixelsCinquanteMetres;
         return false;        
     }
     
-    $xmin=$xMinPasse;
-    $xmax=$xMaxPasse;
+   
     if (abs($xMaxPasse-$xMinPasse)>$deltaXpixelsSite){
         // Réduire l'ampleur de la zone
         $xmax=$xMinPasse+$deltaXpixelsSite;        
     }
 
-    $ymin=$minY;
-    $ymax=$maxY; 
+
     if (abs($maxY-$minY)>$deltaXpixelsSite){
         // Réduire l'ampleur de la zone
         $ymax=$minY+$deltaYpixelsSite;         
     }    
-
     
-    // Préparer les données 
+    
+
+if ($debug2){
+    echo "<br><br><b>Avant préparation</b> \n";
+    echo ($xMinPasse.", ".$xMaxPasse.", ".$minY.", ".$maxY."\n");
+    echo "<br>TWD_degre ".$twd_degre."\n";
+    echo "<br>TWD_radian ".$twd_radian."\n";    
+}    
+
+        $xouest=$xMinPasse;
+        $xest=$xMaxPasse;
+        $ynord=$minY;
+        $ysud=$maxY;   
+
+/*
+    // Préparer les données pour un repère direct
     if ($twd_degre>=0 && $twd_degre<=90){
         // X croissant, y croissant
         $x1=$xmin;
@@ -587,7 +599,7 @@ global $deltaYpixelsCinquanteMetres;
         $y1=$ymax;
         $y2=$ymin; 
     }
-    else if ($twd_degre>180 && $twd_degre<=200){
+    else if ($twd_degre>180 && $twd_degre<=270){
         // X décroissant, y décroissant
         $x1=$xmax;
         $x2=$xmin;
@@ -602,11 +614,58 @@ global $deltaYpixelsCinquanteMetres;
         $y2=$ymax; 
     }
 
+    // Préparer les données
+    // Le repère est désormais indirect 
+    if ($twd_degre>=0 && $twd_degre<=90){
+        // X croissant, y décroissant
+        $x1=$xmax;
+        $x2=$xmin;
+        $y1=$ymax;
+        $y2=$ymin; 
+    }
+    else if ($twd_degre>90 && $twd_degre<=180){
+        // X croissant, y croissant
+        $x1=$xmin;
+        $x2=$xmax;
+        $y1=$ymin;
+        $y2=$ymax; 
+    }
+    else if ($twd_degre>180 && $twd_degre<=270){
+        // X décroissant, y croissant
+        $x1=$xmax;
+        $x2=$xmin;
+        $y1=$ymin;
+        $y2=$ymax; 
+    }
+    else if ($twd_degre>270 && $twd_degre<360){
+        // X décroissant, y décroissant
+        $x1=$xmax;
+        $x2=$xmin;
+        $y1=$ymax;
+        $y2=$ymin; 
+    }
+*/
     // Coordonnées du rectangle où sont placées les bouées
-    $x1Lon=get_lon_Xecran(setSaisieToDisplayX($x1,$y1, $twd_radian));
-    $y1Lat=get_lat_Yecran(setSaisieToDisplayY($x1,$y1, $twd_radian));    
-    $x2Lon=get_lon_Xecran(setSaisieToDisplayX($x2,$y2, $twd_radian));
-    $y2Lat=get_lat_Yecran(setSaisieToDisplayY($x2,$y2, $twd_radian)); 
+    $exitLonLat=array();
+    $exitLonLat[0]=new stdClass();
+    $exitLonLat[0]->lon=get_lon_Xecran(setSaisieToDisplayX($xouest,$ysud, $twd_radian));
+    $exitLonLat[0]->lat=get_lat_Yecran(setSaisieToDisplayY($xouest,$ysud, $twd_radian));
+    $exitLonLat[1]=new stdClass();
+    $exitLonLat[1]->lon=get_lon_Xecran(setSaisieToDisplayX($xouest,$ynord, $twd_radian));
+    $exitLonLat[1]->lat=get_lat_Yecran(setSaisieToDisplayY($xouest,$ynord, $twd_radian));
+    $exitLonLat[2]=new stdClass();
+    $exitLonLat[2]->lon=get_lon_Xecran(setSaisieToDisplayX($xest,$ynord, $twd_radian));
+    $exitLonLat[2]->lat=get_lat_Yecran(setSaisieToDisplayY($xest,$ynord, $twd_radian));
+    $exitLonLat[3]=new stdClass();
+    $exitLonLat[3]->lon=get_lon_Xecran(setSaisieToDisplayX($xest,$ysud, $twd_radian));
+    $exitLonLat[3]->lat=get_lat_Yecran(setSaisieToDisplayY($xest,$ysud, $twd_radian));
+    
+    
+if ($debug2){
+    echo "<br><br><b>Fin de recherche_rectangle</b> ::Données en sortie\n";
+    echo ("Ouest:".$xouest.", Est:".$xest.", Sud: ".$ysud.", Nord: ".$ynord."\n");
+    echo "<br>\n";
+}    
 
     return true;
 }
@@ -614,9 +673,10 @@ global $deltaYpixelsCinquanteMetres;
 
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
-function placer_bouees($x1, $x2, $y1, $y2){
+function placer_bouees($xouest, $xest, $ysud, $ynord){
 
-global $debug2; 
+global $debug3; 
+global $twd_degre;
 global $twd_radian;
 global $nbouees;   
 global $balises_xsaisie;
@@ -629,11 +689,26 @@ $boueesFixesParcours=array();
 global $boueesMobilesParcours;
 $boueesMobilesParcours=array();   
 
+$porte_tribord=false;
+$porte_babord=false;
+$depart_tribord=false;
+$depart_babord=false;
+$dog_leg1=false;
+$dog_leg2=false;
+$name="";
+$color= "";
+$fillcolor= "";
+    
+$quartHauteur=abs($ynord-$ysud) / 4;
+$demiLargeur=abs($xouest-$xest) / 2;
+
+$nboueesFixes= 6-$nbouees;
+
 $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
 
-if ($debug2){
+if ($debug3){
     echo "<br><br><b>placer_bouees</b> ::Données en entrée\n";
-    echo ($x1.", ".$x2.", ".$y1.", ".$y2."\n");
+    echo ($xouest.", ".$xest.", ".$ysud.", ".$ynord."\n");
     echo "<br>\n";
 
     echo "<br>Balises fixes<br>\n<table border=\"1\"><tr>\n";
@@ -655,33 +730,29 @@ if ($debug2){
     echo "</tr></table>\n";
 }
 
-    $nboueesFixes= 6-$nbouees;
-if ($debug2){   
+
+    // Commencer par calculer le rectangle utile      
+if ($debug3){   
     if ($nboueesFixes>0){
         echo "<br><b>Placement de ".$nbouees." bouées autonomes et de ".$nboueesFixes." bouées fixes.</b>\n";
     }
     else{
         echo "<br><b>Placement de ".$nbouees." bouées autonomes</b>\n";        
     }
-    echo "<br>Droite verticale X1: ".$x1."<br>Droite verticale X2: ".$x2."\n";  
-    echo "<br>Droites horizontales Y1: ".$y1."\n";
-    echo "<br>Droites horizontales Y2 : ".$y2."\n";
-}
-    // Commencer par calculer le rectangle utile    
-if ($debug2){    
-    echo "<br><b>Rectangle utile</b>\n"; 
-}
-    
-if ($debug2){    
-    echo "<br> Y1: ".$y1." Y1: ".$y2."\n";
-    echo "<br>Hauteur: ".abs($y2-$y1)." pixels ==  ".distanceEcran2Earth(0,$y1,0,$y2)." mètres\n";
-    echo "<br>Largeur: ".abs($x1-$x2)." pixels ==  ".distanceEcran2Earth($x1,0,$x2,0)." mètres\n";
-    echo "<br>Coordonnées du rectangle utile<br>Point inférieur gauche (".$x1.",".$y1."), Point supérieur droit (".$x2.",".$y2.")\n";
+    echo "<br>Droite verticale X1 Ouest: ".$xouest."<br>Droite verticale X2 Est: ".$xest."\n";  
+    echo "<br>Droites horizontales Y1 Sud: ".$ysud."\n";
+    echo "<br>Droites horizontales Y2 Nord: ".$ynord."\n";
+   
+    echo "<br><b>Rectangle utile</b>\n";  
+    echo "<br> Y1 Sud: ".$ysud." Y2 Nord: ".$ynord."\n";
+    echo "<br>Hauteur: ".abs($ynord-$ysud)." pixels ==  ".distanceEcran2Earth(0,$ysud,0,$ynord)." mètres\n";
+    echo "<br>Largeur: ".abs($xouest-$xest)." pixels ==  ".distanceEcran2Earth($xouest,0,$xest,0)." mètres\n";
+    echo "<br>Coordonnées du rectangle utile<br>Point inférieur gauche (".$xouest.",".$ysud."), Point supérieur droit (".$xest.",".$ynord.")\n";
 }    
     // Recherche des bouées fixes incluses dans ce rectangle
 
-if ($debug2){    
-    echo "<br>Balises fixes incluses dans le rectangle utile<br>\n<table border=\"1\"><tr><td>Id</td>\n"; 
+if ($debug3){    
+    echo "<br>Affichage des Balises fixes incluses dans le rectangle utile<br>\n<table border=\"1\"><tr><td>Id</td>\n"; 
     for ($index=0; $index<count($balisesEcran); $index++){
         echo "<td>".$balisesEcran[$index]->id."</td>";
     }
@@ -691,9 +762,8 @@ if ($debug2){
     }
     echo "</tr><tr><td>X</td>\n";
     for ($index=0; $index<count($balises_xsaisie); $index++){
-        if (($balises_xsaisie[$index]>=$x1) && ($balises_xsaisie[$index]<=$x2)){
-            echo "<td bgcolor=\"yellow\">".$balises_xsaisie[$index]."</td>";
-            
+        if (($balises_xsaisie[$index]>=$xouest) && ($balises_xsaisie[$index]<$xest)){
+            echo "<td bgcolor=\"yellow\">".$balises_xsaisie[$index]."</td>";            
         }
         else{ 
             echo "<td>".$balises_xsaisie[$index]."</td>";
@@ -701,7 +771,7 @@ if ($debug2){
     }
     echo "</tr><tr><td>Y</td>\n";
     for ($index=0; $index<count($balises_ysaisie); $index++){
-        if (($balises_ysaisie[$index]>=$y1) && ($balises_ysaisie[$index]<=$y2)){
+        if (($balises_ysaisie[$index]>=$ysud) && ($balises_ysaisie[$index]<$ynord)){
             echo "<td bgcolor=\"green\">".$balises_ysaisie[$index]."</td>";
         }
         else{ 
@@ -715,15 +785,15 @@ if ($debug2){
 
     $k=0;    
     for ($index=0; $index<count($balises_xsaisie); $index++){
-        if (($balises_xsaisie[$index]>=$x1) && ($balises_xsaisie[$index]<=$x2)
-            && ($balises_ysaisie[$index]>=$y1) && ($balises_ysaisie[$index]<=$y2)){
+        if (($balises_xsaisie[$index]>=$xouest) && ($balises_xsaisie[$index]<$xest)
+            && ($balises_ysaisie[$index]>=$ysud) && ($balises_ysaisie[$index]<$ynord)){
             $balisesIn[$k]=$index;            
             $k++;
         }
     }
     
     
-if ($debug2){    
+if ($debug3){    
     echo "<br>Balises incluses<br>\n";
     print_r($balisesIn);
     echo "<br>\n";
@@ -735,39 +805,31 @@ if ($debug2){
     // Porte sous le vent : y < Hauteur / 4
     // Depart / Arrivée : Hauteur /4 > y < 3 * Hauteur / 4
     // Il faut ensuite considérer l'alignement vertical
-    $porte_tribord=false;
-    $porte_babord=false;
-    $depart_tribord=false;
-    $depart_babord=false;
-    $dog_leg1=false;
-    $dog_leg2=false;
-    
-    $quartHauteur=abs($y2-$y1) / 4;
-    $demiLargeur=abs($x1-$x2) / 2;
+
     
     $k=0; 
     for ($index=0; $index<count($balisesIn); $index++){
         if ($balises_ysaisie[$balisesIn[$index]]<=$quartHauteur){ // Porte sous le vent
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Porte tribord 
-                if ($debug2){ echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
+                if ($debug3){ echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $porte_tribord=true;
             }
             else{
                 // Porte bâbord
-                if ($debug2){echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
+                if ($debug3){echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $porte_babord=true;
             } 
         } 
         else if ($balises_ysaisie[$balisesIn[$index]]>=3*$quartHauteur){ // Dog Leg ?
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Dog leg bâbord 2
-                if ($debug2){ echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
+                if ($debug3){ echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $dog_leg2=true;                 
             }
             else{
                 // Dog leg bâbord 1
-                if ($debug2){ echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
+                if ($debug3){ echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $dog_leg1=true;                 
             }         
         }
@@ -776,56 +838,56 @@ if ($debug2){
             // Entre deux : Départ ?
             if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
                 // Départ / Arrivée bâbord
-                if ($debug2){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
+                if ($debug3){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
                 $depart_babord=true;                 
             }
             else{
                 // Départ / Arrivée tribord
-                if ($debug2){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                                 
+                if ($debug3){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                                 
                 $depart_tibord=true;
             }                     
         }
 
-if ($debug2){        
-        echo "<br>Distance au bord gauche ".abs($balises_xsaisie[$balisesIn[$index]]-$x1)."\n";
-        echo "<br>Distance au bord droit ".abs($balises_xsaisie[$balisesIn[$index]]-$x2)."\n";
-        echo "<br>Distance au bord supérieur ".abs($balises_ysaisie[$balisesIn[$index]]-$y2)."\n";
-        echo "<br>Distance au bord inférieur ".abs($balises_ysaisie[$balisesIn[$index]]-$y1)."<br>\n";   
+if ($debug3){        
+        echo "<br>Distance au bord gauche ".abs($balises_xsaisie[$balisesIn[$index]]-$xouest)."\n";
+        echo "<br>Distance au bord droit ".abs($balises_xsaisie[$balisesIn[$index]]-$xest)."\n";
+        echo "<br>Distance au bord supérieur ".abs($balises_ysaisie[$balisesIn[$index]]-$ynord)."\n";
+        echo "<br>Distance au bord inférieur ".abs($balises_ysaisie[$balisesIn[$index]]-$ysud)."<br>\n";   
 }        
         if ($porte_tribord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteTribord"}', false);
                 $k++;
             }        
         }
         if ($porte_babord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteBabord"}', false);
                 $k++;
             }        
         }
         // Depart / Arrivée
         if ($depart_tribord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DepartTribord"}', false);
                 $k++;
             }        
         }
         if ($depart_babord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DepartBabord"}', false);
                 $k++;
             }        
         }
         // Dog Leg bâbord
         if ($dog_leg1){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x2)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DogLeg1"}', false);
                 $k++;
             }        
         }
         if ($dog_leg2){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$x1)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<ECART_BORDURE){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DogLeg2"}', false);
                 $k++;
             }        
@@ -833,14 +895,12 @@ if ($debug2){
     } 
     
     // Afficher les balises retenues
-if ($debug2){
+if ($debug3){
     echo "<br>Balises retenues\n";
     for ($index=0; $index<count($tableBoueesFixesSaisieParcours); $index++){
         echo "<br>".json_encode($tableBoueesFixesSaisieParcours[$index])."\n";
     }  
 }    
-
-// Ajouter des points remarquables pour tester l'algoritme
 
 
 
@@ -849,25 +909,35 @@ if ($debug2){
     
     for ($index=0; $index<count($tableBoueesFixesSaisieParcours); $index++){
         // {"boueefixe":true,"id":4,"lon":-1.4743316798018502,"lat":47.24381872961287,"color":"yellow","fillcolor":"red"}
-        if (($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg1") || ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg2")){
+        if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg1"){
             $color= "navy";
             $fillcolor= "red";
+            $name="Dog leg1";
+        }
+        else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg2"){       
+            $color= "navy";
+            $fillcolor= "red";
+            $name="Dog leg2";
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteBabord"){
             $color= "purple";
             $fillcolor= "red";
+            $name="Porte bâbord";
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteTribord"){
             $color= "purple";
             $fillcolor= "green";
+            $name="Porte tribord";
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartBabord"){
             $color= "yellow";
             $fillcolor= "red";
+            $name="Départ bâbord";
         }
         else {
             $color= "yellow";
             $fillcolor= "green";
+            $name="Départ tribord";
         }
         // repasser en coordonnées écran
         $ecranX=setSaisieToDisplayX($tableBoueesFixesSaisieParcours[$index]->xs, $tableBoueesFixesSaisieParcours[$index]->ys, $twd_radian);
@@ -876,10 +946,10 @@ if ($debug2){
         $lon=get_lon_Xecran($ecranX);
         $lat=get_lat_Yecran($ecranY);
         // Formater la sortie
-        $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.',"lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
+        $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.'"name":"'.$name.'","lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
     }  
     // Debug
-if ($debug2){
+if ($debug3){
     echo "<br>Bouées fixes retenues pour le parcours\n";
     for ($index=0; $index<count($boueesFixesParcours); $index++){        
         echo "<br>".$boueesFixesParcours[$index];
@@ -906,127 +976,138 @@ if ($debug2){
         if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg1"){
             $tab_BoueesMobiles['dog_leg1']->fixe=true;
             if (isset($tab_BoueesMobiles['dog_leg2']->fixe) && ($tab_BoueesMobiles['dog_leg2']->fixe==false)){
-                $tab_BoueesMobiles['dog_leg2']->xs=$x1+ECART_BORDURE;
+                $tab_BoueesMobiles['dog_leg2']->xs=$xouest;
                 $tab_BoueesMobiles['dog_leg2']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['dog_leg2']->color="navy";
                 $tab_BoueesMobiles['dog_leg2']->fillcolor="red";
+                $tab_BoueesMobiles['dog_leg2']->name="Dog leg2"; 
             }     
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg2"){
             $tab_BoueesMobiles['dog_leg2']->fixe=true;
             if (isset($tab_BoueesMobiles['dog_leg1']->fixe) && ($tab_BoueesMobiles['dog_leg1']->fixe==false)){
-                $tab_BoueesMobiles['dog_leg1']->xs=$x2-ECART_BORDURE;
+                $tab_BoueesMobiles['dog_leg1']->xs=$xest;
                 $tab_BoueesMobiles['dog_leg1']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['dog_leg1']->color="navy";
                 $tab_BoueesMobiles['dog_leg1']->fillcolor="red";
+                $tab_BoueesMobiles['dog_leg1']->name="Dog leg1";  
             }                  
         }        
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteBabord"){
             $tab_BoueesMobiles['porte_babord']->fixe=true;
             if (isset($tab_BoueesMobiles['porte_tribord']->fixe) && ($tab_BoueesMobiles['porte_tribord']->fixe==false)){
-                $tab_BoueesMobiles['porte_tribord']->xs=$x1+ECART_BORDURE;
+                $tab_BoueesMobiles['porte_tribord']->xs=$xouest;
                 $tab_BoueesMobiles['porte_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['porte_tribord']->color="purple";
-                $tab_BoueesMobiles['porte_tribord']->fillcolor="green";                
+                $tab_BoueesMobiles['porte_tribord']->fillcolor="green";  
+                $tab_BoueesMobiles['porte_tribord']->name="Porte tribord";                
             }             
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteTribord"){
             $tab_BoueesMobiles['porte_tribord']->fixe=true;
             if (isset($tab_BoueesMobiles['porte_babord']->fixe) && ($tab_BoueesMobiles['porte_babord']->fixe==false)){
-                $tab_BoueesMobiles['porte_babord']->xs=$x2-ECART_BORDURE;
+                $tab_BoueesMobiles['porte_babord']->xs=$xest;
                 $tab_BoueesMobiles['porte_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['porte_babord']->color="purple";
-                $tab_BoueesMobiles['porte_babord']->fillcolor="red";                 
+                $tab_BoueesMobiles['porte_babord']->fillcolor="red"; 
+                $tab_BoueesMobiles['porte_babord']->name="Porte bâbord";                
             }             
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartBabord"){
             $tab_BoueesMobiles['depart_babord']->fixe=true;
             if (isset($tab_BoueesMobiles['depart_tribord']->fixe) && ($tab_BoueesMobiles['depart_tribord']->fixe==false)){
-                $tab_BoueesMobiles['depart_tribord']->xs=$x2-ECART_BORDURE;
+                $tab_BoueesMobiles['depart_tribord']->xs=$xest;
                 $tab_BoueesMobiles['depart_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['depart_tribord']->color="yellow";
-                $tab_BoueesMobiles['depart_tribord']->fillcolor="green";                   
+                $tab_BoueesMobiles['depart_tribord']->fillcolor="green";
+                $tab_BoueesMobiles['depart_tribord']->name="Départ tribord";                   
             }             
         }
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartTribord"){
             $tab_BoueesMobiles['depart_tribord']->fixe=true;
             if (isset($tab_BoueesMobiles['depart_babord']->fixe) && ($tab_BoueesMobiles['depart_babord']->fixe==false)){
-                $tab_BoueesMobiles['depart_babord']->xs=$x1+ECART_BORDURE;
+                $tab_BoueesMobiles['depart_babord']->xs=$xouest;
                 $tab_BoueesMobiles['depart_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['depart_babord']->color="yellow";
-                $tab_BoueesMobiles['depart_babord']->fillcolor="red";                   
+                $tab_BoueesMobiles['depart_babord']->fillcolor="red";
+                $tab_BoueesMobiles['depart_babord']->name="Départ bâbord";                   
             }             
         }        
     }
 
-if ($debug2){    
+if ($debug3){    
     echo "<br><br>Bouées mobiles<br>\n";
     print_r($tab_BoueesMobiles);
 }
     
+    /***************************************************
+     * 
+     *  Placement des bouées mobiles
+     * 
+     * *************************************************/
     $k=0;
     foreach( $tab_BoueesMobiles as $key => $value){
         if (!isset($value->fixe)){
             //echo "<br> Creer la bouee\n";
             if ($key=="dog_leg1"){
-                $ecranX=setSaisieToDisplayX($x2-ECART_BORDURE,$y2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x2-ECART_BORDURE,$y2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xest,$ynord, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xest,$ynord, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"navy","fillcolor":"red"}';        
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"Dog leg1","lon":'.$lon.',"lat":'.$lat.',"color":"navy","fillcolor":"red"}';        
                 $k++;                
             }
             else if ($key=="dog_leg2"){
-                $ecranX=setSaisieToDisplayX($x1+ECART_BORDURE,$y2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x1+ECART_BORDURE,$y2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xouest,$ynord, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xouest,$ynord, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"navy","fillcolor":"red"}';        
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"Dog leg2","lon":'.$lon.',"lat":'.$lat.',"color":"navy","fillcolor":"red"}';        
                 $k++;                            
             }
             else if ($key=="porte_tribord"){
-                $ecranX=setSaisieToDisplayX($x1+ECART_BORDURE,$y1, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x1+ECART_BORDURE,$y1, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xouest,$ysud, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xouest,$ysud, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"purple","fillcolor":"green"}';        
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"Porte tribord","lon":'.$lon.',"lat":'.$lat.',"color":"purple","fillcolor":"green"}';        
                 $k++;                            
             }        
             else if ($key=="porte_babord"){
-                $ecranX=setSaisieToDisplayX($x2-ECART_BORDURE,$y1, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x2-ECART_BORDURE,$y1, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xest,$ysud, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xest,$ysud, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"purple","fillcolor":"red"}';        
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"Porte bâbord","lon":'.$lon.',"lat":'.$lat.',"color":"purple","fillcolor":"red"}';        
                 $k++;  
             }                       
             else if ($key=="depart_tribord"){
-                $ecranX=setSaisieToDisplayX($x2-ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x2-ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xest, ($ysud+$ynord)/2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xest, ($ysud+$ynord)/2, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"yellow","fillcolor":"green"}';        
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"Départ tribord","lon":'.$lon.',"lat":'.$lat.',"color":"yellow","fillcolor":"green"}';        
                 $k++;  
             }        
             else if ($key=="depart_babord"){
-                $ecranX=setSaisieToDisplayX($x1+ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($x1+ECART_BORDURE, ($y1+$y2)/2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xouest, ($ysud+$ynord)/2, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xouest, ($ysud+$ynord)/2, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"yellow","fillcolor":"red"}';        
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"Départ bâbord","lon":'.$lon.',"lat":'.$lat.',"color":"yellow","fillcolor":"red"}';        
                 $k++;  
             }          
         }
         else if (isset($value) && isset($value->fixe) && ($value->fixe==false) 
             && isset($value->xs) && isset($value->ys) && isset($value->color) && isset($value->fillcolor)){
                 // completer 
-if ($debug2){
+if ($debug3){
                 echo "<br> Key:".$key."<br>\n";
                 print_r($value);
                 echo "<br>\n";
@@ -1036,13 +1117,13 @@ if ($debug2){
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
-                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"lon":'.$lon.',"lat":'.$lat.',"color":"'.$value->color.'","fillcolor":"'.$value->fillcolor.'"}';
+                $boueesMobilesParcours[$k]='{"boueefixe":false,"id":'.$k.',"name":"'.$value->name.'","lon":'.$lon.',"lat":'.$lat.',"color":"'.$value->color.'","fillcolor":"'.$value->fillcolor.'"}';
                 $k++;              
         }
     }  
 
     // Debug
-    if ($debug2){    
+    if ($debug3){    
         echo "<br>Liste des bouées mobiles ajoutées au parcours\n";
         for ($index=0; $index<count($boueesMobilesParcours); $index++){        
             echo "<br>".$boueesMobilesParcours[$index];

@@ -8,11 +8,9 @@ $twd_radian=0.0;    // Ceci N'EST PAS la simple conversion de la direction du ve
 
 $windsector=array("N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","N");
 
-$canvasw=520; // Pour conserver une certaine cohérence avec les canvas de l'appli web
-$canvash=520;
-$cw=520; // Pour conserver une certaine cohérence avec les canvas de l'appli web
-$ch=520;
-$zoom=1.0;
+$canvasw=1000000; // Pour conserver une certaine cohérence avec les canvas de l'appli web
+$canvash=1000000;
+
 
 $coeff_homothetie = 1.0; // On va garder les figures du canvas homothétiques de celles de la carte
 $delta_lonlat=360.0; // Maximum de taille de la fenêtre géographique
@@ -48,35 +46,6 @@ $balises_name=array();
 $balises_lon=array();
 $balises_lat=array();    
 
-// angle est exprimé en degré dans le repère géographique
-// retourne la valeur de l'angle en radian dans le repère orthonormé direct
-/*
-Pi is often usefull in con/sin/tan functions..
-There are also other Pi related constants.
-These are most of them:
-
-M_PI  = 3.14159265358979323846 // pi
-
-// The following were added in PHP 4.0.0
-M_PI_2 = 1.57079632679489661923 // pi/2
-M_PI_4 = 0.78539816339744830962 // pi/4
-M_1_PI = 0.31830988618379067154 // 1/pi
-M_2_PI = 0.63661977236758134308 // 2/pi
-M_SQRTPI = 1.77245385090551602729 // sqrt(pi) (Only in PHP 4.0.2+)
-M_2_SQRTPI = 1.12837916709551257390 // 2/sqrt(pi)
-*/
-
-function get_radian_repere_direct($angle){
-    return ((M_PI / 180.0) * ((450 - $angle) % 360));
-}
-
-// angle est exprimé en radian dans le repère orthonormé direct
-// retourne la valeur de l'angle  en degré dans le repère géographique
-function get_degre_repere_geographique($angle){
-    return ((180.0 * M_1_PI * (5 * M_PI_2 - $angle)) % 360);
-}
-
-
 // Conversion d'un polygone géographique en polygone écran
 // Il faut calculer le rectangle englobant puis se ramener par homothétie et translation aux coordonnées du canvas
 // Attention : le repère géographique croit d'EST en OUEST (longitude) et de SUD au Nord (latitude)
@@ -88,9 +57,9 @@ function get_degre_repere_geographique($angle){
 function rectangle_englobantZN(){
     global $lonmax;
     global $lonmin;
-    global $canvasw;
     global $latmax;
     global $latmin;
+    global $canvasw;
     global $canvash;
     global $zonenav_lon;
     global $zonenav_lat;
