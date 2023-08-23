@@ -316,10 +316,18 @@ function ajax_GetData(url, mystr){
                 boueesFixesParcours=data.boueesfixes;
                 addBoueesFixesParcours2Map();
                 
-                // Test
-                if (data.rectangle !== undefined){
-                    //console.debug(data.rectangle);
-                    addRectangleParcours2Map(data.rectangle);
+                if (mode_debug===true){
+                    // Test1 : fantôme du parcours
+                    if (data.fantome !== undefined){
+                        //console.debug(data.fantome);
+                        addFantomeParcours2Map(data.fantome);
+                    }
+                    
+                    // Test2
+                    if (data.rectangle !== undefined){
+                        //console.debug(data.rectangle);
+                        addRectangleParcours2Map(data.rectangle);
+                    }
                 }
                 
                 boueesMobiles=data.boueesmobiles;

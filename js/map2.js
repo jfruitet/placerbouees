@@ -247,6 +247,21 @@ var mesMarkersFixesParcours; // Objet des markers fixes du parcours affichés su
   iconSize: [20, 28],
   iconAnchor: [10,-4]
 });      
+
+// Afficher le fantôme du polygone de navigation utilisé pour placer les bouées
+// -------------------------------
+function addFantomeParcours2Map(polyline){
+    if (polyline!==undefined){
+        var latlngs = [];
+        for (var index=0; index<polyline.length; index++){ 
+            latlngs[index]=[polyline[index].lat, polyline[index].lon]; 
+        }
+        //console.debug(latlngs);
+        
+        var fantome = L.polyline(latlngs, {color: "#aa0000", weight: 0.5}).addTo(map);
+    }
+
+}   
    
    
 // Afficher le rectangle où sont placées les bouées
