@@ -133,8 +133,20 @@ function rectangle_englobantZN(){
 // On applique la formule de la distance selon un grand cercle 
 // seulement valable à l'équateur pour les longitudes sur la projection Mercator
 // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  PI / 180
+// Distance entre deux points de l'écran
 
-// Distance entre deux poits de l'écran
+// --------------------------------------
+function distanceVEcran($y1,$y2){
+    return abs($y1-$y2); 
+}
+
+// --------------------------------------
+function distanceHEcran($x1,$x2){
+    return abs($x1-$x2); 
+}
+
+
+// Distance entre deux points de l'écran
 // --------------------------------------
 function distancePointsEcran($x1,$y1,$x2,$y2){
     return sqrt(($x1-$x2) * ($x1-$x2) + ($y1-$y2) * ($y1-$y2)); 

@@ -580,71 +580,9 @@ if ($debug2){
 
         $xouest=$xMinPasse;
         $xest=$xMaxPasse;
-        $ynord=$minY;
-        $ysud=$maxY;   
-
-/*
-    // Préparer les données pour un repère direct
-    if ($twd_degre>=0 && $twd_degre<=90){
-        // X croissant, y croissant
-        $x1=$xmin;
-        $x2=$xmax;
-        $y1=$ymin;
-        $y2=$ymax; 
-    }
-    else if ($twd_degre>90 && $twd_degre<=180){
-        // X croissant, y décroissant
-        $x1=$xmin;
-        $x2=$xmax;
-        $y1=$ymax;
-        $y2=$ymin; 
-    }
-    else if ($twd_degre>180 && $twd_degre<=270){
-        // X décroissant, y décroissant
-        $x1=$xmax;
-        $x2=$xmin;
-        $y1=$ymax;
-        $y2=$ymin; 
-    }
-    else if ($twd_degre>270 && $twd_degre<360){
-        // X décroissant, y croissant
-        $x1=$xmax;
-        $x2=$xmin;
-        $y1=$ymin;
-        $y2=$ymax; 
-    }
-
-    // Préparer les données
-    // Le repère est désormais indirect 
-    if ($twd_degre>=0 && $twd_degre<=90){
-        // X croissant, y décroissant
-        $x1=$xmax;
-        $x2=$xmin;
-        $y1=$ymax;
-        $y2=$ymin; 
-    }
-    else if ($twd_degre>90 && $twd_degre<=180){
-        // X croissant, y croissant
-        $x1=$xmin;
-        $x2=$xmax;
-        $y1=$ymin;
-        $y2=$ymax; 
-    }
-    else if ($twd_degre>180 && $twd_degre<=270){
-        // X décroissant, y croissant
-        $x1=$xmax;
-        $x2=$xmin;
-        $y1=$ymin;
-        $y2=$ymax; 
-    }
-    else if ($twd_degre>270 && $twd_degre<360){
-        // X décroissant, y décroissant
-        $x1=$xmax;
-        $x2=$xmin;
-        $y1=$ymax;
-        $y2=$ymin; 
-    }
-*/
+        $ysud=$minY;
+        $ynord=$maxY;   
+        
     // Coordonnées du rectangle où sont placées les bouées
     $exitLonLat=array();
     $exitLonLat[0]=new stdClass();
@@ -699,8 +637,8 @@ $name="";
 $color= "";
 $fillcolor= "";
     
-$quartHauteur=abs($ynord-$ysud) / 4;
-$demiLargeur=abs($xouest-$xest) / 2;
+$quartHauteur=abs($ynord-$ysud) / 6; // On resserre les distances
+$demiLargeur=abs($xouest-$xest) / 4;
 
 $nboueesFixes= 6-$nbouees;
 
@@ -805,47 +743,48 @@ if ($debug3){
     // Porte sous le vent : y < Hauteur / 4
     // Depart / Arrivée : Hauteur /4 > y < 3 * Hauteur / 4
     // Il faut ensuite considérer l'alignement vertical
-
+    // On va changer de méthode et comparer les distances
     
     $k=0; 
     for ($index=0; $index<count($balisesIn); $index++){
-        if ($balises_ysaisie[$balisesIn[$index]]<=$quartHauteur){ // Porte sous le vent
-            if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
+        if (distanceVEcran($balises_ysaisie[$balisesIn[$index]], $ysud) < $quartHauteur){ // Porte sous le vent
+            if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xouest) < $demiLargeur){
                 // Porte tribord 
                 if ($debug3){ echo "<br>Porte sous le vent tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $porte_tribord=true;
             }
-            else{
+            else if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xest) < $demiLargeur){
                 // Porte bâbord
                 if ($debug3){echo "<br>Porte sous le vent bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $porte_babord=true;
             } 
         } 
-        else if ($balises_ysaisie[$balisesIn[$index]]>=3*$quartHauteur){ // Dog Leg ?
-            if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
+        else if (distanceVEcran($balises_ysaisie[$balisesIn[$index]],$ynord) < $quartHauteur){ // Dog Leg ?
+            if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xouest) < $demiLargeur){
                 // Dog leg bâbord 2
                 if ($debug3){ echo "<br>Dog leg N°2 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}
                 $dog_leg2=true;                 
             }
-            else{
+            else if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xest) < $demiLargeur){
                 // Dog leg bâbord 1
                 if ($debug3){ echo "<br>Dog leg N°1 bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                 
                 $dog_leg1=true;                 
             }         
         }
         else {
-            // ((($balises_ysaisie[$balisesIn[$index]]>$quartHauteur)) && ($balises_ysaisie[$balisesIn[$index]]<3*$quartHauteur)){
             // Entre deux : Départ ?
-            if ($balises_xsaisie[$balisesIn[$index]]<=$demiLargeur){
-                // Départ / Arrivée bâbord
-                if ($debug3){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
-                $depart_babord=true;                 
+            if (distanceVEcran($balises_xsaisie[$balisesIn[$index]], ($ynord+$ysud)/2) < $quartHauteur){ // Départ ?
+                if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xouest) < $demiLargeur){
+                    // Départ / Arrivée bâbord
+                    if ($debug3){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
+                    $depart_babord=true; 
+                }
+                else if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xest) < $demiLargeur){    
+                    // Départ / Arrivée tribord
+                    if ($debug3){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
+                    $depart_tribord=true; 
+                }                                
             }
-            else{
-                // Départ / Arrivée tribord
-                if ($debug3){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                                 
-                $depart_tibord=true;
-            }                     
         }
 
 if ($debug3){        
@@ -946,7 +885,7 @@ if ($debug3){
         $lon=get_lon_Xecran($ecranX);
         $lat=get_lat_Yecran($ecranY);
         // Formater la sortie
-        $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.'"name":"'.$name.'","lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
+        $boueesFixesParcours[$index]='{"boueefixe":true,"id":'.$tableBoueesFixesSaisieParcours[$index]->id.',"name":"'.$name.'","lon":'.$lon.',"lat":'.$lat.',"color":"'.$color.'","fillcolor":"'.$fillcolor.'"}';        
     }  
     // Debug
 if ($debug3){

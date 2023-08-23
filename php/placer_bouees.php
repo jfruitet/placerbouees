@@ -10,7 +10,7 @@ include ("./include/algo.php");
 $debug = false;
 $debug1 = false;
 $debug2 = false;
-$debug3 = true;
+$debug3 = false;
 
 $nomSite=''; // Pour les données sauvegardées
 $nomSite2=''; // Pour le nom de fichier des données saugegardees 
@@ -298,6 +298,7 @@ if ($debug2){
     $milieu_lon2=get_lon_Xecran($ecranX2);
     $milieu_lat2=get_lat_Yecran($ecranY2);
     echo "<br>Retour en coordonnées géographiques<br>Milieu (lon,lat) : ".$milieu_lon2.", ".$milieu_lat2."\n";   
+
     
     $t_ecranX=array();
     $t_ecranY=array();
@@ -428,35 +429,10 @@ if ($debug1){
 // Si cette distance est supérieure au seuil enregistrer les points d'intersection.  
 
 // Tracer des droites verticlae (x=cte)
-
-/*
-$x0=$coordonneesmin[0]; // abscisse du Sommet le plus proche de la ligne des concurrents
-$y0=$coordonneesmin[1]; // ordonnée 
-$xC=$intersectionmin[0]; // abscisse du point d'intersection de y=$y0 avec la ligne des concurrents
-$yC=$intersectionmin[1]; // ordonnée
-
-
-// Progresser vers l'Est ou vers l'Ouest selon le cas
-if ($x0>=$xC){
-    $sensprogression=1;
-}
-else {
-    $sensprogression=-1;
-}
-
-$incrementX=$sensprogression*1000; // Environ 1m vers l'Est ou vers l'Ouest
-if ($sensprogression==1){
-    $xInitial=$xminPoly;
-    $xFinal=$xmaxPoly;
-}
-else{
-    $xInitial=$xmaxPoly;
-    $xFinal=$xminPoly;
-}
-
-*/
 // on va balayer tout le plan d'eau sans se préoccuper de la distance à la zone des concurrents
 // <br>Boîte englobante du polygone : (Xmin,Ymin):(".$xminPoly.",".$yminPoly.") (Xmax, Ymax):(".$xmaxPoly.",".$ymaxPoly.")\n";
+
+// Cette partie doit être améliorée
 
 $x0=$xminPoly;
 $sensprogression=1;
@@ -494,7 +470,7 @@ if ($succes){
         for ($index=0; $index<count($boueesFixesParcours)-1; $index++){        
             $data.=$boueesFixesParcours[$index].',';
         }
-        $data.=$boueesFixesParcours[$index].'],"boueesmobiles":[';
+        $data.=$boueesFixesParcours[$index].']';
     }
     else{
         $data.=']';
@@ -511,9 +487,10 @@ if ($succes){
         $data.=']';
     }
     
-    // Rectangle parcours
-    
-    if (!empty($exitLonLat)){
+    // Rectangle de placement des bouéés    
+    // L'afficheur ./placerbouees/chargerbouees.html doit aussi être positionnée en mod debug dans le fichier de configuration ./js/config.js
+    if ($debug3){
+        if (!empty($exitLonLat)){
             $data.=',"rectangle":[';
             $i=0;
             while ($i<count($exitLonLat)-1){
@@ -523,22 +500,21 @@ if ($succes){
             
             $data.='{"lon":'.$exitLonLat[$i]->lon.',"lat":'.$exitLonLat[$i]->lat.'}';
             $data.=']';
-    }    
+        }    
     
-    // Test
-    /*
-    //Retour en coordonnées géographiques après transformation <br>\n<table border=\"1\">\n<tr><th>Lon</th>\n";
-    if (!empty($t_ecranX) && !empty($t_ecranY)){
-            $data.=',"rectangle":[';
+        // Test : affichage du fantôme du parcours utilisé pour le placement des bouées
+
+        if (!empty($poly_xsaisie) && !empty($poly_ysaisie)){
+            $data.=',"fantome":[';
             $i=0;
-            while ($i<count($t_ecranX)-1){
-                $data.='{"lon":'.get_lon_Xecran($t_ecranX[$i]).',"lat":'.get_lat_Yecran($t_ecranY[$i]).'},';
+            while ($i<count($poly_xsaisie)-1){
+                $data.='{"lon":'.get_lon_Xecran($poly_xsaisie[$i]).',"lat":'.get_lat_Yecran($poly_ysaisie[$i]).'},';
                 $i++;      
             }
-            $data.='{"lon":'.get_lon_Xecran($t_ecranX[$i]).',"lat":'.get_lat_Yecran($t_ecranY[$i]).'}';
+            $data.='{"lon":'.get_lon_Xecran($poly_xsaisie[$i]).',"lat":'.get_lat_Yecran($poly_ysaisie[$i]).'}';
             $data.=']';
+        }
     }
-    */
     
     $data.='}';
     
