@@ -73,14 +73,54 @@ Il y a quelques conditions au fonctionnement du serveur :
 
 ### Sources
 ```
-./php
-    placer_bouees.php
-    ./php/include
-		config.php
-        saisie.php
-		geo_utils.php
-        algo.php
+./placerbouees
+    index.html
+    chargerbouees.html
+	placerbouees.html
+	README.md
+    
+./js
+    ajax.js
+    ajax2.js
+	ajax3.js
+    bouees.js
+    canavas.js
+    config.js
+    geo_utils.js
+    iconse.js
+    maps.js
+    maps2.js
+    myscript.js
+    sitnenavigation.js   
 
+./css
+  style.css
+  materiel.css
+  material-icons.css
+
+./data
+    Fichiers .json de positionnement de bouées mobiles
+
+./doc
+  Captures d'écran
+
+./php
+    getdata.php 
+	getsite.php
+	index.php
+    placer_bouees.php
+    plans_eau.php
+    sauverbouees.php
+	setsite.php
+	README.md
+	./include
+		config.php
+		saisie.php
+		geo_utils.php
+		algo.php
+		initial.php
+		index.php
+		
 ./data :: Output 
     Fichiers .json de positionnement de bouées mobiles
 
@@ -124,7 +164,7 @@ Enfin écrire un script en PHP qui génère un placement automatique pour tous l
 Mais il faut avant cela améliorer le placement automatique.
    
 ## Droits d'utilisation et de modification (License)
-Tous ce projet est en Open source.
+Tout ce projet est en Open source.
 
 Pour le code source : **MIT** *Free Software, Hell Yeah!* https://github.com/pandao/editor.md/blob/master/LICENSE
 

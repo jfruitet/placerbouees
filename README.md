@@ -267,7 +267,7 @@ dnGrep https://dngrep.github.io/ : recherche de chaînes de caractères multi do
 Figma https://www.figma.com/ : éditeur de pages web et création d'objets vectoriels au format svg
 
 ## Droits d'utilisation et de modification (License)
-Tous ce projet est en Open source.
+Tout ce projet est en Open source.
 
 Pour le code source : **MIT** *Free Software, Hell Yeah!* https://github.com/pandao/editor.md/blob/master/LICENSE
 
