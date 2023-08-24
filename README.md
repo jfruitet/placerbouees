@@ -17,10 +17,12 @@ La page web *./placerbouees/index.html* permet d'affecter des positions GPS sur 
 
 La page web *./placerbouees/chargerbouees.html* affiche ces bouées autonomes sur une carte OpenStreetMap.
 
+La page web *./placerbouees/placerbouees.html* propose la génération automatique des placements pour toutes les valeurs de la rose des vents.
+
 Le script *./placerbouees/php/placer_bouees.php* positionne automatiquement une "*constellation*" de bouées sur un plan d'eau en fonction de l'orientation du vent.
 Voir *./placerbouees/php/README.md*
 
-En sortie un fichier de nom *robonav_NomDuPlanDEau_twd_aaaammjj_auto.json*, compatible avec *./placerbouees/chargerbouees.html*, est placé dans le dossier *./placerbouees/data/* .
+En sortie un fichier de nom *robonav_NomDuPlanDEau_twd_aaaammjj_***auto***.json*, compatible avec *./placerbouees/chargerbouees.html*, est placé dans le dossier *./placerbouees/data/* .
 
 ## Page index.html : éditeur de placement
 
@@ -130,15 +132,19 @@ C'est l'application *.placerbouees/index.html* qui produit les fichiers d'entré
 
 Le script PHP  *./placerbouees/php/placer_bouees.php* réalise cette tâche de façon automatique (mais non optimale !:>))
 
-## Sources
+
+### Sources
 ```
 ./placerbouees
     index.html
     chargerbouees.html
+	placerbouees.html
+	README.md
     
 ./js
     ajax.js
     ajax2.js
+	ajax3.js
     bouees.js
     canavas.js
     config.js
@@ -159,29 +165,40 @@ Le script PHP  *./placerbouees/php/placer_bouees.php* réalise cette tâche de f
 
 ./doc
   Captures d'écran
-  
+
 ./php
-    getsite.php
-    placer-bouees.php
+    getdata.php 
+	getsite.php
+	index.php
+    placer_bouees.php
     plans_eau.php
     sauverbouees.php
-	placer_bouees.php
+	setsite.php
+	README.md
 	./include
 		config.php
 		saisie.php
 		geo_utils.php
 		algo.php
+		initial.php
+		index.php
 		
-./images
+./data :: Output 
+    Fichiers .json de positionnement de bouées mobiles
 
-./json
-    // Données .json des sites de navigation (zonz d'évolution, concurrents, bouées fixes) 
+./doc
+  Captures d'écran
+  
+./json  :: Input
+    // Données .json des sites de navigation (zone d'évolution, concurrents, bouées fixes) 
     leplessis.json
     laminais.json
     laplageverte.json
-    planeauduchene.json
-    boisjoalland.json
-    plans-eau_robonav.xml
+    plandeaudelemprunt.json
+	planeauduchêne.json
+    etangduboisjoalland.json
+	// Liste des sites de navigation disponibles
+    plans_eau_robonav.xml
 
 ```
 
@@ -192,7 +209,18 @@ Les données produites par *./placerbouees/index.html* sont placées dans le dos
 
 Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
 et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_yyyymmdd.json*>, par exemple
-<*robonav_LePlessis_45_20230803.json*>, pour l'étang du Plessis et un vent de direction 45°
+<*robonav_LePlessis_45_20230803.json*>, pour l'étang du Plessis et un vent de direction 45°.
+
+Les données produites sont placées dans le dossier du serveur *./data/*
+
+### Output : Placement automatique
+Le script *./placerbouees/placerbouees.html* propose la génération automatique des fichiers de positionnement pour l'ensemble 
+de la rose des vents (pas de 22.5°). 
+
+Les données produites sont placées dans le dossier du serveur *./data/*
+
+Les fichiers ont le nom de la forme  *robonav_NomDuPlanDEau_twd_aaaammjj_***auto***.json*.
+
 
 ### Input : Afficher les bouées in situ
 Les données ci-dessus sont lues dans le dossier du serveur *./data/* 
@@ -202,7 +230,7 @@ Les données ci-dessus sont lues dans le dossier du serveur *./data/*
 cela consiste à importer dans l'applet **RoBoNav** pour smartphones les fichiers *robonav_NomDuPlanDEau_twd_aaaammjj.json* 
 et *robonav_NomDuPlanDEau_twd_aaaammjj_auto.json*.
 
-**RoBoNav** se chargeant ensuite d'affeceter leurs positions GPS au bouées mobiles;
+**RoBoNav** se chargeant ensuite d'affecter leurs positions GPS au bouées mobiles;
 
 ### Difficultés rencontrées
 Il m'a fallu réactualiser complètement mes notions de javascript, de canvas, de création de cartes et l'ajout de markers et autres éléments graphiques, bien oubliées, je dois dire...
@@ -213,8 +241,8 @@ L'adaptation à une langue différente du français ne me paraît pas trop compl
 
 
 ## Installation
-- Recopier l'ensemble des sources dans un dossier ./placerbouées de votre serveur httpd
-- Modifier le contenu du fichier ./js/config.js pour indiquer l'adresse du serveur.
+- Recopier l'ensemble des sources dans un dossier ./placerbouees de votre serveur httpd
+- Modifier le contenu des fichiers ./js/config.js et ./php/include/config.php pour indiquer l'adresse de votre serveur.
    
 ## Outils et liens 
 

@@ -5,20 +5,25 @@
 Par JF en PHP. (cc) jean.fruitet@free.fr
 
 ## Présentation
-Le script *./placerbouees/php/placer_bouees.php* est la version automatique de l'éditeur de placement web **placerbouees/index.html**.
+Le script *./placerbouees/php/setsite.php* génère automatiquement pour toutes la rose des vents les fichiers de placement des bouées mobile.
 
-En entrée il prend le nom du site de navigation, la direction du vent, le nombre de bouées à placer.
+Il appelle le script *./placerbouees/php/placer_bouees.php* qui est la version automatique de l'éditeur de placement web **placerbouees/index.html**.
+
+En entrée ce dernier prend le nom du site de navigation, la direction du vent, le nombre de bouées à placer.
 En sortie le script enregistre les positions de *n* bouées mobiles sur le plan d'eau ciblé.
 
-Si des bouées fixes sont mobilisables elles le sont, mais cette partie du programme nécessite d'être améliorée.
+Si des bouées fixes sont mobilisables elles le sont, mais cette partie du programme nécessite d'être grandement améliorée.
  
 
 ## Utilisation
 
+- Pour toutes les directions de la rose des vents (par pas de de 22.5°) :
+*./placerbouees/php/setsite.php?site=NOMduSite*
+
+- ou pour une seule valeur de direction du vent :
 *./placerbouees/php/placer_bouees.php?site=NOMduSite&twd=60&nbouees=4*
 
 Par exemple pour le site du Plessis :
-
 *http://localhost/placerbouees/php/placer_bouees.php?site=LePlessis&twd=60&nbouees=4*
 
 
