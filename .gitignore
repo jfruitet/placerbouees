@@ -1,2 +1,3 @@
-# Exclusion du dossier sauvegarde des fichiers de traavil intermédiaires
+# Exclusion du dossier sauvegarde et des data des fichiers de travail intermédiaires
 /sauvegardes
+/data

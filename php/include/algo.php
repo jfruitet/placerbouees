@@ -28,6 +28,11 @@
 **********************************************/
 $tab_distances=null;
 
+    $xPasse1=0; // les abscisses recherchées pour le placement des bouées
+    $xPasse2=0;
+    $yMaxPasse1=array();    // Les ordonnées des droites déterminant le rectangle de placement des bouées 
+    $yMaxPasse2=array();
+
 
 function tab_echange(&$tab1, &$tab2){
 // echange les contenus d'un tableau de deux éléments

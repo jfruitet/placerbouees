@@ -1,5 +1,5 @@
 <?php
-// Script à supprimer
+// Script à ne pas supprimer
 // Lecture d'un fichier passé en paramètres 
 // N'a aucune spécialisation sauf le dossier du fichier cherché
 

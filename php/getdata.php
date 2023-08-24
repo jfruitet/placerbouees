@@ -47,7 +47,7 @@ global $reponse_not_ok;
 
 //--------------------------
 function getdir($expression){
-// Il ne faut matcher les extensions des fichiers .json
+// Il ne faut matcher que les extensions des fichiers .json
 global $reponse_not_ok;
     $dossier = opendir(DATAPATH_OUTPUT);
     if (empty($dossier)){
@@ -77,7 +77,7 @@ global $reponse_not_ok;
 
 //--------------------------
 function getdirNotWind($expression, $nottwd){
-// Il ne faut matcher les fichier ne contenant pas twd avec l'extension .json
+// Il ne faut matcher ue les fichier ne contenant pas twd avec l'extension .json
 global $reponse_not_ok;
     $dossier = opendir(DATAPATH_OUTPUT);
     if (empty($dossier)){

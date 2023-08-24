@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="Placement automatique de bouées autonomes">
+  <meta name="author" content="Jean Fruitet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, target-densitydpi=device-dpi">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <!-- base href="http://localhost/placerbouees/" target="_blank" -->
+  <title>Placement automatique de bouées autonomes</title>
+  <!-- Feuilles de style -->
+
+<link rel="stylesheet" href="css/style.css">
+<!-- link rel="stylesheet" href="map.css"  -->
+ 
+<!-- Javascript ---------->
+<script src="js/myscript.js"></script>
+<script src="js/config.js"></script>
+
+</head>
+<body>
+ <div id="entete"></div>
+ <script>
+ document.getElementById("entete").innerHTML = "<b>Placement automatique de bouées autonomes</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+ </script>
+ <noscript>
+<div class="menu"><h3>Placement automatique de bouées autonomes</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
+<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/placerbouees#README'">GitHub JF</button></span>
+</div>
+ </noscript> 
+ <div class="corpstexte" style="block">  
+  <h2>Placement automatique de bouées autonomes</h2>    
+<a href="mailto:jean.fruitet@free.fr?subject=Affichage des bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
+ <p><b>Sites disponibles</b> 
+<div class="scrollleft">
+    <ul id="mylist"></ul>
+</div>
+<div id="droite">
+    <img src="images/parcours_regate-vrc_imagette.gif" alt="logo" style="max-width:100%;height:auto;">
+</div>
+</div>
+<p><b>Données disponibles</b><br />
+<span id="info"></span><br /></p> 
+<ul id="myListData"></ul>   
+
+<script src="js/ajax3.js"></script>  
+<script src="js/geo_utils.js"></script> 
+    
+
+<script>
+// Chargement de la page
+    window.onload = function(){
+        //console.log('Page chargée');
+        checkCookies();
+        listePlansEauDisponibles();
+        infoSite=nomDuSite;
+        document.getElementById("info").innerHTML=infoSite;    
+        getDataSite(nomDuSite);
+        var x = document.getElementsByClassName("corpstexte");
+        for (var i = 0; i < x.length; i++) {
+            x[i].style.display = "block";  
+        }
+    }
+  
+</script>
+
+    
+</body>
+</html>
