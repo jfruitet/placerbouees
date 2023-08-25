@@ -9,7 +9,7 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = true;
+$debug = false;
 $debug1 = false;
 $debug2 = false;
 $debug3 = false;
@@ -19,7 +19,7 @@ $nomSite2=''; // Pour le nom de fichier des données saugegardees
 $site='';   // pour le nom de fichier de données importées concernant les données du site
 $nbouees=6; // nombre max de bouées mobiles à placer.
 $ecartBoueesXmetres=10;
-$ecartBoueesYmetres=50;
+$ecartBoueesYmetres=60;
 
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
@@ -67,8 +67,9 @@ $uri .= $_SERVER['HTTP_HOST'];
     
 if (!empty($_GET['site'])){
     $nomSite=urldecode($_GET['site']);
-    $nomSite2=str_replace(' ','',$nomSite);
-    $site=strtolower(str_replace("'",'',$nomSite2));
+    $nomSite1=str_replace(' ','',$nomSite);
+    $nomSite2=str_replace("'",'',$nomSite1);
+    $site=strtolower($nomSite2);
 }
 
 
@@ -91,7 +92,7 @@ while ($twd_degre<360){
     * Chargement des données en input 
     * ****************************************/
     if (!empty($dataObject)){
-        $succes=traitement_initial($dataObject, $twd_radian);
+        $succes=traitement_initial($dataObject);
         if ($succes){    
             placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre            
 

@@ -18,7 +18,7 @@ $nomSite2=''; // Pour le nom de fichier des données saugegardees
 $site='';   // pour le nom de fichier de données importées concernant les données du site
 $nbouees=6; // nombre max de bouées mobiles à placer.
 $ecartBoueesXmetres=10;
-$ecartBoueesYmetres=50;
+$ecartBoueesYmetres=60;
 
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';

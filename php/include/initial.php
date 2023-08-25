@@ -3,9 +3,11 @@
     // Zone des Concurrents 
  
 //-----------------------
-function traitement_initial($dataObject, $twd_radian){    
+function traitement_initial($dataObject){    
 
 global $debug1;
+global $twd_degre;
+global $twd_radian;
 global $lonmin; // en degré géographique
 global $latmin;
 global $lonmax; // en degré géographique EST ligne de changement d'horaire
@@ -40,6 +42,10 @@ global $nbouees; // nombre max de bouées mobiles à placer.
 global $ecartBoueesXmetres;
 global $ecartBoueesYmetres;
 global $tab_distances;
+global $deltaXpixelsSite;
+global $deltaYpixelsSite;
+global $ecartbordure; // Deux mètres pour éviter de taper la berge
+global $deltaBordure;
  
     $zoneconc_lon=array();
     $zoneconc_lat=array();
@@ -104,7 +110,7 @@ if ($debug1){
 
 
 /*******************************************************************
- * Transformation en coordonnées "écran" pour accélerer l'algorithme 
+ * Transformation en coordonnées "écran" pour accélérer l'algorithme 
  * *****************************************************************/
 init_ecran_ZN();
 init_ecran_bouees_fixes();
@@ -270,22 +276,47 @@ $ymaxPoly=-1000000; // en pixels
 $distance_H_MillePixels=distanceHorizontalePixels(0,0,1000);
 $distance_V_MillePixels=distanceVerticalePixels(0,0,1000); 
 
-$deltaXpixelsDixMetres=howMuchXPixelsForMeters($ecartBoueesXmetres);
-$deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres);
+// Grands plans d'eau
+$ecartBordure=2; // Deux mètres pour éviter de taper la berge
+$deltaBordure=howMuchXPixelsForMeters($ecartBordure);
 
-$deltaXpixelsSite=min(round(abs($xmaxPoly-$xminPoly)/4.0),$deltaXpixelsDixMetres);
-$deltaYpixelsSite=min(round(abs($ymaxPoly-$yminPoly)/3.0),$deltaYpixelsCinquanteMetres);
+$ecartBoueesXmetres=14; // Distance entre bouées de la porte Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+$ecartBoueesYmetres=64;  // Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+
+$deltaXpixelsDixMetres=howMuchXPixelsForMeters($ecartBoueesXmetres+2*$ecartBordure);
+$deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres+2*$ecartBordure);
+
+// Petits plans d'eau
+if (abs($xminPoly-$xmaxPoly) < 10 * $deltaXpixelsDixMetres){
+    $ecartBoueesXmetres=10; // Ecart des portes : 6 mètres 
+    $deltaXpixelsDixMetres=howMuchXPixelsForMeters($ecartBoueesXmetres+2*$ecartBordure);
+}
+
+if (abs($yminPoly-$ymaxPoly) < 2 * $deltaYpixelsCinquanteMetres){
+    $ecartBoueesYmetres=50; // 46 mètres de dog leg à porte sous le vent
+    $deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres+2*$ecartBordure);
+}
+
+// Seconde adaptation aux dimensions du plan d'eau
+$deltaXpixelsSite=$deltaXpixelsDixMetres;
+
+// $deltaXpixelsSite=min(round(abs($xmaxPoly-$xminPoly)/2.0),$deltaXpixelsDixMetres);
+if (round(abs($ymaxPoly-$yminPoly)/2.0) > $deltaYpixelsCinquanteMetres){
+    $deltaYpixelsSite=min(round(abs($ymaxPoly-$yminPoly)/2.0),round(3*$deltaYpixelsCinquanteMetres/2.0));
+}
+else{
+    $deltaYpixelsSite=$deltaYpixelsCinquanteMetres;
+}
 
 if ($debug1){
-    echo "Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
-    echo "<br>Distance verticale pour 1000 \"pixels\": ".$distance_V_MillePixels."\n";
-    echo "<br>Nombre de \"pixels\" pour une distance horizontale de 10 mètres: ".$deltaXpixelsDixMetres."\n";
-    echo "<br>Nombre de \"pixels\" pour une distance verticale de 50 mètres: ".$deltaYpixelsCinquanteMetres."\n";
-    echo "<br>Nombre de \"pixels\" entre les bouées de départ : ".$deltaXpixelsSite."\n";
-    echo "<br>Nombre de \"pixels\" pour une distance verticale de 50 mètres: ".$deltaYpixelsCinquanteMetres."\n";
-    echo "<br>Nombre de \"pixels\" entre la porte et le dog leg: ".$deltaYpixelsSite."\n";
     echo "<br>Boîte englobante du polygone : (Xmin,Ymin):(".$xminPoly.",".$yminPoly.") (Xmax, Ymax):(".$xmaxPoly.",".$ymaxPoly.")\n";
     echo "<br>Largeur : distance(Xmin,Xmax): ".abs($xminPoly-$xmaxPoly)." Hauteur : distance(Ymin,Ymax): ".abs($ymaxPoly-$yminPoly)."\n";
+    echo "<br>Distance horizontale pour 1000 \"pixels\": ".$distance_H_MillePixels."\n";
+    echo "<br>Distance verticale pour 1000 \"pixels\": ".$distance_V_MillePixels."\n";
+    echo "<br>Nombre de \"pixels\" pour une distance horizontale de ".$ecartBoueesXmetres." mètres: ".$deltaXpixelsDixMetres."\n";
+    echo "<br>Nombre de \"pixels\" pour une distance verticale de ".$ecartBoueesYmetres." mètres: ".$deltaYpixelsCinquanteMetres."\n";
+    echo "<br><b>Après optimisation</b><br>Nombre de \"pixels\" entre les bouées de départ : ".$deltaXpixelsSite."\n";
+    echo "<br>Nombre de \"pixels\" entre la porte et le dog leg: ".$deltaYpixelsSite."\n";
 }
 
 // Calcule la distance entre chaque sommet du polygone et la ligne des concurrents
@@ -340,10 +371,20 @@ if ($debug1){
 // Cette partie doit être améliorée
 
 $x0=$xminPoly;
-$sensprogression=1;
+
+if ($coordonneesmin[0]>=$intersectionmin[0]){
+    $sensprogression=1;
+    $xInitial=$xminPoly;
+    $xFinal=$xmaxPoly;
+}
+else{
+    $sensprogression=-1;
+    $xInitial=$xmaxPoly;
+    $xFinal=$xminPoly;    
+}
+
+
 $incrementX=$sensprogression*INCREMENT; // Environ 1m vers l'Est ou vers l'Ouest
-$xInitial=$xminPoly;
-$xFinal=$xmaxPoly;
     
 $encore=true;
 $succes=false;

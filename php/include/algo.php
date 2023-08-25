@@ -179,6 +179,8 @@ global $xPasse1;
 global $xPasse2;
 global $deltaXpixelsDixMetres;
 global $deltaYpixelsCinquanteMetres;
+global $ecartBordure; // Deux mètres pour éviter de taper la berge
+global $deltaBordure;
 
 /**************************************
  *     Première passe
@@ -510,17 +512,17 @@ global $deltaYpixelsCinquanteMetres;
         $distanceY=min(abs($yMaxPasse1[0]-$yMaxPasse1[1]),abs($yMaxPasse2[0]-$yMaxPasse2[1]));
     
         if ($debug2){
-            echo "<b>Succès APPARENT</b>\n";
+            echo "<br><b>Succès APPARENT</b>\n";
             echo "<br><br>Recherche d'un rectangle inclus\n";    
             echo "<br><i>Droite verticale initiale x=".$xPasse1."</i>\n";
             echo "<br><i>Droite verticale finale x=".$xPasse2."</i>\n";
             echo "<br><i>Droite horizontale initiale inférieure y=".$yMaxPasse1[0]."</i>\n";
             echo "<br><i>Droite horizontale initiale supérieure y=".$yMaxPasse1[1]."</i>\n";        
-            echo "Distance initiale verticale DY1: ".abs($yMaxPasse1[1]-$yMaxPasse1[0])."</i>\n";
+            echo "<br><b>Distance initiale verticale DY1:</b><i>".abs($yMaxPasse1[1]-$yMaxPasse1[0])."</i>\n";
             echo "<br><i>Droite horizontale finale inférieure y=".$yMaxPasse2[0]."</i>\n";
             echo "<br><i>Droite horizontale finale supérieure y=".$yMaxPasse2[1]."</i>\n";      
-            echo "Distance finale verticale DY2: ".abs($yMaxPasse2[1]-$yMaxPasse2[0])."</i>\n";           
-            echo "<br>Longueur verticale : ".$distanceY." Largeur horizontale: ".$distanceX;    
+            echo "<br><b>Distance finale verticale DY2:</b><i>".abs($yMaxPasse2[1]-$yMaxPasse2[0])."</i>\n";           
+            echo "<br><b>Longueur verticale :</b> <i>".$distanceY."</i> <b>Largeur horizontale:</b> <i>".$distanceX."</i>\n";    
             echo "<br />\n";
         }
     }
@@ -540,7 +542,7 @@ global $deltaYpixelsCinquanteMetres;
         echo "<br>xPasse1:".$xPasse1.", xPasse2:".$xPasse2."\n";
         echo "<br>minY1:".$minY1.", maxY1:".$maxY1." DistanceV1:".abs($maxY1-$minY1)." \n";
         echo "<br>minY2:".$minY2.", maxY2:".$maxY2." DistanceV2:".abs($maxY2-$minY2)."\n";
-        echo "<br>DeltaXpixelsDixmètres=".$deltaXpixelsDixMetres." DeltaXpixelsSite=".$deltaXpixelsSite."\n";
+        echo "<br>DeltaXpixels =".$deltaXpixelsSite." DeltaXpixelsSite=".$deltaXpixelsSite."\n";
     }    
     
     $minY= max($minY1, $minY2);
@@ -617,7 +619,9 @@ if ($debug2){
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------
 function placer_bouees($xouest, $xest, $ysud, $ynord){
-
+global $yDepart;
+global $ecartBordure; // Deux mètres pour éviter de taper la berge
+global $deltaBordure; // Nb de pixels équivalent à 2 mètres
 global $debug3; 
 global $twd_degre;
 global $twd_radian;
@@ -648,6 +652,11 @@ $demiLargeur=abs($xouest-$xest) / 4;
 $nboueesFixes= 6-$nbouees;
 
 $balisesIn=array(); // Tableau des balises contenues dans le rectangle utile
+
+//$yDepart = ($ysud+$ynord)/2;
+
+$yDepart = (2*$ysud+$ynord)/3;
+
 
 if ($debug3){
     echo "<br><br><b>placer_bouees</b> ::Données en entrée\n";
@@ -778,13 +787,13 @@ if ($debug3){
         }
         else {
             // Entre deux : Départ ?
-            if (distanceVEcran($balises_xsaisie[$balisesIn[$index]], ($ynord+$ysud)/2) < $quartHauteur){ // Départ ?
-                if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xouest) < $demiLargeur){
+            if (distanceVEcran($balises_xsaisie[$balisesIn[$index]], $yDepart) < $deltaBordure){ // Départ ?
+                if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xouest) < $deltaBordure){
                     // Départ / Arrivée bâbord
                     if ($debug3){echo "<br>Arrivée / Départ bâbord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
                     $depart_babord=true; 
                 }
-                else if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xest) < $demiLargeur){    
+                else if (distanceHEcran($balises_xsaisie[$balisesIn[$index]],$xest) < $deltaBordure){    
                     // Départ / Arrivée tribord
                     if ($debug3){echo "<br>Arrivée / Départ tribord:".$balisesIn[$index]." X:".$balises_xsaisie[$balisesIn[$index]]." Y:".$balises_ysaisie[$balisesIn[$index]]."\n";}                                 
                     $depart_tribord=true; 
@@ -799,39 +808,39 @@ if ($debug3){
         echo "<br>Distance au bord inférieur ".abs($balises_ysaisie[$balisesIn[$index]]-$ysud)."<br>\n";   
 }        
         if ($porte_tribord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<$deltaBordure){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteTribord"}', false);
                 $k++;
             }        
         }
         if ($porte_babord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<$deltaBordure){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"PorteBabord"}', false);
                 $k++;
             }        
         }
         // Depart / Arrivée
         if ($depart_tribord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<$deltaBordure){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DepartTribord"}', false);
                 $k++;
             }        
         }
         if ($depart_babord){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<$deltaBordure){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DepartBabord"}', false);
                 $k++;
             }        
         }
         // Dog Leg bâbord
         if ($dog_leg1){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xest)<$deltaBordure){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DogLeg1"}', false);
                 $k++;
             }        
         }
         if ($dog_leg2){
-            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<ECART_BORDURE){
+            if (abs($balises_xsaisie[$balisesIn[$index]]-$xouest)<$deltaBordure){
                 $tableBoueesFixesSaisieParcours[$k]=json_decode('{"id":'.$balisesEcran[$balisesIn[$index]]->id.',"xs":'.$balises_xsaisie[$balisesIn[$index]].',"ys":'.$balises_ysaisie[$balisesIn[$index]].',"name":"'.$balisesEcran[$balisesIn[$index]]->name.'","franchissement":"DogLeg2"}', false);
                 $k++;
             }        
@@ -920,7 +929,7 @@ if ($debug3){
         if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg1"){
             $tab_BoueesMobiles['dog_leg1']->fixe=true;
             if (isset($tab_BoueesMobiles['dog_leg2']->fixe) && ($tab_BoueesMobiles['dog_leg2']->fixe==false)){
-                $tab_BoueesMobiles['dog_leg2']->xs=$xouest;
+                $tab_BoueesMobiles['dog_leg2']->xs=$xouest+$deltaBordure;
                 $tab_BoueesMobiles['dog_leg2']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['dog_leg2']->color="navy";
                 $tab_BoueesMobiles['dog_leg2']->fillcolor="red";
@@ -930,7 +939,7 @@ if ($debug3){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DogLeg2"){
             $tab_BoueesMobiles['dog_leg2']->fixe=true;
             if (isset($tab_BoueesMobiles['dog_leg1']->fixe) && ($tab_BoueesMobiles['dog_leg1']->fixe==false)){
-                $tab_BoueesMobiles['dog_leg1']->xs=$xest;
+                $tab_BoueesMobiles['dog_leg1']->xs=$xest-$deltaBordure;
                 $tab_BoueesMobiles['dog_leg1']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['dog_leg1']->color="navy";
                 $tab_BoueesMobiles['dog_leg1']->fillcolor="red";
@@ -940,7 +949,7 @@ if ($debug3){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteBabord"){
             $tab_BoueesMobiles['porte_babord']->fixe=true;
             if (isset($tab_BoueesMobiles['porte_tribord']->fixe) && ($tab_BoueesMobiles['porte_tribord']->fixe==false)){
-                $tab_BoueesMobiles['porte_tribord']->xs=$xouest;
+                $tab_BoueesMobiles['porte_tribord']->xs=$xouest+$deltaBordure;
                 $tab_BoueesMobiles['porte_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['porte_tribord']->color="purple";
                 $tab_BoueesMobiles['porte_tribord']->fillcolor="green";  
@@ -950,7 +959,7 @@ if ($debug3){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="PorteTribord"){
             $tab_BoueesMobiles['porte_tribord']->fixe=true;
             if (isset($tab_BoueesMobiles['porte_babord']->fixe) && ($tab_BoueesMobiles['porte_babord']->fixe==false)){
-                $tab_BoueesMobiles['porte_babord']->xs=$xest;
+                $tab_BoueesMobiles['porte_babord']->xs=$xest-$deltaBordure;
                 $tab_BoueesMobiles['porte_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['porte_babord']->color="purple";
                 $tab_BoueesMobiles['porte_babord']->fillcolor="red"; 
@@ -960,7 +969,7 @@ if ($debug3){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartBabord"){
             $tab_BoueesMobiles['depart_babord']->fixe=true;
             if (isset($tab_BoueesMobiles['depart_tribord']->fixe) && ($tab_BoueesMobiles['depart_tribord']->fixe==false)){
-                $tab_BoueesMobiles['depart_tribord']->xs=$xest;
+                $tab_BoueesMobiles['depart_tribord']->xs=$xest-$deltaBordure;
                 $tab_BoueesMobiles['depart_tribord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['depart_tribord']->color="yellow";
                 $tab_BoueesMobiles['depart_tribord']->fillcolor="green";
@@ -970,7 +979,7 @@ if ($debug3){
         else if ($tableBoueesFixesSaisieParcours[$index]->franchissement=="DepartTribord"){
             $tab_BoueesMobiles['depart_tribord']->fixe=true;
             if (isset($tab_BoueesMobiles['depart_babord']->fixe) && ($tab_BoueesMobiles['depart_babord']->fixe==false)){
-                $tab_BoueesMobiles['depart_babord']->xs=$xouest;
+                $tab_BoueesMobiles['depart_babord']->xs=$xouest+$deltaBordure;
                 $tab_BoueesMobiles['depart_babord']->ys=$tableBoueesFixesSaisieParcours[$index]->ys;
                 $tab_BoueesMobiles['depart_babord']->color="yellow";
                 $tab_BoueesMobiles['depart_babord']->fillcolor="red";
@@ -994,8 +1003,8 @@ if ($debug3){
         if (!isset($value->fixe)){
             //echo "<br> Creer la bouee\n";
             if ($key=="dog_leg1"){
-                $ecranX=setSaisieToDisplayX($xest,$ynord, $twd_radian);
-                $ecranY=setSaisieToDisplayY($xest,$ynord, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xest-$deltaBordure,$ynord-$deltaBordure, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xest-$deltaBordure,$ynord-$deltaBordure, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -1003,8 +1012,8 @@ if ($debug3){
                 $k++;                
             }
             else if ($key=="dog_leg2"){
-                $ecranX=setSaisieToDisplayX($xouest,$ynord, $twd_radian);
-                $ecranY=setSaisieToDisplayY($xouest,$ynord, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xouest+$deltaBordure,$ynord-$deltaBordure, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xouest+$deltaBordure,$ynord-$deltaBordure, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -1012,8 +1021,8 @@ if ($debug3){
                 $k++;                            
             }
             else if ($key=="porte_tribord"){
-                $ecranX=setSaisieToDisplayX($xouest,$ysud, $twd_radian);
-                $ecranY=setSaisieToDisplayY($xouest,$ysud, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xouest+$deltaBordure,$ysud+$deltaBordure, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xouest+$deltaBordure,$ysud+$deltaBordure, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -1021,8 +1030,8 @@ if ($debug3){
                 $k++;                            
             }        
             else if ($key=="porte_babord"){
-                $ecranX=setSaisieToDisplayX($xest,$ysud, $twd_radian);
-                $ecranY=setSaisieToDisplayY($xest,$ysud, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xest-$deltaBordure,$ysud+$deltaBordure, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xest-$deltaBordure,$ysud+$deltaBordure, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -1030,8 +1039,8 @@ if ($debug3){
                 $k++;  
             }                       
             else if ($key=="depart_tribord"){
-                $ecranX=setSaisieToDisplayX($xest, ($ysud+$ynord)/2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($xest, ($ysud+$ynord)/2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xest-$deltaBordure, $yDepart, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xest-$deltaBordure, $yDepart, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
@@ -1039,8 +1048,8 @@ if ($debug3){
                 $k++;  
             }        
             else if ($key=="depart_babord"){
-                $ecranX=setSaisieToDisplayX($xouest, ($ysud+$ynord)/2, $twd_radian);
-                $ecranY=setSaisieToDisplayY($xouest, ($ysud+$ynord)/2, $twd_radian);
+                $ecranX=setSaisieToDisplayX($xouest+$deltaBordure, $yDepart, $twd_radian);
+                $ecranY=setSaisieToDisplayY($xouest+$deltaBordure, $yDepart, $twd_radian);
                 $lon=get_lon_Xecran($ecranX);
                 $lat=get_lat_Yecran($ecranY);
                 // Formater la sortie
