@@ -285,6 +285,7 @@ function addRectangleParcours2Map(polyline){
 // ----------------------------------
 function resetMarkersBoueesMobiles(){
     //console.debug("resetMarkersBoueesMobiles"); 
+    
     if ((tmarkersMobiles!==undefined) && (tmarkersMobiles.length>0)){
         if ((map !== undefined) && (mesMarkersMobiles !== undefined))
         {
@@ -394,7 +395,7 @@ function addBoueesMobiles2Map(){
                     "Zone Nav.":zonenav, 
                     "Concurrents":zoneconcurrents, 
                     "Balises ancrées":balises,
-                    "Bouées fixes":mesMarkersFixesParcours,
+                    "Bouées fixées":mesMarkersFixesParcours,
                     "Bouées mobiles":mesMarkersMobiles
                 }      
             }
@@ -403,7 +404,7 @@ function addBoueesMobiles2Map(){
                     "Info":baliseSite,
                     "Zone Nav.":zonenav, 
                     "Concurrents":zoneconcurrents, 
-                    "Balises ancrées":balises,
+                    "Bouées ancrées":balises,
                     "Bouées mobiles":mesMarkersMobiles
                 }                  
             }
@@ -432,10 +433,8 @@ function resetMarkersBoueesFixesParcours(){
 
 // ------------------------------
 function addBoueesFixesParcours2Map(){
-  
-    if ((map!==undefined) && (boueesFixesParcours !== undefined) && (boueesFixesParcours.length>0)){
-        resetMarkersBoueesFixesParcours();
-        
+    resetMarkersBoueesFixesParcours();
+    if ((map!==undefined) && (boueesFixesParcours !== undefined) && (boueesFixesParcours.length>0)){                
         var myIcon;
         for (var index=0; index<boueesFixesParcours.length; index++){  
             var style='';
@@ -526,8 +525,8 @@ function addBoueesFixesParcours2Map(){
                 "Info":baliseSite,
                 "Zone Nav.":zonenav, 
                 "Concurrents":zoneconcurrents, 
-                "Balises ancrées":balises,
-                "Bouées fixes":mesMarkersFixesParcours
+                "Bouées ancrées":balises,
+                "Bouées fixées":mesMarkersFixesParcours
             }      
             
             layerControl = L.control.layers(baseMaps, overlayMaps,  { collapsed: true }).addTo(map);                     	    

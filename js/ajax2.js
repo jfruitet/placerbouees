@@ -370,7 +370,7 @@ function getThatData(nf){
     ajax_GetData(url,  myfile);     
 }
 
-
+// Affiche les fichiers disponibles pour le site donné
 //--------------------------
 function majDataBouees(){
     document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";

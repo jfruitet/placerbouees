@@ -36,58 +36,57 @@
     ]
   },
   "geojsonZoneNav": 
-  {
-    "type": "FeatureCollection",
-    "features": 
-    [
-      {
-        "type": "Feature",
-        "properties": {
-          "name": "ZN de l'Emprunt",
-          "title": "Z. Nav. de l'Emprunt",
-          "description": "Zone de navigation Voile RC",
-          "infobox": true,
-          "color": "#7777ff",
-          "opacity": "0.3",
-          "fill-opacity": "0.2",
-          "weight": "1",
-          "fillColor": "#ffffee",
-          "fill": "#ffffee"
-        },
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "ZN de l'Emprunt",
+        "title": "Z. Nav. de l'Emprunt",
+        "description": "Zone de navigation Voile RC",
+        "infobox": true,
+        "color": "#7777ff",
+        "opacity": "0.3",
+        "fill-opacity": "0.2",
+        "weight": "1",
+        "fillColor": "#ffffee",
+        "fill": "#ffffee"
+      },
       "geometry": {
         "coordinates": [
           [
             [
-              -2.18432015848677,
-              47.312967028330405
+              -2.184355324801004,
+              47.31301504812782
             ],
             [
-              -2.184027552385203,
-              47.31353308378888
+              -2.184143434663639,
+              47.31351737047066
             ],
             [
-              -2.1848780607869287,
-              47.3137129506093
+              -2.1848873313695947,
+              47.313668953465935
             ],
             [
-              -2.1862942743198346,
-              47.31384785032279
+              -2.1857079022362598,
+              47.313748957255456
             ],
             [
-              -2.18575197767791,
-              47.31325534705502
+              -2.18559660328674,
+              47.31328960176887
             ],
             [
-              -2.18432015848677,
-              47.312967028330405
+              -2.184355324801004,
+              47.31301504812782
             ]
           ]
         ],
         "type": "Polygon"
       }
-      }       
-    ]
-  },      
+    }
+  ]
+},      
   "geojsonBalises": {
     "type": "FeatureCollection",
     "features": [
@@ -132,3 +131,4 @@
     ]
   }
 }
+
