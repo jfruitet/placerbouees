@@ -9,7 +9,7 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = false;
+$debug = true;
 $debug1 = false;
 $debug2 = false;
 $debug3 = false;
@@ -124,7 +124,7 @@ while ($twd_degre<360){
     
             // Rectangle de placement des bouéés    
             // L'afficheur ./placerbouees/chargerbouees.html doit aussi être positionnée en mod debug dans le fichier de configuration ./js/config.js
-            if ($debug3){
+            if ($debug){
                 if (!empty($exitLonLat)){
                     $data.=',"rectangle":[';
                     $i=0;

@@ -372,6 +372,7 @@ if ($debug1){
 
 $x0=$xminPoly;
 
+/*
 if ($coordonneesmin[0]>=$intersectionmin[0]){
     $sensprogression=1;
     $xInitial=$xminPoly;
@@ -382,7 +383,11 @@ else{
     $xInitial=$xmaxPoly;
     $xFinal=$xminPoly;    
 }
+*/
 
+    $sensprogression=1;
+    $xInitial=$xminPoly;
+    $xFinal=$xmaxPoly;
 
 $incrementX=$sensprogression*INCREMENT; // Environ 1m vers l'Est ou vers l'Ouest
     
