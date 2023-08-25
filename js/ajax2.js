@@ -44,6 +44,7 @@ function ajax_SetPlanEau(url, mystr){
     
 // ----------------------- 
 // Essai de création d'un tableau avec ascenseur
+// Non utilisé
 function ajax_getDisplaySitesAsTable(url, mystr){ 
     if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
         // POST avec fetch()
@@ -162,8 +163,10 @@ function ajax_GetSite(url, mystr){
             // Puisque le site est chargé on peut sauvegarder les cookies 
             setCookies(); // nomDuSite, longitudeDuSite, latitudeDuSite, fichierACharger 
             document.getElementById("mapinfo").innerHTML=infoSite;
-            document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
-            getDataWindBoueeSite(twd,nomDuSite);        
+            // document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
+            // getDataWindBoueeSite(twd,nomDuSite);
+            majDataBouees();   
+                 
         })  // tout le boulot se fait ici  dans le script  sitenavigation.js              
         .catch(error => console.debug("Erreur : "+error));
     }
@@ -304,6 +307,7 @@ function getDataBoueeSite(twd, site) {
 }
 
 
+// Affichage des bouees sur la map
 // ----------------------- 
 function ajax_GetData(url, mystr){ 
     if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
@@ -354,6 +358,7 @@ function ajax_GetData(url, mystr){
 }
 
     
+// Affiche la map pour ce fichier
 // ----------------------- 
 function getThatData(nf){  
     //console.debug("Chargement des bouées\n");
@@ -369,7 +374,7 @@ function getThatData(nf){
 //--------------------------
 function majDataBouees(){
     document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
-    console.debug(nomDuSite);
+    //console.debug(nomDuSite);
     getDataWindBoueeSite(twd,nomDuSite);
     document.getElementById("datanotwind").innerHTML="pour les autres directions du vent";
     getDataBoueeSite(twd,nomDuSite);
