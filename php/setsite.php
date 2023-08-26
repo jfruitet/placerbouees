@@ -9,7 +9,7 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = true;
+$debug = false;
 $debug1 = false;
 $debug2 = false;
 $debug3 = false;
@@ -164,7 +164,7 @@ while ($twd_degre<360){
             $reponse.=$twd_degre.',';
         }
     }
-    $twd_degre+=22.5;
+    $twd_degre+=15;
 }
 if ( !empty($reponse)){
     $reponse=substr($reponse, 0, strlen($reponse)-1);     // Retirer la dernière virgule 

@@ -8,10 +8,10 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = false;
-$debug1 = true;
-$debug2 = true;
-$debug3 = true;
+$debug = false; // enregistrer les infos dans un fichier texte
+$debug1 = false; // suivre le  traitement initial
+$debug2 = false; // suivre la détection d'un rectangle
+$debug3 = false; // suivre le placement des bouéés 
 
 $nomSite=''; // Pour les données sauvegardées
 $nomSite2=''; // Pour le nom de fichier des données saugegardees 
@@ -90,7 +90,7 @@ $twd_radian = get_radian_repere_direct($twd_degre);
 if ($debug || $debug1 || $debug2 || $debug3){
     $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
     echo "<br />$msg\n";
-    if ($debug) {
+    if (false) {
         file_put_contents("debug_test.txt", $msg);
     }        
 }
@@ -100,8 +100,7 @@ if ($debug || $debug1 || $debug2 || $debug3){
 
 $filename_input=$site.".json";
 if ($debug){
-    echo ("Fichier Input: ".DATAPATH_INPUT.$filename_input."<br>\n");
-    file_put_contents("debug_test.txt", $data, FILE_APPEND);    
+    echo ("Fichier Input: ".DATAPATH_INPUT.$filename_input."<br>\n"); 
 }
 
 if (file_exists(DATAPATH_INPUT.$filename_input)){
@@ -109,8 +108,6 @@ if (file_exists(DATAPATH_INPUT.$filename_input)){
         $dataObject=json_decode($data,false);
         if ($debug){
             file_put_contents("debug_test.txt", $data, FILE_APPEND);
-        }        
-        if ($debug){
             file_put_contents("debug_test.txt", $dataObject, FILE_APPEND);
         }
     }

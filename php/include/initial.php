@@ -370,24 +370,31 @@ if ($debug1){
 
 // Cette partie doit être améliorée
 
-$x0=$xminPoly;
 
-/*
+
+// Version sans tenir compte de la position de la ligne des concurrents
+/****************************************
+    $sensprogression=1;
+    $xInitial=$xminPoly;
+    $xFinal=$xmaxPoly;
+****************************************/
+
+/* *******************************************************************************
+*  Tentative pour améliorer le placement au plus près de la ligne des concurrents 
+*  ******************************************************************************/
 if ($coordonneesmin[0]>=$intersectionmin[0]){
     $sensprogression=1;
     $xInitial=$xminPoly;
     $xFinal=$xmaxPoly;
+    $x0=$xminPoly;
 }
 else{
     $sensprogression=-1;
     $xInitial=$xmaxPoly;
     $xFinal=$xminPoly;    
+    $x0=$xmaxPoly;
 }
-*/
 
-    $sensprogression=1;
-    $xInitial=$xminPoly;
-    $xFinal=$xmaxPoly;
 
 $incrementX=$sensprogression*INCREMENT; // Environ 1m vers l'Est ou vers l'Ouest
     
