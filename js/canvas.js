@@ -137,7 +137,7 @@ function affiche_legende(x){
     ctx4.fillText("Légende", x, 24); 
     ctx4.font = "12pt Calibri";
     ctx4.fillText("Bouées fixes", x, 48);
-    ctx4.fillText("Balises mobiles", x, 128);     
+    ctx4.fillText("Bouées mobiles", x, 128);     
     ctx4.font = "10pt Calibri";
     ctx4.fillText("Balises ancrées", x, 90);     
     ctx4.fillText("Départ tribord", x, 166); 
@@ -298,6 +298,7 @@ function draw_scale(){
 // seulement valable à l'équateur pour les longitudes sur la projection Mercator
 // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  Math.PI / 180
 // Sur les latitudes la formule 
+//console.debug("canvas.js :: draw_scale()");
     var anglelon=lonmax-lonmin;
     var anglelat=latmax-latmin;
     var dlon =  Math.abs(6378137 * anglelon * Math.PI / 180.0);

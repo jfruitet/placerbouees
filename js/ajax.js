@@ -4,11 +4,6 @@
 
 let myList = document.getElementById('mylist'); // La liste des sites à charger
 
-let tFichiers=[]; // tableau des fichiers proposés au chargement
-let boueesMobiles=[];
-let boueesFixes=[];
-
-
 let myInitGet = {
     method: "GET",
     headers: {"Content-Type": "application/json;charset=UTF-8"},

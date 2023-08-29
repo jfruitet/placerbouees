@@ -92,6 +92,7 @@ function show_coords(event) {
     ycoordold=ycoord;  
 }
 
+
 // A sleep function from https://www.sitepoint.com/delay-sleep-pause-wait/
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

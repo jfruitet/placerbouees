@@ -404,7 +404,7 @@ function addBoueesMobiles2Map(){
                     "Info":baliseSite,
                     "Zone Nav.":zonenav, 
                     "Concurrents":zoneconcurrents, 
-                    "Bouées ancrées":balises,
+                    "Balises ancrées":balises,
                     "Bouées mobiles":mesMarkersMobiles
                 }                  
             }
@@ -420,22 +420,20 @@ function addBoueesMobiles2Map(){
 // ----------------------------------
 function resetMarkersBoueesFixesParcours(){
     //console.debug("resetMarkersBoueesFixesParcours"); 
-    if ((tmarkersFixesParcours!==undefined) && (tmarkersFixesParcours.length>0)){
-        if ((map !== undefined) && (mesMarkersFixesParcours !== undefined))
-        {
-            if (map.hasLayer(mesMarkersFixesParcours)){
-                //console.debug("Remove Layer MarkersBoueesFixesParcours");
-                map.removeLayer(mesMarkersFixesParcours);
-            }
-        }                                       
-    }        
-}
+    if ((map !== undefined) && (mesMarkersFixesParcours !== undefined))
+    {        
+       if (map.hasLayer(mesMarkersFixesParcours)){
+            console.debug("Remove Layer MarkersBoueesFixesParcours");
+            map.removeLayer(mesMarkersFixesParcours);
+        }
+    }                                       
+}        
+
 
 // ------------------------------
 function addBoueesFixesParcours2Map(){
-    resetMarkersBoueesFixesParcours();
     if ((map!==undefined) && (boueesFixesParcours !== undefined) && (boueesFixesParcours.length>0)){                
-        var myIcon;
+        var myIcon;        
         for (var index=0; index<boueesFixesParcours.length; index++){  
             var style='';
             var description="Bouée mobile N° "+boueesFixesParcours[index].id;
@@ -514,6 +512,7 @@ function addBoueesFixesParcours2Map(){
     }     
     if (tmarkersFixesParcours.length>0)
     {
+
         mesMarkersFixesParcours=L.layerGroup(tmarkersFixesParcours);
     	setTimeout(() => {  
             // Ajout des boueesFixesParcours
@@ -525,7 +524,7 @@ function addBoueesFixesParcours2Map(){
                 "Info":baliseSite,
                 "Zone Nav.":zonenav, 
                 "Concurrents":zoneconcurrents, 
-                "Bouées ancrées":balises,
+                "Balises ancrées":balises,
                 "Bouées fixées":mesMarkersFixesParcours
             }      
             
