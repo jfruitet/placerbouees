@@ -317,6 +317,7 @@ function ajax_GetData(url, mystr){
         .then((data) => {
                 siteCharge=data.site;
                 twdChargee=data.twd;
+                
                 boueesFixesParcours=data.boueesfixes;
                 addBoueesFixesParcours2Map();
                 
@@ -334,9 +335,14 @@ function ajax_GetData(url, mystr){
                     }
                 }
                 
-                boueesMobiles=data.boueesmobiles;
-                addBoueesMobiles2Map();
-                document.getElementById("mapinfo").innerHTML=siteCharge+" TWD:"+ twdChargee;
+                if (data.boueesmobiles !== undefined){
+                    boueesMobiles=data.boueesmobiles;
+                    addBoueesMobiles2Map();
+                    document.getElementById("mapinfo").innerHTML=siteCharge+" TWD:"+ twdChargee;
+                }
+                else{
+                    document.getElementById("mapinfo").innerHTML=siteCharge+": Données indisponibles pour  TWD:"+ twdChargee;
+                }
 /*
                 if (boueesMobiles.length>0){
                     for (var item=0; item<boueesMobiles.length; item++){

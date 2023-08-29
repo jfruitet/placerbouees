@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="Déplacement de bouées pour la Voile radiocommandée">
+  <meta name="author" content="Jean Fruitet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, target-densitydpi=device-dpi">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <!-- base href="http://localhost/placerbouees/" target="_blank" -->
+  <title>Déplacement de Bouées RC</title>
+  <!-- Feuilles de style -->
+
+<link rel="stylesheet" href="css/style2.css">
+<!-- link rel="stylesheet" href="map.css"  -->
+ 
+<!-- Javascript ---------->
+<script src="js/myscript.js"></script>
+<script src="js/myscript2.js"></script> <!-- Déplacement des bouées -->
+<script src="js/config.js"></script>
+
+<!-- LeafLet : bibliothèque Javascript pour les cartes OpenStreetMap -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+</head>
+<body>
+ <div id="entete"></div>
+ <script>
+ document.getElementById("entete").innerHTML = "<b>Déplacement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"editionBouees()\"><span id='edit'>Ajouter</span></button> &nbsp; &nbsp; <button onclick=\"choixFichierBouees()\"><span id='move'>Déplacer</span></button> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+ </script>
+ <noscript>
+<div class="menu"><h3>Déplacement de Bouées RC</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
+<span style="color:orange;text-align:center;">Sources disponibles sur <button onclick="document.location='https://github.com/jfruitet/placerbouees#README'">GitHub JF</button></span>
+</div>
+ </noscript>
+ 
+ <div class="corpstexte">  
+ <!-- div id="gauche" --> 
+  <h2>Edition / Déplacement de Bouées radio commandées</h2>    
+<a href="mailto:jean.fruitet@free.fr?subject=Placement de bouées" title="Ecrivez-moi">jean.fruitet@free.fr</a>
+<p> <!-- button id="liste" onclick="listePlansEauDisponibles(); ">Lister</button--> <b>Sites de navigation disponibles</b> 
+<div class="scrollleft">
+    <ul id="mylist"></ul>
+</div>
+<div id="droite">
+    <img src="images/parcours_regate-vrc_imagette.gif" alt="logo" style="max-width:100%;height:auto;">
+</div>
+</div>
+
+<div class="graphicLayout1">
+    <div id="ajout">
+    <h3>Ajouter des bouées</h3>
+    <p>Positionnement des bouées du parcours</p>
+    <p id="consigne">Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  "Soumettre" </p>
+    <p> <span id="twddeg">TWD ° ?</span> &nbsp; &nbsp; &nbsp; <span id="twdrad"></span>,  
+ &nbsp; &nbsp; &nbsp; Zoom:<span id="zoomv">?</span>
+ <br />
+ X:<span id="coordx">?</span> Y:<span id="coordy">?</span>
+ &nbsp; &nbsp; &nbsp; Lon:<span id="lon">?</span> Lat:<span id="lat">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance">...</span> 
+<br />
+<b>TWD</b> : <input type="text" id="twd" name="twd" size="5">  
+    <button class="input" onclick="setTWD(); affiche_fleche_TWD();">Soumettre</button>
+ &nbsp;  <b>Zoom</b> <button class="input" id="zoomin" onclick="zoomIn(); ">+</button>  
+    <button class="input" id="zoomout" onclick="zoomOut(); ">-</button>  
+    <button class="input" id="zoomout" onclick="zoomReset(); ">1</button>
+</p>
+    <!--  &nbsp; &nbsp; &nbsp; 
+    <button class="input" id="draw" onclick="drawAll();">Afficher</button>
+    -->
+    &nbsp; <button class="input" id="clear" onclick="ajouterBouees(); ">Bouées</button> 
+    &nbsp; <button class="input" id="bdelete" onclick="boueesDelete(); ">Retirer</button>
+    &nbsp; <button class="input" id="breset" onclick="boueesReset(); ">Vider</button>
+    &nbsp; <button class="input" id="bvalider" onclick="boueesValider(); ">Valider</button>
+    &nbsp; <button class="input" id="bannuler" onclick="boueesAnnuler(); ">Annuler</button>
+    &nbsp; <button class="attention" id="transfert" onclick="tranfertBouees(); ">Transférer</button>  
+
+    <div id="typebouee"> 
+        <input type="radio" id="babord" name="franchissement" value="babord" /><label for="babord">Bâbord</label> 
+        <input type="radio" id="tribord" name="franchissement" value="tribord" checked><label for="tribord">Tribord</label>
+ &nbsp; &nbsp; 
+        <input type="radio" id="depart" name="type" value="depart" checked /><label for="depart">Départ</label>  
+        <input type="radio" id="arrivee" name="type" value="arrivee" /><label for="arrivee">Arrivée</label>  
+        <input type="radio" id="porte" name="type" value="porte" /><label for="porte">Porte</label>
+        <input type="radio" id="dogleg" name="type" value="dogleg" /><label for="dogleg">DogLeg</label>
+    </div>  
+
+    <div class="canvas">
+    <canvas id="canvas1" width="520" height="520" onmousedown="show_coords(event); screen2earth();">  
+ This text is displayed if your browser does not support HTML5 Canvas.
+    </canvas> 
+    <canvas id="canvas3" width="520" height="520" onmousemove="drawReticule(event);"></canvas>  
+    <div  class="info">
+        <canvas id="canvas2" width="150" height="150"></canvas>
+        <canvas id="canvas4" width="150" height="300"></canvas> 
+    </div>  
+    </div>
+    </div> <!-- fin div ajout -->
+    
+    <div id="fileedit">
+        <h3>Editer des bouées</h3>
+        <p>Modification du placement de bouées de parcours. 
+        <div id="fileslist">
+            <span id="consigne2">Sélectionnez un fichier à modifier</span> </p>
+            <b>Données disponibles</b><br />
+            <span id="datawind"></span></p> 
+            <ol id="myListWindData"></ol>
+            <span id="datanotwind"></span></p> 
+            <ul id="myListData"></ul>   
+        </div>
+        
+        <div id="moveedit">
+            <p> <span id="twddeg2">TWD ° ?</span> &nbsp; &nbsp; &nbsp; <span id="twdrad2"></span>,  
+ &nbsp; &nbsp; &nbsp; Zoom:<span id="zoomv2">?</span>
+ <br />X:<span id="coordx2">?</span> Y:<span id="coordy2">?</span>
+ &nbsp; &nbsp; &nbsp; Lon:<span id="lon2">?</span> Lat:<span id="lat2">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance2">...</span> 
+ <br />
+ <!-- ----------------------------------- Pas de mofication de la direction du vent dans cette page
+ <b>TWD</b> : <input type="text" id="twd2" name="twd2" size="5">  
+    <button class="input" onclick="setTWD2(); affiche_fleche_TWD();">Soumettre</button>
+ &nbsp;  
+----------------------- --> 
+    <b>Zoom</b> <button class="input" id="zoomin2" onclick="zoomIn2(); ">+</button>  
+    <button class="input" id="zoomout2" onclick="zoomOut2(); ">-</button>  
+    <button class="input" id="zoomout2" onclick="zoomReset2(); ">1</button>
+</p>    
+    &nbsp; <button class="input" id="bmove" onclick="ecranSaisie(); ">Déplacer</button>
+    &nbsp; <button class="input" id="breset2" onclick="buoysReset(); ">Annuler</button>
+    &nbsp; <button class="input" id="bdisplay" onclick="buoysDisplay(); ">Valider</button>  
+    &nbsp; <button class="attention" id="bsave" onclick="buoysSave(); ">Enregistrer</button>  
+
+            <div class="canvas">
+    <canvas id="canvas5" width="520" height="520" onmousedown="show_coords2(event); screen2earth();">  
+ This text is displayed if your browser does not support HTML5 Canvas.
+    </canvas> 
+    <canvas id="canvas7" width="520" height="520" onmousemove="drawReticule2(event);"></canvas>  
+    <div  class="info">
+        <canvas id="canvas6" width="150" height="150"></canvas>
+        <canvas id="canvas8" width="150" height="300"></canvas> 
+    </div>  
+    </div>
+    </div> <!-- fin div file -->
+    </div>
+</div> <!-- Graphiclayout1 -->
+
+<script src="js/map.js"></script>
+<script src="js/map2.js"></script>
+<script src="js/ajax.js"></script>    <!-- édition de bouees -->
+<script src="js/ajax4.js"></script>    <!-- Déplacement des bouées -->
+<script src="js/sitenavigation.js"></script>
+<script src="js/geo_utils.js"></script> 
+<script src="js/icones.js"></script>
+<script src="js/saisie.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/canvas2.js"></script> <!-- Déplacement des bouées -->
+<script src="js/bouees.js"></script>
+<script src="js/bouees2.js"></script>
+
+
+<div class="graphicLayout2">
+<h3 id="mapinfo">Carte</h3>
+<div id="osm-map"></div> 
+</div>
+    
+
+<script>
+// -- Création
+document.getElementById('bdelete').style.visibility="hidden";
+document.getElementById('breset').style.visibility="hidden";
+document.getElementById('bvalider').style.visibility="hidden";
+document.getElementById('bannuler').style.visibility="hidden";
+document.getElementById('typebouee').style.visibility="hidden";
+// -- Edition / Déplacement 
+document.getElementById('moveedit').style.display="none";
+document.getElementById('bsave').style.visibility="hidden";
+document.getElementById('bmove').style.visibility="hidden";
+document.getElementById('breset2').style.visibility="hidden";
+document.getElementById('bdisplay').style.visibility="hidden";  
+document.getElementById('bsave').style.visibility="hidden";
+
+// Chargement de la carte
+ window.onload = function(){
+        //console.log('Page chargée');
+        checkCookies();
+        initMap(); // Affiche le fond de carte
+        setTWD(); 
+        affiche_fleche_TWD();
+        affiche_legende(8);
+        listePlansEauDisponibles();
+        infoSite=nomDuSite;
+        document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
+        getDataWindBoueeSite(twd,nomDuSite);
+        document.getElementById("datanotwind").innerHTML="pour les autres directions du vent";
+        getDataBoueeSite(twd,nomDuSite);
+        document.getElementById("mapinfo").innerHTML=infoSite;
+        getSite();       
+ }   
+</script>
+
+    
+</body>
+</html>
