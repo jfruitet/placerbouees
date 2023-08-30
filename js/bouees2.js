@@ -134,6 +134,17 @@ function drawReticule2(event){
 }
 
 */
+
+// Annule tout déplacement 
+// ----------------------------------
+ function buoysReset(){
+    if (rectangleEnglobant!==undefined){
+        rectangleEnglobant.length=0;
+    }  
+    drawAll2(); // reset intégral      
+ }
+ 
+ 
 // Applique le déplacement aux bouées mobile sans l'enregistrer
 // ----------------------------------
  function buoysDisplay(){
@@ -164,15 +175,16 @@ function drawReticule2(event){
         var dogleg=false;
         var porte=false
         var depart=false;
+        var arrivee=false;
         var premier_dogleg=true;
         
-        console.debug("bouees2.js :: buoysSave()");
-        console.debug("Coordonnées du rectangle dans l'écran de saisie x1:"+x1+", y1:"+y1+", x2:"+x2+", y2:"+y2);
-        console.debug("Coordonnées du rectangle dans l'écran d'affichage Cx1:"+cx11+", Cy1:"+cy11+", Cx2:"+cx22+", Cy2:"+cy22);
+        //console.debug("bouees2.js :: buoysSave()");
+        //console.debug("Coordonnées du rectangle dans l'écran de saisie x1:"+x1+", y1:"+y1+", x2:"+x2+", y2:"+y2);
+        //console.debug("Coordonnées du rectangle dans l'écran d'affichage Cx1:"+cx11+", Cy1:"+cy11+", Cx2:"+cx22+", Cy2:"+cy22);
         if ((balisesMobilesEcran!==undefined) &&  (balisesMobilesEcran.length>0)){
             for (var index=0; index< balisesMobilesEcran.length; index++){
-                console.debug("AVANT\nIndex:"+index+" Id:"+balisesMobilesEcran[index].id+" Name: "+balisesMobilesEcran[index].name+" CX:"+balisesMobilesEcran[index].cx+" CY:"+balisesMobilesEcran[index].cy);
-                console.debug(" X:"+balisesMobilesEcran[index].x+" Y:"+balisesMobilesEcran[index].y+ " Color: "+balisesMobilesEcran[index].color+" Fillcolor:"+balisesMobilesEcran[index].fillcolor+"\n");
+                //console.debug("AVANT\nIndex:"+index+" Id:"+balisesMobilesEcran[index].id+" Name: "+balisesMobilesEcran[index].name+" CX:"+balisesMobilesEcran[index].cx+" CY:"+balisesMobilesEcran[index].cy);
+                //console.debug(" X:"+balisesMobilesEcran[index].x+" Y:"+balisesMobilesEcran[index].y+ " Color: "+balisesMobilesEcran[index].color+" Fillcolor:"+balisesMobilesEcran[index].fillcolor+"\n");
             
                 // Franchissement : bâbord ou tribord ?
                 if (balisesMobilesEcran[index].fillcolor=="green"){
@@ -184,22 +196,32 @@ function drawReticule2(event){
                     tribord=false;
                     babord=true;                
                 }    
+                
                 // Type de bouée
                 if (balisesMobilesEcran[index].color=="navy"){
                     // Dog leg
                     dogleg=true;
                     porte=false;
-                    depart=false;                      
+                    depart=false; 
+                    arrivee=false;                     
                 }
                 else if (balisesMobilesEcran[index].color=="purple"){    
                     dogleg=false;
                     porte=true;
                     depart=false;
+                    arrivee=false;
                 }
-                else{
+                else if (balisesMobilesEcran[index].color=="yellow"){    
                     dogleg=false;
                     porte=false;
-                    depart=true;                
+                    depart=true;
+                    arrivee=false;
+                }
+                else {
+                    dogleg=false;
+                    porte=false;
+                    depart=false;
+                    arrivee=true;                
                 }  
                 
                 if (dogleg==true){  
@@ -231,8 +253,8 @@ function drawReticule2(event){
                         balisesMobilesEcran[index].cy=cy22;                    
                     }    
                 } 
-                else {
-                    if (tribord==true){ // porte au 1/3 de la hauteur du rectangle
+                else if (depart==true){
+                    if (tribord==true){ // départ au 1/3 de la hauteur du rectangle
                         balisesMobilesEcran[index].x=x2;
                         balisesMobilesEcran[index].y=Math.round((2*y2+y1)/3);                        
                         balisesMobilesEcran[index].cx=setSaisieToDisplayX(x2,Math.round((2*y2+y1)/3), twd_radian); 
@@ -245,20 +267,13 @@ function drawReticule2(event){
                         balisesMobilesEcran[index].cy=setSaisieToDisplayY(x1,Math.round((2*y2+y1)/3), twd_radian);                   
                     }    
                 }
-                console.debug("APRES\nIndex:"+index+" Id:"+balisesMobilesEcran[index].id+" Name: "+balisesMobilesEcran[index].name+" CX:"+balisesMobilesEcran[index].cx+" CY:"+balisesMobilesEcran[index].cy);
-                console.debug(" X:"+balisesMobilesEcran[index].x+" Y:"+balisesMobilesEcran[index].y+" Color "+balisesMobilesEcran[index].color+" Fillclor:"+balisesMobilesEcran[index].fillcolor+"\n");
+                else {  // Arrivee ?
+                    ; // On ne modifie pas la position des bouées d'arrivées 
+                }
+                //console.debug("APRES\nIndex:"+index+" Id:"+balisesMobilesEcran[index].id+" Name: "+balisesMobilesEcran[index].name+" CX:"+balisesMobilesEcran[index].cx+" CY:"+balisesMobilesEcran[index].cy);
+                //console.debug(" X:"+balisesMobilesEcran[index].x+" Y:"+balisesMobilesEcran[index].y+" Color "+balisesMobilesEcran[index].color+" Fillclor:"+balisesMobilesEcran[index].fillcolor+"\n");
             }
         }    
-        
-        /*
-        saisir_encore=false;
-        document.getElementById("bdelete").style.visibility="hidden";
-        document.getElementById("transfert").style.visibility="hidden";
-        document.getElementById("breset").style.visibility="hidden";
-        document.getElementById("bvalider").style.visibility="hidden";
-        document.getElementById("bannuler").style.visibility="hidden";
-        document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";
-        */        
     
         removeEvent(canvas7,"dblclick");
         removeEvent(canvas7,"mouseover");  
@@ -316,8 +331,8 @@ function nouveauSommet() {
     var cx=setSaisieToDisplayX(x,y,twd_radian); 
     var cy=setSaisieToDisplayY(x,y,twd_radian);
         
-    console.debug("nouveau sommet() :: MouseX:"+xcoord+" MouseY:"+ycoord+" Zoom:"+zoom+"\nCoordonnées écran de saisie X:"+x+" Y:"+y+"\n");
-    console.debug("Coordonnées écran d'affichage CX:"+cx+" CY:"+cy+"\n");
+    //console.debug("nouveau sommet() :: MouseX:"+xcoord+" MouseY:"+ycoord+" Zoom:"+zoom+"\nCoordonnées écran de saisie X:"+x+" Y:"+y+"\n");
+    //console.debug("Coordonnées écran d'affichage CX:"+cx+" CY:"+cy+"\n");
         
     if (rectangleEnglobant!==undefined){
         if (oksaisieSommet<2){
@@ -334,6 +349,7 @@ function nouveauSommet() {
  
  
 // Trace  une ellipse surmontée d'un drapeau
+// ------------------------------------------
 function drawBoueeColor2(x,y,color,flag){   
     ctx7.fillStyle=color;
     ctx7.strokeStyle = "black";
@@ -441,9 +457,67 @@ function drawRectangle2(x1,y1,x2,y2){
   *      SAUVEGARDER
   * 
   * *********************************************/
-  
- // ---------------------------
- function buoysSave(){
-    console.debug("Sauvegarde des nouveaux emplacments de bouées mobiles");
-    //
+// affiche les bouées sur la map
+ function boueesMobilesToMap(){
+    if (bouees !== undefined && balisesMobilesEcran !== undefined && (balisesMobilesEcran.length>0)){
+        bouees.length=0;
+        for (var index=0; index<balisesMobilesEcran.length; index++){
+            // Passer dans le repère d'origine du canvas
+            console.debug ('{"id":'+balisesMobilesEcran[index].id+',"cx":'+balisesMobilesEcran[index].cx+',"cy":'+balisesMobilesEcran[index].cy+',"lon":'+balisesMobilesEcran[index].lon+',"lat":'+balisesMobilesEcran[index].lat+',"color":"'+balisesMobilesEcran[index].color+'","flag":"'+balisesMobilesEcran[index].fillcolor+'"}');
+            bouees.push(JSON.parse('{"id":'+balisesMobilesEcran[index].id+',"cx":'+balisesMobilesEcran[index].cx+',"cy":'+balisesMobilesEcran[index].cy+',"lon":'+balisesMobilesEcran[index].lon+',"lat":'+balisesMobilesEcran[index].lat+',"color":"'+balisesMobilesEcran[index].color+'","flag":"'+balisesMobilesEcran[index].fillcolor+'"}'));
+        }    
+        addBouees2Map();
+        saisir_encore=false;
+        document.getElementById('moveedit').style.display="none";
+        document.getElementById('bsave').style.visibility="hidden";
+        document.getElementById('bmove').style.visibility="hidden";
+        document.getElementById('breset2').style.visibility="hidden";
+        document.getElementById('bdisplay').style.visibility="hidden";  
+
+        document.getElementById("consigne2").innerHTML="Bouées transférées";        
+    } 
  }
+
+  
+  
+// ---------------------------
+function buoysSave(){
+    console.debug("bouees2.js :: buoysSave(); Sauvegarde des nouveaux emplacements des bouées mobiles");
+    // Bouées mobiles
+    if ((balisesMobilesEcran !== undefined) && (balisesMobilesEcran.length>0)){
+        // Exporter
+        // Nom du fichier de sauvegarde
+
+        // envoie le fichier JSON des bouées au serveur pour l'enregistrer dans le dossier ./data
+        var myjsonboueesfixes='"boueesfixes":[';
+        var myjson='"boueesmobiles":[';
+        var compteurfixe=0;
+        var compteurmobile=0;
+        for (var index=0; index<balisesMobilesEcran.length; index++){
+            balisesMobilesEcran[index].lon=get_lon_Xecran(balisesMobilesEcran[index].cx); // Attention de ne pas inverser l'ordre des changements de repères
+            balisesMobilesEcran[index].lat=get_lat_Yecran(balisesMobilesEcran[index].cy); // Attention de ne pas inverser l'ordre des changements de repères
+
+            if (compteurmobile==0){ 
+                myjson = myjson+'{"boueefixe":'+false+',"id":'+compteurmobile+',"lon":'+balisesMobilesEcran[index].lon+',"lat":'+balisesMobilesEcran[index].lat+',"color":"'+balisesMobilesEcran[index].color+'","fillcolor":"'+balisesMobilesEcran[index].fillcolor+'"}';                
+            }
+            else{
+                myjson = myjson+',{"boueefixe":'+false+',"id":'+compteurmobile+',"lon":'+balisesMobilesEcran[index].lon+',"lat":'+balisesMobilesEcran[index].lat+',"color":"'+balisesMobilesEcran[index].color+'","fillcolor":"'+balisesMobilesEcran[index].fillcolor+'"}';                
+            }             
+            compteurmobile++;
+        }
+        
+        boueesMobilesToMap();
+         
+        myjsonboueesfixes = myjsonboueesfixes+']';    // Les bouées fixes ne peuvent pas être déplacéées :>))       
+        myjson = myjson+']';
+        
+        var mystrjson='{"site":"'+nomDuSite.replace(/\s+/g, '')+'","twd":'+twd+',' + myjsonboueesfixes+','+myjson+'}';
+        // console.debug("Bouees Fixes JSON:"+myjsonboueesfixes+"\n");
+        // console.debug("Bouees JSON:"+myjson+"\n");
+        // console.debug("JSON:"+mystrjson+"\n");
+        
+        var url= url_serveur+'sauverbouees.php';
+        ajax_post(url, mystrjson);
+    }
+}
+

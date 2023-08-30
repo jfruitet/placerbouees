@@ -178,6 +178,7 @@ function drawReticule(event){
 
 
  // saisie des bouées du parcours (MAXBOUEES au plus)
+ //---------------------------------
  function placerBouees(){
     document.getElementById("consigne").innerHTML="Double clic pour placer une à une les bouées en travers du vent. "; 
 
@@ -189,6 +190,7 @@ function drawReticule(event){
 // Recherche une bouée fixe dans le voisinage
 // En entrée une coordonnée dans le repère lié au canvas d'affichage
 // Correspondant à un changement de coordonnées lon, lat vers x,y du canvas d'affichage
+// ---------------------------------
 function getBoueeFixeDansVoisinage(x, y){
     var index=0; 
     //console.debug ("getBoueeFixe :: X:"+x+" Y:"+y);
