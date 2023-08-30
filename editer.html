@@ -31,7 +31,7 @@
 <body>
  <div id="entete"></div>
  <script>
- document.getElementById("entete").innerHTML = "<b>Déplacement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"editionBouees()\"><span id='edit'>Ajouter</span></button> &nbsp; &nbsp; <button onclick=\"choixFichierBouees()\"><span id='move'>Déplacer</span></button> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
+ document.getElementById("entete").innerHTML = "<b>Déplacement de Bouées RC</b> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"masqueTexte()\"><span id='masquer'>Sites</span></button> &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"editionBouees()\"><span id='edit'>Ajouter</span></button> &nbsp; &nbsp; <button onclick=\"choixFichierBouees()\"><span id='move'>Replacer</span></button> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <button onclick=\"document.location='https://github.com/jfruitet/placerbouees#README'\">Sources</button>";
  </script>
  <noscript>
 <div class="menu"><h3>Déplacement de Bouées RC</h3> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; 
@@ -64,7 +64,7 @@
  &nbsp; &nbsp; &nbsp; Lon:<span id="lon">?</span> Lat:<span id="lat">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance">...</span> 
 <br />
 <b>TWD</b> : <input type="text" id="twd" name="twd" size="5">  
-    <button class="input" onclick="setTWD(); affiche_fleche_TWD();">Soumettre</button>
+    <button class="input" id="btwd" onclick="setTWD(); affiche_fleche_TWD(); reloadDataFiles();">Soumettre</button>
  &nbsp;  <b>Zoom</b> <button class="input" id="zoomin" onclick="zoomIn(); ">+</button>  
     <button class="input" id="zoomout" onclick="zoomOut(); ">-</button>  
     <button class="input" id="zoomout" onclick="zoomReset(); ">1</button>
@@ -102,32 +102,30 @@
     </div> <!-- fin div ajout -->
     
     <div id="fileedit">
-        <h3>Editer des bouées</h3>
-        <p>Modification du placement de bouées de parcours. 
-        <div id="fileslist">
-            <span id="consigne2">Sélectionnez un fichier à modifier</span> </p>
+        <h3>Replacer des bouées</h3>
+        <p>Modification du placement de bouées de parcours.</p>
+<p><b>TWD</b> : <input type="text" id="twd2" name="twd2" size="5">  
+<button class="input" id="btwd2" onclick="setTWD2(); affiche_fleche_TWD2(); reloadDataFiles();">Soumettre</button>
+&nbsp; &nbsp; <span id="twddeg2"></span> &nbsp; &nbsp; <span id="twdrad2"></span>
+</p>
+<p id="consigne2"> Sélectionnez un fichier à modifier </p>
+        <div id="fileslist">           
             <b>Données disponibles</b><br />
-            <span id="datawind"></span></p> 
+            <span id="datawind"></span> 
             <ol id="myListWindData"></ol>
-            <span id="datanotwind"></span></p> 
+            <span id="datanotwind"></span>
             <ul id="myListData"></ul>   
         </div>
         
         <div id="moveedit">
-            <p> <span id="twddeg2">TWD ° ?</span> &nbsp; &nbsp; &nbsp; <span id="twdrad2"></span>,  
- &nbsp; &nbsp; &nbsp; Zoom:<span id="zoomv2">?</span>
- <br />X:<span id="coordx2">?</span> Y:<span id="coordy2">?</span>
- &nbsp; &nbsp; &nbsp; Lon:<span id="lon2">?</span> Lat:<span id="lat2">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance2">...</span> 
- <br />
- <!-- ----------------------------------- Pas de mofication de la direction du vent dans cette page
- <b>TWD</b> : <input type="text" id="twd2" name="twd2" size="5">  
-    <button class="input" onclick="setTWD2(); affiche_fleche_TWD();">Soumettre</button>
- &nbsp;  
------------------------ --> 
+<p>Zoom:<span id="zoomv2">?</span> 
+ &nbsp; &nbsp; X:<span id="coordx2">?</span> Y:<span id="coordy2">?</span>
+ &nbsp; &nbsp; Lon:<span id="lon2">?</span> Lat:<span id="lat2">?</span> &nbsp; &nbsp; &nbsp; Distance:<span id="distance2">...</span> 
+<br />
     <b>Zoom</b> <button class="input" id="zoomin2" onclick="zoomIn2(); ">+</button>  
     <button class="input" id="zoomout2" onclick="zoomOut2(); ">-</button>  
     <button class="input" id="zoomout2" onclick="zoomReset2(); ">1</button>
-</p>    
+  
     &nbsp; <button class="input" id="bmove" onclick="ecranSaisie(); ">Déplacer</button>
     &nbsp; <button class="input" id="breset2" onclick="buoysReset(); ">Annuler</button>
     &nbsp; <button class="input" id="bdisplay" onclick="buoysDisplay(); ">Valider</button>  
@@ -192,12 +190,20 @@ document.getElementById('bsave').style.visibility="hidden";
         affiche_legende(8);
         listePlansEauDisponibles();
         infoSite=nomDuSite;
-        document.getElementById("datawind").innerHTML="pour un vent de direction <b>"+twd+"°</b>";
-        getDataWindBoueeSite(twd,nomDuSite);
-        document.getElementById("datanotwind").innerHTML="pour les autres directions du vent";
-        getDataBoueeSite(twd,nomDuSite);
-        document.getElementById("mapinfo").innerHTML=infoSite;
-        getSite();       
+        getSite();
+        reloadDataFiles();
+        if (twd>=0 && twd<=360){
+            document.getElementById("twd").value=twd;
+            document.getElementById("twd2").value=twd;           
+            twd_radian=get_radian_repere_direct(twd);// Math.round(number*100)/100
+            var twd_radrounded=Math.round(twd_radian*1000)/1000;
+                        
+            document.getElementById("twddeg").innerHTML='TWD°: <i>'+twd+'</i>';
+            document.getElementById("twdrad").innerHTML='TWD radian: <i>'+twd_radrounded+'</i>';
+            document.getElementById("twddeg2").innerHTML='TWD°: <i>'+twd+'</i>';
+            document.getElementById("twdrad2").innerHTML='TWD radian°: <i>'+twd_radrounded+'</i>';
+        }                 
+        document.getElementById("mapinfo").innerHTML=infoSite+" TWD:"+twd;
  }   
 </script>
 

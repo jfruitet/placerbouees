@@ -8,7 +8,7 @@ const ctx5 = canvas5.getContext("2d");
 canvas5.height=canvas5.width;
 canvasw=canvas5.width;
 canvash=canvas5.height;
-console.debug("canvas2.js :: Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
+//console.debug("canvas2.js :: Zoom : "+zoom+" canvasw : "+canvasw+" canvash : "+canvash);
 
 const canvas6 = document.getElementById("canvas6");
 const ctx6 = canvas6.getContext("2d");
@@ -41,13 +41,15 @@ function zoomReset2() {
   drawAll2();
 }
 
+
+// ------------------------------------
 function draw_scale2(){
 // calcule et affiche l'échelle en mètres
 // On applique la formule de la distance selon un grand cercle 
 // seulement valable à l'équateur pour les longitudes sur la projection Mercator
 // Distance (km) = Rayon terreste(6400 km) * angle (°)  *  Math.PI / 180
 // Sur les latitudes la formule 
-console.debug("canvas2.js :: draw_scale2()");
+    //console.debug("canvas2.js :: draw_scale2()");
     var anglelon=lonmax-lonmin;
     var anglelat=latmax-latmin;
     var dlon =  Math.abs(6378137 * anglelon * Math.PI / 180.0);
@@ -137,7 +139,7 @@ function init_ecran_bouees_mobiles(){
     if ((boueesMobiles!==undefined) && (boueesMobiles.length>0)){
         balisesMobilesEcran.length=0;
         for (var index=0; index<boueesMobiles.length; index++) {                                
-            balisesMobilesEcran[index]=(JSON.parse('{"id":'+boueesMobiles[index].id+',"x":'+get_Xecran_lon(boueesMobiles[index].lon)+',"y":'+get_Yecran_lat(boueesMobiles[index].lat)+',"name":"'+boueesMobiles[index].name+'", "color":"'+boueesMobiles[index].color+'","fillcolor":"'+boueesMobiles[index].fillcolor+'"}'));
+            balisesMobilesEcran[index]=(JSON.parse('{"id":'+boueesMobiles[index].id+',"lon":'+boueesMobiles[index].lon+',"lat":'+boueesMobiles[index].lat+',"cx":'+get_Xecran_lon(boueesMobiles[index].lon)+',"cy":'+get_Yecran_lat(boueesMobiles[index].lat)+',"x":0,"y":0, "name":"'+boueesMobiles[index].name+'", "color":"'+boueesMobiles[index].color+'","fillcolor":"'+boueesMobiles[index].fillcolor+'"}'));
         }     
     }  
      
@@ -237,7 +239,7 @@ function drawBoueesMobiles(){
     if ((balisesMobilesEcran !== undefined) && (balisesMobilesEcran.length>0)){
         for (var index=0; index<balisesMobilesEcran.length; index++){
             //console.debug(" Index: "+index+ " -> "+balisesMobilesEcran[index].x+", "+balisesMobilesEcran[index].y+", "+balisesMobilesEcran[index].color+", "+balisesMobilesEcran[index].fillcolor);
-            drawBoueeMobile(balisesMobilesEcran[index].x,balisesMobilesEcran[index].y,balisesMobilesEcran[index].color,balisesMobilesEcran[index].fillcolor);                
+            drawBoueeMobile(balisesMobilesEcran[index].cx,balisesMobilesEcran[index].cy,balisesMobilesEcran[index].color,balisesMobilesEcran[index].fillcolor);                
         }    
     }
 }

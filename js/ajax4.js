@@ -15,7 +15,7 @@ let boueesFixesParcours=[]; // Pour la map
 //-----------------
 function proposeChoixWindData(){
     if ((tFichiers !== undefined) && (tFichiers.length>0)){ 
-        console.debug("proposeChoixWindData :: tFichiers 2 : "+ tFichiers);
+        //console.debug("proposeChoixWindData :: tFichiers 2 : "+ tFichiers);
         document.getElementById("myListWindData").innerHTML=""; // Sinon les items fichiers sont en doublés 
                                                             // et je n'ai toujours pas compris pourquoi
         for (var i=0; i<tFichiers.length; i++){     
@@ -71,27 +71,20 @@ function getDataWindBoueeSite(twd,site) {
 
 
 //-----------------
-function proposeChoixData(){    // Tous les fichiers de data sauf 45°
+function afficheListeData(){    // Affiche la liste sans possibilité de choix
     if ((tFichiers !== undefined) && (tFichiers.length>0)){ 
         //console.debug("tFichiers 2 : "+ tFichiers);
         document.getElementById("myListData").innerHTML=""; // Sinon les items fichiers sont en doublés 
                                                             // et je n'ai toujours pas compris pourquoi
         for (var i=0; i<tFichiers.length; i++){     
             //console.debug("tFichiers i:"+i+" => "+ tFichiers[i]);
-            const listItem = document.createElement("li");   
-            var b = document.createElement('button');
-            b.setAttribute('name',tFichiers[i]);
-            b.setAttribute('onclick','getThatData("'+encodeURI(tFichiers[i])+'");');
-            b.textContent=tFichiers[i];
-            // apend the anchor to the dom element
-            listItem.appendChild(b);
-            myListData.appendChild(listItem);
+            document.getElementById("myListData").innerHTML+="<li>"+tFichiers[i]+"</li>\n";
         }
     }                     
 }
 
 // ----------------------- 
-function ajax_GetDataSite(url, mystr){ 
+function ajax_GetDataSite(url, mystr, choix=true){ 
     if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
         // GET avec fetch()
         fetch(url+"?"+mystr, myInitGet)
@@ -105,7 +98,7 @@ function ajax_GetDataSite(url, mystr){
                         tFichiers.push(fichier);
                 }  
                 //console.debug("tFichiers : "+ tFichiers);
-                proposeChoixData();
+                afficheListeData();
             }   
         })                          
         .catch(error => console.debug("Erreur : "+error));
@@ -190,8 +183,8 @@ function ajax_GetData(url, mystr){
 // Affiche la map pour ce fichier
 // ----------------------- 
 function getThatData(nf){  
-    console.debug("getThatData :: Chargement des bouées\n");
-    console.debug("Fichier\n"+ nf);
+    //console.debug("getThatData :: Chargement des bouées\n");
+    //console.debug("Fichier\n"+ nf);
     document.getElementById("fileslist").style.display="none";
     deplacementBouees();   
     boueesMobiles.length=0;

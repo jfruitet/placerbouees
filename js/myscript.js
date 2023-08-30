@@ -58,19 +58,19 @@ function myFunction() {
 }
 
 // Positonne la direction du vent en degre
+// ---------------------------------------------
 function setTWD() {
     if (document.getElementById("twd").value.length>0){
-        twd=document.getElementById("twd").value;        
-    }
-    if (twd>=0 && twd<=360){
-        document.getElementById("twddeg").innerHTML='TWD°: <i>'+twd+'</i>';
-    }    
-
-    document.getElementById("twd").innerHTML=""; // Efface le contenu de la saisie
-    document.getElementById("twddeg").innerHTML='TWD°: <i>'+twd+'</i>';
-    twd_radian=get_radian_repere_direct(twd);// Math.round(number*100)/100
-    var twd_radrounded=Math.round(twd_radian*1000)/1000;
-    document.getElementById("twdrad").innerHTML='TWD radian: <i>'+twd_radrounded+'</i>';
+        var newtwd=document.getElementById("twd").value;        
+        if (newtwd>=0 && newtwd<=360){
+            twd=newtwd;
+            setCookie("stwd", twd, 30); // 30 jours
+            document.getElementById("twddeg").innerHTML='TWD°: <i>'+twd+'</i>';
+            twd_radian=get_radian_repere_direct(twd);// Math.round(number*100)/100
+            var twd_radrounded=Math.round(twd_radian*1000)/1000;
+            document.getElementById("twdrad").innerHTML='TWD radian: <i>'+twd_radrounded+'</i>';
+        }
+    }                    
 }
 
 

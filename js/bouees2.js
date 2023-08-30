@@ -29,15 +29,15 @@ function show_reticule2(x,y) {
     
         
         if (rectangleEnglobant.length==1){
-            console.debug("Cible 2");
-            console.debug("RSommet1:"+ rectangleEnglobant);
-            console.debug("RSommet1:"+ rectangleEnglobant[0].x+","+rectangleEnglobant[0].y);
+            //console.debug("Cible 2");
+            //console.debug("RSommet1:"+ rectangleEnglobant);
+            //console.debug("RSommet1:"+ rectangleEnglobant[0].x+","+rectangleEnglobant[0].y);
             drawCible2(rectangleEnglobant[0].x,rectangleEnglobant[0].y);
         }
         else if (rectangleEnglobant.length==2){
-            console.debug("Rectangle");
-            console.debug("RSommet1:"+ rectangleEnglobant[0].x+","+rectangleEnglobant[0].y);
-            console.debug("RSommet2:"+ rectangleEnglobant[1].x+","+rectangleEnglobant[1].y);
+            //console.debug("Rectangle");
+            //console.debug("RSommet1:"+ rectangleEnglobant[0].x+","+rectangleEnglobant[0].y);
+            //console.debug("RSommet2:"+ rectangleEnglobant[1].x+","+rectangleEnglobant[1].y);
             drawRectangle2(rectangleEnglobant[0].x,rectangleEnglobant[0].y, rectangleEnglobant[1].x,rectangleEnglobant[1].y);
         }
     
@@ -133,47 +133,171 @@ function drawReticule2(event){
 
 }
 
-// affiche les bouées sur la map, arrête la saisie des bouées
- function boueesValider(){
-    if ((bouees !== undefined) && (bouees.length>0)){
-        var x;
-        var y;
-        for (var index=0; index<bouees.length; index++){
-            // Passer dans le repère d'origine du canvas
-            cx=setSaisieToDisplayX(bouees[index].x,bouees[index].y,twd_radian); // Passer dans le repère d'origine du canvas
-            cy=setSaisieToDisplayY(bouees[index].x,bouees[index].y,twd_radian);
-            bouees[index].cx=cx;
-            bouees[index].cy=cy;           
-            bouees[index].lon=get_lon_Xecran(cx); // Attention de ne pas inverser l'ordre des changements de repères
-            bouees[index].lat=get_lat_Yecran(cy);
-            //console.debug("Index:"+index+" X:"+bouees[index].x+" Y:"+bouees[index].y+"  --> Cx:"+cx+" Cy:"+cy+"  --> Lon:"+bouees[index].lon+" Lat:"+bouees[index].lat+"\n");
+*/
+// Applique le déplacement aux bouées mobile sans l'enregistrer
+// ----------------------------------
+ function buoysDisplay(){
+    if ((rectangleEnglobant!==undefined) && (rectangleEnglobant.length==2)){
+        var x1=Math.min(rectangleEnglobant[0].x, rectangleEnglobant[1].x);  // Verticale droite -> longitude minimale 
+        var x2=Math.max(rectangleEnglobant[0].x, rectangleEnglobant[1].x);  // Verticale gauche  -> longitude maximale 
+        var y1=Math.min(rectangleEnglobant[0].y, rectangleEnglobant[1].y);  // Horizontale supérieure -> latitude maximale 
+        var y2=Math.max(rectangleEnglobant[0].y, rectangleEnglobant[1].y);  // Ligne horizontale inférieure (repère indirect) -> Latitude minimale
+        
+        var cx11=setSaisieToDisplayX(x1,y1,twd_radian);
+        var cy11=setSaisieToDisplayY(x1,y1,twd_radian);
+        var cx22=setSaisieToDisplayX(x2,y2,twd_radian);
+        var cy22=setSaisieToDisplayY(x2,y2,twd_radian);
+
+        var cx12=setSaisieToDisplayX(x1,y2,twd_radian);
+        var cy12=setSaisieToDisplayY(x1,y2,twd_radian);
+        var cx21=setSaisieToDisplayX(x2,y1,twd_radian);
+        var cy21=setSaisieToDisplayY(x2,y1,twd_radian);       
+        
+        /*
+        var cx1=x1;
+        var cy1=y1
+        var cx2=x2
+        var cy2=y2;
+        */
+        var tribord=false;
+        var babord=false;
+        var dogleg=false;
+        var porte=false
+        var depart=false;
+        var premier_dogleg=true;
+        
+        console.debug("bouees2.js :: buoysSave()");
+        console.debug("Coordonnées du rectangle dans l'écran de saisie x1:"+x1+", y1:"+y1+", x2:"+x2+", y2:"+y2);
+        console.debug("Coordonnées du rectangle dans l'écran d'affichage Cx1:"+cx11+", Cy1:"+cy11+", Cx2:"+cx22+", Cy2:"+cy22);
+        if ((balisesMobilesEcran!==undefined) &&  (balisesMobilesEcran.length>0)){
+            for (var index=0; index< balisesMobilesEcran.length; index++){
+                console.debug("AVANT\nIndex:"+index+" Id:"+balisesMobilesEcran[index].id+" Name: "+balisesMobilesEcran[index].name+" CX:"+balisesMobilesEcran[index].cx+" CY:"+balisesMobilesEcran[index].cy);
+                console.debug(" X:"+balisesMobilesEcran[index].x+" Y:"+balisesMobilesEcran[index].y+ " Color: "+balisesMobilesEcran[index].color+" Fillcolor:"+balisesMobilesEcran[index].fillcolor+"\n");
+            
+                // Franchissement : bâbord ou tribord ?
+                if (balisesMobilesEcran[index].fillcolor=="green"){
+                    // tribord
+                    tribord=true;
+                    babord=false;
+                }
+                else{
+                    tribord=false;
+                    babord=true;                
+                }    
+                // Type de bouée
+                if (balisesMobilesEcran[index].color=="navy"){
+                    // Dog leg
+                    dogleg=true;
+                    porte=false;
+                    depart=false;                      
+                }
+                else if (balisesMobilesEcran[index].color=="purple"){    
+                    dogleg=false;
+                    porte=true;
+                    depart=false;
+                }
+                else{
+                    dogleg=false;
+                    porte=false;
+                    depart=true;                
+                }  
+                
+                if (dogleg==true){  
+                    if (premier_dogleg==true){
+                        balisesMobilesEcran[index].x=x2;
+                        balisesMobilesEcran[index].y=y1;                    
+                        balisesMobilesEcran[index].cx=cx21;
+                        balisesMobilesEcran[index].cy=cy21;
+                        premier_dogleg=false;
+                    }
+                    else{
+                        balisesMobilesEcran[index].x=x1;
+                        balisesMobilesEcran[index].y=y1;     
+                        balisesMobilesEcran[index].cx=cx11;
+                        balisesMobilesEcran[index].cy=cy11;                    
+                    }    
+                }
+                else  if (porte==true){  
+                    if (tribord==true){
+                        balisesMobilesEcran[index].x=x1;
+                        balisesMobilesEcran[index].y=y2;                         
+                        balisesMobilesEcran[index].cx=cx12;
+                        balisesMobilesEcran[index].cy=cy12;
+                    }
+                    else{
+                        balisesMobilesEcran[index].x=x2;
+                        balisesMobilesEcran[index].y=y2;                         
+                        balisesMobilesEcran[index].cx=cx22;
+                        balisesMobilesEcran[index].cy=cy22;                    
+                    }    
+                } 
+                else {
+                    if (tribord==true){ // porte au 1/3 de la hauteur du rectangle
+                        balisesMobilesEcran[index].x=x2;
+                        balisesMobilesEcran[index].y=Math.round((2*y2+y1)/3);                        
+                        balisesMobilesEcran[index].cx=setSaisieToDisplayX(x2,Math.round((2*y2+y1)/3), twd_radian); 
+                        balisesMobilesEcran[index].cy=setSaisieToDisplayY(x2,Math.round((2*y2+y1)/3), twd_radian); 
+                    }
+                    else{
+                        balisesMobilesEcran[index].x=x1;
+                        balisesMobilesEcran[index].y=Math.round((2*y2+y1)/3);                           
+                        balisesMobilesEcran[index].cx=setSaisieToDisplayX(x1,Math.round((2*y2+y1)/3), twd_radian);
+                        balisesMobilesEcran[index].cy=setSaisieToDisplayY(x1,Math.round((2*y2+y1)/3), twd_radian);                   
+                    }    
+                }
+                console.debug("APRES\nIndex:"+index+" Id:"+balisesMobilesEcran[index].id+" Name: "+balisesMobilesEcran[index].name+" CX:"+balisesMobilesEcran[index].cx+" CY:"+balisesMobilesEcran[index].cy);
+                console.debug(" X:"+balisesMobilesEcran[index].x+" Y:"+balisesMobilesEcran[index].y+" Color "+balisesMobilesEcran[index].color+" Fillclor:"+balisesMobilesEcran[index].fillcolor+"\n");
+            }
         }    
         
-        // Imprimer les coordonnées
-
-        addBouees2Map();
+        /*
         saisir_encore=false;
         document.getElementById("bdelete").style.visibility="hidden";
         document.getElementById("transfert").style.visibility="hidden";
         document.getElementById("breset").style.visibility="hidden";
         document.getElementById("bvalider").style.visibility="hidden";
         document.getElementById("bannuler").style.visibility="hidden";
-        document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";        
-    }
- 
-
-    //drawBouees();
-    removeEvent(canvas3,"dblclick");
-    removeEvent(canvas3,"mouseover");  
-    drawAll();    
-    document.getElementById("transfert").style.visibility="visible";
-    document.getElementById("consigne").innerHTML="Tranférez les bouées vers le serveur. ";      
+        document.getElementById("consigne").innerHTML="Entrez la direction <b><i>d'où souffle le vent</i></b> en degré puis cliquez  \"Soumettre\"  ";
+        */        
+    
+        removeEvent(canvas7,"dblclick");
+        removeEvent(canvas7,"mouseover");  
+        redrawAll();    
+        document.getElementById("transfert").style.visibility="visible";
+        document.getElementById("consigne").innerHTML="Tranférez les bouées vers le serveur. ";
+    }              
  }
 
-*/
- // saisie des bouées du parcours (MAXBOUEES au plus)
+
+// --------------------------------
+function redrawAll(){
+    //console.debug("canvas2.js :: drawAll2()"); 
+    ctx7.clearRect(0, 0, canvas7.width, canvas7.height); // Pour le cas où il y aurait des scories
+    document.getElementById("zoomv2").innerHTML=zoomfactor;
+
+    // Passer la main au canvas
+    document.getElementById("canvas5").style.zIndex=2;   
+    document.getElementById("canvas7").hidden=true;
+    clearCanvas5();    
+    draw_scale2(); 
+    draw_Ecran_poly_navigation2(); 
+    draw_Ecran_ligne_concurrents2();
+    //console.debug("canvas2.js :: draw_Ecran_bouees_fixes2()"); 
+    draw_Ecran_bouees_fixes2();
+    
+    // Bouées mobiles
+    if ((balisesMobilesEcran !== undefined) && (balisesMobilesEcran.length>0)){
+        //console.debug("Affichage des bouées mobiles dans le canvas 5");
+        drawBoueesMobiles();
+    }   
+    affiche_fleche_TWD2();
+    affiche_legende2(8);    
+}
+
+ // Rectangle destination
+ // -------------------------------
  function placerRectangle(){
-    document.getElementById("consigne").innerHTML="Double clic pour placer un sommet du rectangle englobant. "; 
+    document.getElementById("consigne2").innerHTML="Placez le premier sommet du rectangle destination. "; 
     removeEvent(canvas7,"click");
     // removeEvent(canvas3,"mouseover");
     addEvent(canvas7,"dblclick",nouveauSommet());  
@@ -197,15 +321,14 @@ function nouveauSommet() {
         
     if (rectangleEnglobant!==undefined){
         if (oksaisieSommet<2){
-            oksaisieSommet++;       
+            oksaisieSommet++;                   
         }
         else{
             oksaisieSommet=0;
             rectangleEnglobant.length=0;
         }
-        rectangleEnglobant.push(JSON.parse('{"x":'+x+',"y":'+y+'}'));        
+        rectangleEnglobant.push(JSON.parse('{"x":'+x+',"y":'+y+',"cx":'+cx+',"cy":'+cy+'}'));        
     }
-    //drawBoueesMobiles2();
 }
 
  
@@ -265,6 +388,7 @@ function drawRectangle2(x1,y1,x2,y2){
  // et traite les coordonnées saisies à la souris
  function ecranSaisie(){
     //zoomReset();
+    // On fait un transformation de la figure
     clearCanvas5();
     ctx5.save(); // save state  
     ctx5.transform(1, 0, 0, 1, 0, 0); // Réinitialisation : scale h, skew h, skew v, scale v, move h, move v  
@@ -294,7 +418,7 @@ function drawRectangle2(x1,y1,x2,y2){
     
     document.getElementById("zoomv2").innerHTML=zoomfactor;
     // document.getElementById("consigne").innerHTML="La figure globale est ramenée face au vent. <span class=\"surligne\">Positionnez une diagonale du rectangle de la régate</span>.";
-    document.getElementById("consigne2").innerHTML="La figure globale est ramenée face au vent. <span class=\"surligne\">Positionnez les bouées une à une.</span>.";
+    document.getElementById("consigne2").innerHTML="La figure globale est ramenée face au vent. <span class=\"surligne\">Cliquez une diagonale du rectangle destination.</span>.";
 
     document.getElementById('bmove').style.visibility="visible";
     document.getElementById('breset2').style.visibility="visible";
@@ -302,13 +426,24 @@ function drawRectangle2(x1,y1,x2,y2){
     document.getElementById('bsave').style.visibility="visible";   
 
     // Placer le canvas7 au dessus des autres
-    document.getElementById("canvas6").style.zIndex=0;
+    document.getElementById("canvas5").style.zIndex=0;
     document.getElementById("canvas7").style.zIndex=2;
     document.getElementById("canvas7").hidden=false;
     
     //saisir_encore=true; 
     document.getElementById("canvas7").onclick = function() {
-        placerRectangle()
+        placerRectangle();
     };
  }
  
+ /***********************************************
+  * 
+  *      SAUVEGARDER
+  * 
+  * *********************************************/
+  
+ // ---------------------------
+ function buoysSave(){
+    console.debug("Sauvegarde des nouveaux emplacments de bouées mobiles");
+    //
+ }
