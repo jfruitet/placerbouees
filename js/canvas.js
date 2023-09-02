@@ -2,8 +2,8 @@
 // Zone de dessin
 // Version sans rectangle ni calcule d'intériorité
 
-// let rectangle = {x1:0,y1:0,x2:0,y2:0}; // le rectangle à tracer
-// let oksaisierectangle=0; // état de la saisie 0: aucun sommet; 1 : un sommet; 2: deux sommets 
+let rectangle = {x1:0,y1:0,x2:0,y2:0}; // le rectangle à tracer
+let oksaisierectangle=0; // état de la saisie 0: aucun sommet; 1 : un sommet; 2: deux sommets 
 
 let saisir_encore=true; 
 let compteur=0; // Compteur de bouées, permet de d'activer babord ou tribord automatiquement 

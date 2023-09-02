@@ -1,6 +1,8 @@
 // JavaScript Document
 
 let masque=true;
+let deplacer_bouees=true;   // le déplacement est actif
+let placer_dans_rectangle=true; // le positionnement dans un ectangle est actif
 
 let twd_radian = 0.0;
 let twd=0;

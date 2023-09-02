@@ -18,18 +18,18 @@ function show_reticule(x,y) {
 
     ctx3.clearRect(0, 0, canvas3.width, canvas3.height); 
     ctx3.beginPath();
-    ctx3.moveTo(x, 0);
+    ctx3.moveTo(x,0);
     ctx3.lineTo(x, canvas3.height);
     ctx3.moveTo(0,y);
     ctx3.lineTo(canvas3.width,y);
     ctx3.lineWidth = 0.5;
     ctx3.strokeStyle = "pink";
     ctx3.stroke(); 
-    // On va se passer du rectangle
-    // if (oksaisierectangle==1){
-    //    drawCible(rectangle.x1,rectangle.y1);
-    // }
-    // drawRectangle();
+    // rectangle
+    if (oksaisierectangle==1){
+        drawCible(rectangle.x1,rectangle.y1);
+    }
+    drawRectangle();
     drawBouees();
     //ctx3.restore(); // restore to original stat 
 }
@@ -78,6 +78,60 @@ function drawReticule(event){
     myMoveFunction();
 }
 
+
+/*************************************************
+ * Saisie d'un rectangle de "parcours de régate"
+ * ***********************************************/
+ // storeRect() enregistre le coordonnées cliquées dans une structure rectangle
+function storeRect(){
+    xcoord= event.offsetX;
+    ycoord= event.offsetY;
+    var x = setMouseXPos(xcoord);
+    var y = setMouseYPos(ycoord);
+    // console.debug("StoreRect() :: X:"+x+" Y:"+y+"\n");
+    if (oksaisierectangle==0) {
+        rectangle.x1=x;
+        rectangle.y1=y;
+        drawCible(x,y);
+        oksaisierectangle=1;
+    }
+    else if (oksaisierectangle==1) {
+        rectangle.x2=x;
+        rectangle.y2=y;
+        drawCible(rectangle.x1,rectangle.y1);
+        drawCible(x,y);
+        oksaisierectangle=2;      
+    }
+    if (oksaisierectangle==2){
+        // Tracer le rectangle
+        ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+        removeEvent(canvas3,"click"); 
+        drawRectangle();  
+        document.getElementById("consigne").innerHTML="Placement automatique des bouées <span class=\"surligne\">dans le rectangle de la régate</span>.";        
+        placementAutomatiqueBouees();
+    }
+ }
+ 
+ // dessine un rectangle de diagonale rectangle.x1, rectangle.y1, rectangle.x2, rectangle.y2
+function drawRectangle(){
+    if ((rectangle!==undefined) && (rectangle.x1>0) && (rectangle.y1>0)  && (rectangle.x2>0) && (rectangle.y2>0))
+    {
+        if (rectangle.x2<rectangle.x1){
+            var aux=rectangle.x1;
+            rectangle.x1=rectangle.x2;
+            rectangle.x2=aux;
+        }
+        if (rectangle.y2<rectangle.y1){
+            var aux=rectangle.y1;
+            rectangle.y1=rectangle.y2;
+            rectangle.y2=aux;
+        }      
+        ctx3.rect(rectangle.x1, rectangle.y1, rectangle.x2-rectangle.x1, rectangle.y2-rectangle.y1);
+        ctx3.lineWidth = 0.5;
+        ctx3.strokeStyle = "red";
+        ctx3.stroke(); 
+    } 
+}
  
   /*******************************************
   *     Saisie des emplacements de bouées    *
@@ -206,6 +260,154 @@ function getBoueeFixeDansVoisinage(x, y){
         index++;
     }        
     return -1;        
+}
+
+
+// ---------------------
+function placementAutomatiqueBouees(){
+    console.debug ("bouees.js :: placementAutomatiqueBouees");
+    if ((rectangle!==undefined) && (rectangle.x1!==undefined) && (rectangle.y1!=undefined)  
+        && (rectangle.x2!=undefined) && (rectangle.y2!=undefined))
+    {
+        if (rectangle.x2<rectangle.x1){
+            var aux=rectangle.x1;
+            rectangle.x1=rectangle.x2;
+            rectangle.x2=aux;
+        }
+        if (rectangle.y2<rectangle.y1){
+            var aux=rectangle.y1;
+            rectangle.y1=rectangle.y2;
+            rectangle.y2=aux;
+        }      
+
+        if  (nbouees<MAXBOUEE-6){
+        
+            var msgnumero=nbouees+1;
+
+            // Ne pas oublier d'appliquer les transformations inverses (-T') ° TR ° (-T) pour récupérer les coordonnées réelle de l'objet
+            // dans le repère d'affichage
+            var cx11=setSaisieToDisplayX(rectangle.x1,rectangle.y1,twd_radian); 
+            var cy11=setSaisieToDisplayY(rectangle.x1,rectangle.y1,twd_radian);
+            var cx22=setSaisieToDisplayX(rectangle.x2,rectangle.y2,twd_radian); 
+            var cy22=setSaisieToDisplayY(rectangle.x2,rectangle.y2,twd_radian);
+            var cx12=setSaisieToDisplayX(rectangle.x1,rectangle.y2,twd_radian); 
+            var cy12=setSaisieToDisplayY(rectangle.x1,rectangle.y2,twd_radian);
+            var cx21=setSaisieToDisplayX(rectangle.x2,rectangle.y1,twd_radian); 
+            var cy21=setSaisieToDisplayY(rectangle.x2,rectangle.y1,twd_radian);
+
+            // Verifier si on pointe la souris sur une bouée fixe
+            idfixe=-1;
+            var indexfixe=getBoueeFixeDansVoisinage(cx11, cy11);
+            if (indexfixe>-1) { // C'est une bouée fixe ; on amène ses coordonnées dans le canvas de saisie
+                //console.debug ("Bouée fixe dans le canvas d'affichage\nX:"+balisesEcran[indexfixe].x+" Y:"+balisesEcran[indexfixe].y+" idfixe:"+balisesEcran[indexfixe].id+"\n");
+                // On repasse dans le repère de saisie par transformation Display --> Saisie
+                var newx = setDisplayToSaisieX(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                var newy = setDisplayToSaisieY(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                idfixe=balisesEcran[indexfixe].id;
+                cx=balisesEcran[indexfixe].x;
+                cy=balisesEcran[indexfixe].y;
+                x=newx;
+                y=newy;
+                console.debug ("Bouée fixe dans le canvas de saisie X:"+x+" Y:"+y+" cx:"+cx+" cy:"+cy+" idfixe:"+idfixe+"\n");            
+                // dogleg 2
+                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"navy","flag":"red","idfixe":idfixe};
+            }
+            else{ // Nouvelle bouee mobile
+                // dog leg2 bâbord           
+                bouees[nbouees]={"id":nbouees,"x":rectangle.x1,"y":rectangle.y1,"cx":cx11,"cy":cy11,"lon":0.0,"lat":0.0,"color":"navy","flag":"red","idfixe":-1};
+            }
+            nbouees++;
+            
+            idfixe=-1;
+            var indexfixe=getBoueeFixeDansVoisinage(cx21, cy21);
+            if (indexfixe>-1) { // C'est une bouée fixe ; on amène ses coordonnées dans le canvas de saisie
+                //console.debug ("Bouée fixe dans le canvas d'affichage\nX:"+balisesEcran[indexfixe].x+" Y:"+balisesEcran[indexfixe].y+" idfixe:"+balisesEcran[indexfixe].id+"\n");
+                // On repasse dans le repère de saisie par transformation Display --> Saisie
+                var newx = setDisplayToSaisieX(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                var newy = setDisplayToSaisieY(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                idfixe=balisesEcran[indexfixe].id;
+                cx=balisesEcran[indexfixe].x;
+                cy=balisesEcran[indexfixe].y;
+                x=newx;
+                y=newy;
+                console.debug ("Bouée fixe dans le canvas de saisie X:"+x+" Y:"+y+" cx:"+cx+" cy:"+cy+" idfixe:"+idfixe+"\n");            
+                // dogleg 1 bâbord
+                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"navy","flag":"red","idfixe":idfixe};
+            }
+            else{ // Nouvelle bouee mobile
+                // dog leg bâbord            
+                bouees[nbouees]={"id":nbouees,"x":rectangle.x2,"y":rectangle.y1,"cx":cx21,"cy":cy21,"lon":0.0,"lat":0.0,"color":"navy","flag":"red","idfixe":-1};
+            }
+            nbouees++;
+            
+            idfixe=-1;
+            var indexfixe=getBoueeFixeDansVoisinage(cx22, cy22);
+            if (indexfixe>-1) { // C'est une bouée fixe ; on amène ses coordonnées dans le canvas de saisie
+                //console.debug ("Bouée fixe dans le canvas d'affichage\nX:"+balisesEcran[indexfixe].x+" Y:"+balisesEcran[indexfixe].y+" idfixe:"+balisesEcran[indexfixe].id+"\n");
+                // On repasse dans le repère de saisie par transformation Display --> Saisie
+                var newx = setDisplayToSaisieX(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                var newy = setDisplayToSaisieY(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                idfixe=balisesEcran[indexfixe].id;
+                cx=balisesEcran[indexfixe].x;
+                cy=balisesEcran[indexfixe].y;
+                x=newx;
+                y=newy;
+                console.debug ("Bouée fixe dans le canvas de saisie X:"+x+" Y:"+y+" cx:"+cx+" cy:"+cy+" idfixe:"+idfixe+"\n");            
+                // porte bâbord
+                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"purple","flag":"red","idfixe":idfixe};
+            }
+            else{ // Nouvelle bouee mobile
+                // porte bâbord            
+                bouees[nbouees]={"id":nbouees,"x":rectangle.x2,"y":rectangle.y2,"cx":cx22,"cy":cy22,"lon":0.0,"lat":0.0,"color":"purple","flag":"red","idfixe":-1};
+            }
+            nbouees++;
+            
+            idfixe=-1;
+            var indexfixe=getBoueeFixeDansVoisinage(cx12, cy12);
+            if (indexfixe>-1) { // C'est une bouée fixe ; on amène ses coordonnées dans le canvas de saisie
+                //console.debug ("Bouée fixe dans le canvas d'affichage\nX:"+balisesEcran[indexfixe].x+" Y:"+balisesEcran[indexfixe].y+" idfixe:"+balisesEcran[indexfixe].id+"\n");
+                // On repasse dans le repère de saisie par transformation Display --> Saisie
+                var newx = setDisplayToSaisieX(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                var newy = setDisplayToSaisieY(balisesEcran[indexfixe].x,balisesEcran[indexfixe].y, twd_radian);
+                idfixe=balisesEcran[indexfixe].id;
+                cx=balisesEcran[indexfixe].x;
+                cy=balisesEcran[indexfixe].y;
+                x=newx;
+                y=newy;
+                console.debug ("Bouée fixe dans le canvas de saisie X:"+x+" Y:"+y+" cx:"+cx+" cy:"+cy+" idfixe:"+idfixe+"\n");            
+                // porte tribord
+                bouees[nbouees]={"id":nbouees,"x":x,"y":y,"cx":cx,"cy":cy,"lon":0.0,"lat":0.0,"color":"purple","flag":"green","idfixe":idfixe};
+            }
+            else{ // Nouvelle bouee mobile
+                // porte tribord            
+                bouees[nbouees]={"id":nbouees,"x":rectangle.x1,"y":rectangle.y2,"cx":cx12,"cy":cy12,"lon":0.0,"lat":0.0,"color":"purple","flag":"green","idfixe":-1};
+            }
+            nbouees++;
+            
+            // Départ 
+            var ydep= Math.round((2*rectangle.y2 + rectangle.y1) / 3.0);
+            var cx1dep= setSaisieToDisplayX(rectangle.x1,ydep,twd_radian);
+            var cx2dep= setSaisieToDisplayX(rectangle.x2,ydep,twd_radian);
+            var cy1dep= setSaisieToDisplayY(rectangle.x1,ydep,twd_radian);
+            var cy2dep= setSaisieToDisplayX(rectangle.x2,ydep,twd_radian);
+            
+            // départ bâbord            
+            bouees[nbouees]={"id":nbouees,"x":rectangle.x1,"y":ydep,"cx":cx1dep,"cy":cy1dep,"lon":0.0,"lat":0.0,"color":"yellow","flag":"red","idfixe":-1};                      
+            nbouees++; 
+            // départ tribord
+            bouees[nbouees]={"id":nbouees,"x":rectangle.x2,"y":ydep,"cx":cx2dep,"cy":cy2dep,"lon":0.0,"lat":0.0,"color":"yellow","flag":"green","idfixe":-1};
+            nbouees++; 
+        /*
+        var msg="";
+        document.getElementById("consigne").innerHTML = "Bouées ";
+        for (var index=0; index<bouees.length; index++){
+            msg= msg + bouees[index] + " ";
+        }
+        */        
+            document.getElementById("consigne").innerHTML = "Les bouées sont placées. Cliquer sur \"Transférer\" ";
+            boueesValider();       
+        }
+    }
 }
 
 // ---------------------
@@ -363,7 +565,7 @@ function drawCible(x,y){
  
  // redessine le plan d'eau avec le vent "face au nord"
  // et traite les coordonnées saisies à la souris
- function ajouterBouees(){
+ function ajouterBouees(automatique){
     //zoomReset();
     clearCanvas();
     ctx.save(); // save state  
@@ -410,7 +612,13 @@ function drawCible(x,y){
     document.getElementById("tribord").checked=true;
     document.getElementById("depart").checked=true; 
     
-    saisir_encore=true; 
-    document.getElementById("canvas3").onclick = function() {placerBouees()};
+    if (automatique==true && placer_dans_rectangle==true){
+        oksaisierectangle=0;
+        document.getElementById("canvas3").onclick = function() {storeRect()};
+    }
+    else{
+        saisir_encore=true; 
+        document.getElementById("canvas3").onclick = function() {placerBouees()};
+    }
  }
  

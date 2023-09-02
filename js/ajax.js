@@ -220,6 +220,9 @@ function initPlanEau(response) {
     document.getElementById("mapinfo").innerHTML=infoSite;
     // On peut lancer le chargement des données du site
     getSite(); 
+    if (deplacer_bouees) {  // La fonctionnalité du déplacement est ativée
+        reloadDataFiles();
+    }
 }
 
 // ----------------------- 
