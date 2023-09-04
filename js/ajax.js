@@ -6,7 +6,7 @@ let myList = document.getElementById('mylist'); // La liste des sites à charger
 
 let myInitGet = {
     method: "GET",
-    headers: {"Content-Type": "application/json;charset=UTF-8"},
+    headers: {"Content-Type": "application/json;charset=UTF-8",  "Access-Control-Allow-Origin" : "*"},
     referrer: "about:client", //ou "" (pas de réferant) ou une url de l'origine
     referrerPolicy: "no-referrer-when-downgrade", //ou no-referrer, origin, same-origin...
     mode: "cors", //ou same-origin, no-cors
