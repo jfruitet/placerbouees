@@ -13,7 +13,7 @@ Les pages **Web** :  *placerbouees/index.html* et *./placerbouees/chargerbouees.
 ### Développement
 Par JF en javascript et PHP. (cc) jean.fruitet@free.fr
 
-La page web *./placerbouees/index.html* permet d'affecter des positions GPS sur une carte OpenStreetMap à des balises mobiles autonomes, en fonction de la direction du vent.
+La page web *./placerbouees/editer.html* permet d'affecter des positions GPS sur une carte OpenStreetMap à des balises mobiles autonomes, en fonction de la direction du vent.
 
 La page web *./placerbouees/chargerbouees.html* affiche ces bouées autonomes sur une carte OpenStreetMap.
 
@@ -32,7 +32,7 @@ Bouton "**Sites**" : Sélection d'un site de navigation et chargement de la cart
 
 Bouton "**Ajouter**" : Ajouter des bouées au site de navigation sélectionné.
 
-Bouton "**Replacer**" : Reposionner un lot de bouées en indiquant un nouveau rectangle englobant.
+Bouton "**Replacer**" : Repositionner un lot de bouées en indiquant un nouveau rectangle englobant.
 
 Les fichiers json des sites disponibles sont lus dans le dossier ./json/
 
@@ -42,9 +42,10 @@ Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètr
 #### Partie gauche  
 
 Il y a deux façons de placer des bouées :
-    * Bouton "**Générer**" : Placement en bloc de 6 bouées constituant un parcours standart.
+
+- Bouton "**Générer**" : Placement en bloc de 6 bouées constituant un parcours standart.
 Il faut pointer à l'écran une diagonale du rectangle englobant le parcours. Cette méthode est bien sûr la plus rapide.
-    * Bouton "**Placer**" : Placer une à une les bouées sur le plan d'eau en indiquant le mode de franchissement (bâbord / tribord) et le rôle sur le parcours (départ/Arrivée, dog leg, porte sous le vent)
+- Bouton "**Placer**" : Placer une à une les bouées sur le plan d'eau en indiquant le mode de franchissement (bâbord / tribord) et le rôle sur le parcours (départ/Arrivée, dog leg, porte sous le vent)
 Il faut pointer à la souris la position de chaque bouée du parcours, en utilisant aussi bien les bouées ancrées (fixes) qu'en ajoutant des bouées mobiles (des balises autonomes ancrées virtuellement).   
      
 
@@ -147,27 +148,32 @@ Le script PHP  *./placerbouees/php/placer_bouees.php* réalise cette tâche de f
 ### Sources
 ```
 ./placerbouees
-    index.html
+    editer.html
     chargerbouees.html
-	placerbouees.html
-	README.md
+    placerbouees.html
+    README.md
     
 ./js
     ajax.js
     ajax2.js
 	ajax3.js
+    ajax4.js
     bouees.js
+    bouees2.js
     canavas.js
     config.js
     geo_utils.js
-    iconse.js
+    icons.js
     maps.js
     maps2.js
     myscript.js
+    myscript2.js
     sitnenavigation.js   
 
 ./css
   style.css
+  style1.css
+  style2.css
   materiel.css
   material-icons.css
 
@@ -216,7 +222,7 @@ Le script PHP  *./placerbouees/php/placer_bouees.php* réalise cette tâche de f
   
 ## Data
 ### Output : Placer des bouées "à la main"
-Les données produites par *./placerbouees/index.html* sont placées dans le dossier du serveur *./data/*
+Les données produites par *./placerbouees/editer.html* sont placées dans le dossier du serveur *./data/*
 
 Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
 et de leurs positions GPS, stockées dans des fichiers <*robonav_NonPlanEau_twd_yyyymmdd.json*>, par exemple
@@ -253,7 +259,7 @@ L'adaptation à une langue différente du français ne me paraît pas trop compl
 
 ## Installation
 - Recopier l'ensemble des sources dans un dossier ./placerbouees de votre serveur httpd
-- Modifier le contenu des fichiers ./js/config.js et ./php/include/config.php pour indiquer l'adresse de votre serveur.
+- Modifier le contenu des fichiers ./js/config.js pour indiquer l'adresse de votre serveur. Pour que ça fonctionne le dossier doit être à la racine du serveur dans le dossier hdocs.
    
 ## Outils et liens 
 
