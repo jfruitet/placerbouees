@@ -1,3 +1,5 @@
+/* CSS Document */
+
 .imgboueefixe  {
     float: none;
     display: none;
@@ -126,41 +128,10 @@ button {
   border: 1px solid black;
   margin: 2px;
   padding: 2px;
-  height: 750px;
-  width: 750px;
+  height: 720px;
   clear: right;
   float: left;
   overflow: auto;
-  visibility: visible;
-}
-
-#ajout{
-  background-color: #ffffff;
-  left: 0;
-  top: 0;  
-  color: black;
-  height: 720px;
-  width: 720px;
-  display: block;
-}
-
-#fileedit{
-  background-color: #ffffff;
-  left: 0;
-  top: 0;    
-  color: black;
-  height: 720px;
-  width: 720px;
-  display: none;
-}
-#moveedit{
-  background-color: #ffffff;
-  left: 0;
-  top: 0;    
-  color: black;
-  height: 720px;
-  width: 720px;
-  display: none;
 }
 
 .info {
@@ -185,7 +156,7 @@ button {
   #canvas2 {
     background-color: transparent;
     opacity:1;
-    right: 0px;
+    right: 0;
     top: 0px;
     z-index: 4;
     position: absolute;
@@ -209,42 +180,6 @@ button {
   position: absolute;
 }
 
- #canvas5 {
-  background-color: transparent;
-  opacity:1;
-  border: 0.5px solid grey;
-  left:0;
-  z-index: 2;
-  position: absolute;
-}
-  
-  #canvas6 {
-  background-color: transparent;
-    opacity:1;
-    right: 0px;
-    top: 0px;
-    z-index: 4;
-    position: absolute;
-}
-
-
-#canvas7 {
-  background-color: transparent;
-  opacity:1;
-  left:0;
-  z-index: 3;
-  position: absolute;
-}
-
-#canvas8 {
-  background-color:  transparent;
-  opacity:1;
-  right: 0;
-  top: 150px;
-  z-index: 1;
-  position: absolute;
-}
-
 
 .graphicLayout2 {
   background-color: #eeffde;
@@ -252,7 +187,19 @@ button {
   border: 1px solid black;
   margin: 2px;
   padding: 2px; 
-  height: 750px;
+  height: 720px;
+  overflow: auto;
+}
+
+.graphicLayout3 {
+  background-color: #ffeeff;
+  color: black;
+  border: 1px solid black;
+  margin: 2px;
+  padding: 2px;
+  height: 720px;
+  clear: right;
+  float: left;
   overflow: auto;
 }
 
@@ -312,5 +259,3 @@ https://codepen.io/haakseth/pen/KQbjdO
   background-size: 32px;
   background-color: rgba(255, 255, 255, 1);
 }
-
-
