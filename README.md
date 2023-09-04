@@ -24,19 +24,29 @@ Voir *./placerbouees/php/README.md*
 
 En sortie un fichier de nom *robonav_NomDuPlanDEau_twd_aaaammjj_***auto***.json*, compatible avec *./placerbouees/chargerbouees.html*, est placé dans le dossier *./placerbouees/data/* .
 
-## Page index.html : éditeur de placement
+## Page *editer.html* : éditeur de placement et repositionnement de bouées mobiles
 
 ### Ecran
 #### Partie supérieure
-Sélection d'un site de navigation et chargement des données afférentes.
+Bouton "**Sites**" : Sélection d'un site de navigation et chargement de la carte idoine.
 
-Les fichiers json des sites disponibles sont placés dans le dossier ./json/
+Bouton "**Ajouter**" : Ajouter des bouées au site de navigation sélectionné.
+
+Bouton "**Replacer**" : Reposionner un lot de bouées en indiquant un nouveau rectangle englobant.
+
+Les fichiers json des sites disponibles sont lus dans le dossier ./json/
 
 #### Partie droite 
 Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents et, éventuellement, des bouées ancrées (bouées fixes, à demeure).
 
 #### Partie gauche  
-Pointage à la souris des bouées du parcours d'une régate, en s'appuyant aussi bien sur les bouées ancrées (fixes) que sur des bouées mobiles (des balises autonomes ancrées virtuellement).
+
+Il y a deux façons de placer des bouées :
+    * Bouton "**Générer**" : Placement en bloc de 6 bouées constituant un parcours standart.
+Il faut pointer à l'écran une diagonale du rectangle englobant le parcours. Cette méthode est bien sûr la plus rapide.
+    * Bouton "**Placer**" : Placer une à une les bouées sur le plan d'eau en indiquant le mode de franchissement (bâbord / tribord) et le rôle sur le parcours (départ/Arrivée, dog leg, porte sous le vent)
+Il faut pointer à la souris la position de chaque bouée du parcours, en utilisant aussi bien les bouées ancrées (fixes) qu'en ajoutant des bouées mobiles (des balises autonomes ancrées virtuellement).   
+     
 
 ### Fonctionnalités
 Après positionnement à la souris d'un jeu de bouées organisées en *ligne de départ*, *ligne d'arrivée*, *porte* et *dog leg* sur la partie gauche de l'écran, les bouées sont affichées sur la carte et leurs coordonnées GPS (longitude, latitude) 
@@ -52,7 +62,8 @@ transmises au serveur pour être mises à disposition de l'application de pilota
   - Textbox *TWD* : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés puis cliquer sur le bouton "**Soumettre**") ;
   - *Zoom* : "+", "-", "1"  (remise à l'échelle 1) ;
   - Boutons 
-    - "**Bouées**" : Saisie des positions à la souris ;   
+    - "**Générer**" : Pointage d'un rectangle englobant pour le placement de 6 bouées ;     
+    - "**Placer**" : Pointage de chaque position l'une après l'autre à la souris ;   
     - "**Retirer**" : Supprime la dernière position saisie ;        
     - "**Vider**" : Supprime toutes les positions saisies ;    
     - "**Valider**" : Met fin à la saisie et affiche les bouées saisies sur la carte OpenStreetMap ;
