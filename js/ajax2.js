@@ -386,3 +386,46 @@ function majDataBouees(){
     getDataBoueeSite(twd,nomDuSite);
 }
 
+
+    
+// Affiche la liste des données validées
+// ----------------------- 
+function getValidatedData(){  
+    //console.debug("getValidatedData()");
+    var url= url_serveur+'get_validated.php';
+    ajax_GetValidatedData(url);     
+}
+
+
+// Affichage de la liste dans un tableau
+// ----------------------- 
+function ajax_GetValidatedData(url){ 
+    if ((url !== undefined) && (url.length>0)){        
+        // GET avec fetch()
+        fetch(url, myInitGet)
+        .then(response => response.json()) 
+        .then((data) => {
+                if (data.valide !== undefined){
+                    var str="<table><tr><th>Id</th><th>Fichier</th><th>Id</th><th>Fichier</th><th>Id</th><th>Fichier</th></tr>";
+                    
+                    for( var index=0; index<data.valide.length; index++){
+                        if ((index % 3) == 0){
+                            str+="<tr>";
+                        }
+                        str+="<td>"+data.valide[index].id+"</td><td><a href=\"data/"+data.valide[index].file+"\">"+data.valide[index].file+"</a></td>";
+                        if ((index % 3) == 2){
+                            str+="</tr>";
+                        }                        
+                    }             
+                    if ((index % 3) == 1){
+                        str+="<td>&nbsp;</td></tr>";
+                    }                        
+                    str+="</table>";
+                    document.getElementById("fvalide").innerHTML=str;   
+                }
+            }
+        )           
+        .catch(error => console.debug("Erreur : "+error));
+    }
+}
+

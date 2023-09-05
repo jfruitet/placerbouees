@@ -205,7 +205,7 @@ function getThatPlansEau(id_plan_eau){
     ajax_SetPlanEau(url, myget);     
 }
 
-
+// -----------------------
 function initPlanEau(response) {
     // console.debug("Traitement de la réponse\n"+ response);
     // Traitement de la réponse 
