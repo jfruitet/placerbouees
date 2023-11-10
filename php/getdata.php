@@ -12,10 +12,12 @@ $reponse=$reponse_not_ok;
 
 // Get the JSON contents
 if (isset($_SERVER['REQUEST_METHOD']) && (strtoupper($_SERVER['REQUEST_METHOD']) !== 'GET')) {
-  throw new Exception('Only GET requests are allowed');
+  throw new Exception('Only GET requests are allowed'); // PHP 7                                                             	                                                            
+  //exit('Only GET requests are allowed');// php 4 & 5                                           
 }
 if (isset($_SERVER['CONTENT_TYPE']) && (stripos($_SERVER['CONTENT_TYPE'], 'application/json') === false)) {
   throw new Exception('Content-Type must be application/json');
+  //exit('Content-Type must be application/json');
 }
 
 if (!empty($_GET['expression'])){

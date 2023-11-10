@@ -47,7 +47,8 @@ global $str2;
 					|| empty($prefixe)) {
 					foreach(  $t_ext as $ext){
 						if (strpos($f, $ext) !== false){
-                        	$g= mb_eregi_replace($ext,"",$f) ;
+                        	//$g= mb_eregi_replace($ext,"",$f) ;
+                            $g= preg_replace('/'.$ext.'/i',"",$f) ;
 							// DEBUG
 							// echo "<br>g:$g  g+:$g$ext  f:$f\n ";
         			  		if ((substr($g,0,1) != "_") // Les fichiers commençant par '_' ne sont pas affichés
