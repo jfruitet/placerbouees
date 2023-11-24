@@ -1,7 +1,11 @@
 <?php
+// algo.php, fichier inclus des fonction de calcul
+
+
 // Algorithme de placement
 
-// Appliquer une transformation pour ramener la figure face au vent 
+// initial.php : Initialise les variables globales
+//  Applique une transformation pour ramener la figure face au vent 
 // La figure est tournée dans une direction apparente du vent de 0°
 // Désormais il est facile de déterminer un alignement de bouées face au vent :
 // Bouées en travers du vent : y=constante
@@ -13,6 +17,18 @@
 
 // Déterminer un rectangle vertical (face au vent apparent venant du nord) 
 // inclus dans le plan d'eau au plus près de la polyligne d'évolution des concurrents
+
+/******************************************************************************
+ * Nouvel algorithme 
+ * V2. On tente d'améliorer l'algorithme en introduisant une mesure simple.
+ * 1) Calculer un premier rectangle 'A' et la distance 'a' de la ligne de départ au chemin déambulation des concurrents.
+ * 2) Calculer un second rectangle en démarrant depuis le milieu vertical du précédant
+ * 3) etc.
+ * 4) Classer les distances de minimum au maximum.
+ * 5) Sélectionner le rectangle le plus proche
+ * 
+ * ****************************************************************************/
+
 
 /*********************************************
  * 
@@ -33,7 +49,7 @@ $tab_distances=null;
     $yMaxPasse1=array();    // Les ordonnées des droites déterminant le rectangle de placement des bouées 
     $yMaxPasse2=array();
 
-
+//-------------------------------------
 function tab_echange(&$tab1, &$tab2){
 // echange les contenus d'un tableau de deux éléments
     $aux=$tab1[0];
@@ -44,6 +60,49 @@ function tab_echange(&$tab1, &$tab2){
     $tab2[1]=$aux;    
 }
 
+// Calcule la distance minimale entre les sommets de la ligne des concurrents 
+// et le centre de la ligne de départ du rectangle considéré
+// ------------------------------------
+function calculeDistancesDepartConcurrents($xouest, $xest, $ysud, $ynord, $debug){
+
+global $ligne_xsaisie; // Tableau des coordonnées écran de la ligne de déambulation des concurrents après rotation face au vent
+global $ligne_ysaisie;
+    $tab_distances=array();
+     // Milieu Départ
+    $xp = round(($xouest+$xest) / 2.0);
+    // Au premier tiers 
+    $yp = round((2*$ysud+$ynord) / 3.0);
+    
+    $k=0;
+    $index=0;
+    while ($index<count($ligne_ysaisie)){
+        $xc=$ligne_xsaisie[$index];
+        $yc=$ligne_ysaisie[$index];
+        $tab_distances[$k]= sqrt(($xp-$xc)*($xp-$xc)+($yp-$yc)*($yp-$yc));  
+        if ($debug&& false) {
+            echo "<br>Sommet ".$index.": [".$xc.",".$yc."] Distance ".$tab_distances[$k]."<br>\n";
+        }
+                                     
+        $k++;          
+        $index++;
+    }  
+    
+    // Retourner la valeur min
+    $distancemin=10000000;
+    if (count($tab_distances)>0){        
+        for ($k=0; $k<count($tab_distances); $k++){
+            if ($tab_distances[$k]<$distancemin){
+                $distancemin=$tab_distances[$k];
+            }
+        }
+    } 
+    if ($debug) {
+            echo "<br>Départ (X,Y) : [".$xp.",".$yp."] Distance : ".$distancemin."\n";
+    }
+
+    return $distancemin;     
+} 
+ 
  
 // Calcule la distance entre chaque sommet du polygone et la ligne des concurrents
 // ------------------------------------
@@ -147,11 +206,14 @@ function intersectionVerticale($x,$x1,$y1,$x2,$y2){
     }   
 }
 
-
+/***************************
+ * Recherche un rectangle vertical dont les dimensions sont suffisantes pour placer un parcours
+ ***************************/
+ 
 // On balaye le polygone avec des droite verticale pour trouver un rectangle de navigation 
 // suffisemment haut et large 
-// Donnees en output 
-// ($x1, $x2, $y1, $y2)
+// Données en input : increment de progression, positions x initiale et finale, sens de progression
+// Donnees en output : ($xouest, $xest, $ysud, $ynord)
 
 // ------------------------------------------
 function rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression){
@@ -190,12 +252,15 @@ if ($debug2){
     echo "<br><br><b>Première passe</b>\n";       
 }
 
+
 /**************************************
  *     Première passe
  **************************************/
     $numZoneExploree=0; // On a besoin de 2 zones contigües pour placer les bouées
       
     $x=$xInitial; // Démarrer la recherche à 0 mètres du point de départ de la recherche
+    
+    
 
     if ($debug2){    
         echo "<br>Rechercher Rectangle<br><b>Données en entrée</b> : Incrémentx:".$incrementX.", xInitial:".$xInitial.", xFinal:".$xFinal.", Sens progression:".$sensprogression."\n";
@@ -224,13 +289,13 @@ if ($debug2){
         if ($sensprogression < 0){
             $encore = ($x>=$xFinal);   
             if ($debug2){
-                echo "<br>SORTIE BOUCLE quand $x < $xFinal\n";                                         
+                echo "<br>SORTIE BOUCLE quand X:$x < XFinal:$xFinal\n";                                         
             } 
         }
         else{
             $encore = ($x<=$xFinal);   
             if ($debug2){
-                echo "<br>SORTIE BOUCLE quand $x > $xFinal\n";                                         
+                echo "<br>SORTIE BOUCLE quand X:$x > XFinal:$xFinal\n";                                         
             }         
         }    
         $nbtests++;
@@ -238,7 +303,7 @@ if ($debug2){
         $nbintersections=0;           
         $tab_Intersections=array(); // Les valeurs y d'intersection
         if ($debug2){    
-            echo "<br>Exploration x0:".$xInitial.", x traité:".$x."\n";
+            echo "<br>Exploration XInitial:".$xInitial.", x traité:".$x."\n";
         }
 
         for ($i=0; $i<count($poly_ysaisie); $i++){
@@ -255,7 +320,7 @@ if ($debug2){
             $yp2=$poly_ysaisie[$i2];
    
             if (($x>min($xp1, $xp2)) && ($x<max($xp1, $xp2))) { // Intersection possible 
-                if ($debug2){  
+                if ($debug2 && false){  
                     echo "<br>Intersection verticale avec le segment de Sommet ".$i.": [".$xp1.",".$yp1."] et de Sommet ".$i2.": [".$xp2.",".$yp2."]\n";            
                 }              
                 $tab_Intersections[$nbintersections]=intersectionVerticale($x,$xp1,$yp1,$xp2,$yp2); 
@@ -264,9 +329,10 @@ if ($debug2){
         }
 
         if ($debug2){    
-            echo "<br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
-            print_r($tab_Intersections);
-            echo "<br>\n";
+            echo "<br>".$nbintersections." intersections.\n";
+            //echo "<br>Table des intersections<br>\n";
+            //print_r($tab_Intersections);
+            //echo "<br>\n";
         }
     
         switch ($nbintersections) {
@@ -284,7 +350,7 @@ if ($debug2){
                     $xTrouve=$x;
                     $distanceH=abs($xInitial-$x);                
                 }
-                if ($debug2){    
+                if ($debug2 && false){    
                     echo "<br>2 intersections<br>Distance verticale : ".$distanceVerticale." Distance horizontale(X0,X) : ".$distanceH."\n";
                 }                
                 $numZoneExploree++;
@@ -296,7 +362,7 @@ if ($debug2){
             
             break; 
         case 3 : // // polygone concave + passage par un sommet ; il faut faire un pas vers l'Est (ou vers l'Ouest)
-            if ($debug2){    
+            if ($debug2 && false){    
                 echo "<br>3 intersections : on est sur un sommet. <br> On se décale d'un pas\n";
             }                        
             $x=$x+$incrementX; // On se décale d'un pas
@@ -304,7 +370,7 @@ if ($debug2){
         default : // polygone convexe avec au moins une concavité selon l'axe Nord / Sud
                 // On traite les deux premiers couples
                 // Ordonner les Y dans le sens croissant
-            if ($debug2){    
+            if ($debug2 && false){    
                 echo "<br>4 intersections ou plus : on ne conserve que le plus favorables des deux premiers couples\n";
             }                        
                 
@@ -336,7 +402,7 @@ if ($debug2){
                     if ($distanceVerticale2 >= $deltaYpixelsSite){
                         // On a une droite verticale candidate
                         // Passer à la recherche de la seconde droite
-                        if ($debug2){    
+                        if ($debug2 && false){    
                             echo "<br>2 intersections<br>Distance verticale : ".$distanceVerticale." Distance horizontale(X0,X) : ".$distanceH."\n";
                         }                
 
@@ -446,9 +512,10 @@ if ($debug2){
         }
 
         if ($debug2){    
-            echo "<br>".$nbintersections." intersections.<br>Table des intersections<br>\n";
-            print_r($tab_Intersections);
-            echo "<br>\n";
+            echo "<br>".$nbintersections." intersections.\n";
+            //echo "<br>Table des intersections<br>\n";
+            //print_r($tab_Intersections);
+            //echo "<br>\n";
         }
     
         switch ($nbintersections) {
@@ -464,7 +531,7 @@ if ($debug2){
                 $distanceHPasse1=abs($xPasse1-$x); 
                 if ($distanceVerticale >= $deltaYpixelsSite){
                     // On a une droite candidate
-                    if ($debug2){    
+                    if ($debug2 && false){    
                         echo "<br>2 intersections\n";              
                         echo "<br>Distance verticale: ".$distanceVerticale."\n";
                         echo "<br><i>Distance à la droite fournie par la passe N°1</i> : <b>".$distanceHPasse1."</b>\n";
@@ -479,7 +546,7 @@ if ($debug2){
                         $yMaxPasse2[1]=$tab_Intersections[1];                    
                     } 
                     else{
-                        if ($debug2){    
+                        if ($debug2 && false){    
                              echo "<br><i>Distance horizontale trop faible ! </i>\n";                    
                         }                    
                     }             
@@ -487,7 +554,7 @@ if ($debug2){
             
                 break; // Intérieur
             case 3 : // polygone concave, passage par un sommet concave; il faut faire un pas de plus
-                if ($debug2){    
+                if ($debug2 && false){    
                     echo "<br>3 intersections : on est sur un sommet. <br> On se décale d'un pas\n";
                 }                        
                 $x=$x+$incrementX; // On se décale d'un pas
@@ -495,7 +562,7 @@ if ($debug2){
         default : // polygone convexe avec au moins une concavité selon l'axe Nord / Sud
                 // On traite les deux premiers couples
                 // Ordonner les Y dans le sens croissant
-            if ($debug2){    
+            if ($debug2 && false){    
                 echo "<br>4 intersections ou plus : on ne conserve que le plus favorables des deux premiers couples\n";
             }                        
                                 
@@ -513,7 +580,7 @@ if ($debug2){
                 if (($distanceVerticale >= $distanceVerticale2) && ($distanceVerticale >= $deltaYpixelsSite)){
                     // On a un rectangle candidat
                     // Passer au placement des bouées
-                    if ($debug2){    
+                    if ($debug2 && false){    
                         echo "<br>Distance verticale : ".$distanceVerticale."<br>Distance horizontale avec l'abscisse de la passe 1 : ".$distanceHPasse1."\n";
                     }
 
@@ -529,7 +596,7 @@ if ($debug2){
                     if ($distanceVerticale2 >= $deltaYpixelsSite){
                         // On a un rectangle candidat
                         // Passer au placement des bouées
-                        if ($debug2){    
+                        if ($debug2 && false){    
                             echo "<br>Distance verticale : ".$distanceVerticale."<br>Distance horizontale avec l'abscisse de la passe 1 : ".$distanceHPasse1."\n";
                             echo "<br>Distance horizontale avec le début de la recherche de la seconde passe:".$distanceH."\n";
                         }
@@ -645,7 +712,29 @@ if ($debug2){
         $ysud=$minY;
         $ynord=$maxY;   
         
-    // Coordonnées du rectangle où sont placées les bouées
+        // Coordonnées géographiques du rectangle où sont placées les bouées
+        rectangleScreenToWorld($xouest,$xest,$ysud,$ynord);
+    
+if ($debug2){
+    echo "<br><br><b>Fin de recherche_rectangle</b> ::Données en sortie\n";
+    echo ("Ouest:".$xouest.", Est:".$xest.", Sud: ".$ysud.", Nord: ".$ynord."\n");
+    echo "<br>\n";
+}    
+
+    return true;
+}
+
+
+// Modifie $exitLonLat
+// ------------------------
+function rectangleScreenToWorld(){
+// Coordonnées du rectangle où sont placées les bouées
+global $exitLonLat; 
+global $xouest;
+global $xest;
+global $ysud;
+global $ynord;     
+global $twd_radian;
     $exitLonLat=array();
     $exitLonLat[0]=new stdClass();
     $exitLonLat[0]->lon=get_lon_Xecran(setSaisieToDisplayX($xouest,$ysud, $twd_radian));
@@ -659,17 +748,7 @@ if ($debug2){
     $exitLonLat[3]=new stdClass();
     $exitLonLat[3]->lon=get_lon_Xecran(setSaisieToDisplayX($xest,$ysud, $twd_radian));
     $exitLonLat[3]->lat=get_lat_Yecran(setSaisieToDisplayY($xest,$ysud, $twd_radian));
-    
-    
-if ($debug2){
-    echo "<br><br><b>Fin de recherche_rectangle</b> ::Données en sortie\n";
-    echo ("Ouest:".$xouest.", Est:".$xest.", Sud: ".$ysud.", Nord: ".$ynord."\n");
-    echo "<br>\n";
-}    
-
-    return true;
 }
-
 
 // Placement des bouées dans le rectangle ad hoc
 // ---------------------------------

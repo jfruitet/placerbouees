@@ -1,6 +1,10 @@
 <?php
-// Placement automatique de bouées de régate sur un site en fonction de la direction du vent
+// Placement automatique de bouées de régate sur un site en fonction de la direction du vent envoyée en paramètre
+// Très utile pour le débogage
+// http://localhost/placerbouees/php/placer_bouees.php?site=LePlessis&twd=45
+// http://localhost/placerbouees/php/placer_bouees.php?site=EtangduBoisJoalland&twd=90
 // Ce code est pratiquement complet... et assez peu efficient !
+
 
 include ("./include/config.php");
 include ("./include/saisie.php");
@@ -8,17 +12,16 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = false; // enregistrer les infos dans un fichier texte
-$debug1 = false; // suivre le  traitement initial
-$debug2 = false; // suivre la détection d'un rectangle
-$debug3 = false; // suivre le placement des bouéés 
+$debug = true; // enregistrer les infos dans un fichier texte
+$debug1 = true; // suivre le  traitement initial
+$debug2 = true; // suivre la détection d'un rectangle
+$debug3 = true; // suivre le placement des bouéés 
 
 $nomSite=''; // Pour les données sauvegardées
 $nomSite2=''; // Pour le nom de fichier des données saugegardees 
 $site='';   // pour le nom de fichier de données importées concernant les données du site
 $nbouees=6; // nombre max de bouées mobiles à placer.
-$ecartBoueesXmetres=10;
-$ecartBoueesYmetres=60;
+
 
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
@@ -65,15 +68,28 @@ if (isset($_GET) && !empty($_GET)){
         $nomSite2=str_replace("'",'',$nomSite2);
         $site=strtolower($nomSite2);
     }
+    
     if (!empty($_GET['nbouees'])){
         $nbouees=$_GET['nbouees'];
     }
+    
+    /*****************
+     * // Inutilisé
+    // Ecart entre bouées de départ en tenant compte de la bordure de sécurité
     if (!empty($_GET['ecartBoueesX'])){
         $ecartBoueesXmetres=$_GET['ecartBoueesX'];
     }
+    else {
+        $ecartBoueesXmetres=ECART_BOUEES_X_METRES_LONG;
+    }
+    // Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
     if (!empty($_GET['ecartBoueesY'])){
         $ecartBoueesYmetres=$_GET['ecartBoueesY'];
     }
+    else{
+        $ecartBoueesYmetres=ECART_BOUEES_Y_METRES_LONG;
+    }
+    ***************************/
 }
 
 
@@ -90,9 +106,7 @@ $twd_radian = get_radian_repere_direct($twd_degre);
 if ($debug || $debug1 || $debug2 || $debug3){
     $msg=sprintf("Site:%s TWD°:%d, TWD radian:%f<br>\n",$site,$twd_degre, $twd_radian);
     echo "<br />$msg\n";
-    if (false) {
-        file_put_contents("debug_test.txt", $msg);
-    }        
+    file_put_contents("debug_test.txt", $msg);      
 }
 
 // Charger les information de site
@@ -107,9 +121,8 @@ if (file_exists(DATAPATH_INPUT.$filename_input)){
     if ($data=file_get_contents(DATAPATH_INPUT.$filename_input)){
         $dataObject=json_decode($data,false);
         if ($debug){
-            file_put_contents("debug_test.txt", $data, FILE_APPEND);
-            file_put_contents("debug_test.txt", $dataObject, FILE_APPEND);
-        }
+            file_put_contents("debug_test.txt", $data, FILE_APPEND);   
+        }       
     }
 } 
 else {
@@ -125,9 +138,21 @@ if (empty($dataObject)){
     exit; 
 }
  
-$succes=traitement_initial($dataObject, $twd_radian);
-
-if ($succes){    
+// Chargement des données et transformations géométriques
+// Recherche un rectangle candidat au placement des bouées
+if (!empty($dataRect=traitement_initial($dataObject, $twd_radian))){
+    
+    $xouest=$dataRect[0];
+    $xest=$dataRect[1]; 
+    $ysud=$dataRect[2];
+    $ynord=$dataRect[3]; 
+    if ($debug){
+        echo "<br />###########################################################</br>\n";
+        echo "Rectangle Sélectionné<br />\n";
+        print_r($dataRect);
+        echo "<br />###########################################################<br />\n";
+    }    
+           
     placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre
 
 
@@ -157,7 +182,7 @@ if ($succes){
         $data.=']';
     }
     
-    // Rectangle de placement des bouéés    
+    // Rectangle de placement des bouées    
     // L'afficheur ./placerbouees/chargerbouees.html doit aussi être positionnée en mod debug dans le fichier de configuration ./js/config.js
     if ($debug3){
         if (!empty($exitLonLat)){

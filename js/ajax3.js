@@ -1,11 +1,15 @@
 // JavaScript Document
-// ajax.js
+// ajax3.js
 // la communication avec les serveurs
+// Inclus dans placerbouees.html
+// dapte certains appel de ajax;js et ajax2.js pour le placement automatique des bouées
 
 let myList = document.getElementById('mylist'); // La liste des sites à charger
 let tFichiers=[]; // tableau des fichiers proposés au chargement
 
-
+/*********************
+ * Initialisation des appels
+ * *******************/
 let myInitGet = {
     method: "GET",
     headers: {"Content-Type": "application/json;charset=UTF-8"},
@@ -291,12 +295,14 @@ function ajax_SetSite(url, mystr, nomDuSite){
         .catch(error => console.debug("Erreur : "+error));
     }
 }
+
+// Génération des placements pour un site donné
 //-----------------------
 function setSiteBoueesMobile(site){
     document.getElementById("myListData").innerHTML=""; 
     console.debug("Lancement du programme de génération des fichiers robonav_site_twd_date.json");
     if ((site!==undefined) && (site.length>0)){
-        console.debug("Génération pour le du plan d'eau\n"+ site);    
+        //console.debug("Génération pour le plan d'eau\n"+ site);    
         var url= url_serveur+'setsite.php';
         var mystr="site="+encodeURI(site);    
         ajax_SetSite(url, mystr, site);
@@ -350,7 +356,7 @@ function ajax_GetValidatedData(url){
 
 
 //-----------------
-// function proposeChoixData(){    // Tous les fichiers de data
+// Tous les fichiers de data
 function afficheDataDispo(){    
     if ((tFichiers !== undefined) && (tFichiers.length>0)){ 
         //console.debug("tFichiers 2 : "+ tFichiers);
@@ -387,7 +393,7 @@ function afficheDataDispo(){
                 }                        
                 if ((compteur1 % 3) == 1){
                     str1+="<td>&nbsp;</td></tr>";
-                }
+    ÿ    첁翴     }
                 str1+="</table>";                        
                 str2+="</table>";
                 document.getElementById("myListData").innerHTML=str1+"\n"+str2;           

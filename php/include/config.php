@@ -7,4 +7,14 @@ define("DATAPATH_OUTPUT", "../data/"); // Les données de placement des bouées so
 define("INCREMENT", 30000);  // environ 10 mètres ; à améliorer en s'adaptant au plan d'eau
 define("GRAND_INCREMENT", 60000); // environ 20 mètres
 
+
+// Ecart entre bouées de départ en tenant compte de la bordure de sécurité
+define ("ECARTBORDURE", 2); // Deux mètres pour éviter de taper la berge
+define ("ECART_BOUEES_X_METRES_LONG", 14);
+define ("ECART_BOUEES_X_METRES_COURT", 10);
+// Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+define ("ECART_BOUEES_Y_METRES_LONG", 60);
+define ("ECART_BOUEES_Y_METRES_COURT", 50);
+
+
 ?>

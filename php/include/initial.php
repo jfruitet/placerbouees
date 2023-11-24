@@ -1,6 +1,25 @@
 <?php
+// initial.php
+// Calcule une position de départ après avoir appliqué les rotations pour aligner la direction du vent avec l'axe des Y
+// Puis appelle les fonctions de algo.php
+
+// V2. On tente d'améliorer l'algorithme en introduisant une mesure simple.
+// 1) Calculer un premier rectangle 'A' et la distance 'a' de la ligne de départ au chemin déambulation des concurrents.
+// 2) Calculer un second rectangle en démarrant depuis le milieu vertical du précédant
+// 3) etc.
+// 4) Classer les distances de minimum au maximum.
+// 5) Sélectionner le rectangle le plus proche
 
     // Zone des Concurrents 
+ 
+$rectanglesCandidats = array(); // [[$xouest,$xest,$ysud,$ynord], [$xouest,$xest,$ysud,$ynord]]: diagonale retenue
+$distancesCandidats = array();
+ 
+/**************************************
+ * 
+ * Initialise les variables globales  
+ * 
+ *************************************/
  
 //-----------------------
 function traitement_initial($dataObject){    
@@ -12,12 +31,18 @@ global $lonmin; // en degré géographique
 global $latmin;
 global $lonmax; // en degré géographique EST ligne de changement d'horaire
 global $latmax;
-
 global $milieu_lon;
 global $milieu_lat;
 
+// Ecart entre bouées de départ en tenant compte de la bordure de sécurité
+global $ecartBoueesXmetres;
+// Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+global $ecartBoueesYmetres;
+
+
 global $poly_xecran; // Tableau des coordonnées écran de la zone de navigation
 global $poly_yecran;
+
 global $ligne_xecran; // Tableau des coordonnées écran de la ligne de déambulation des concurrents
 global $ligne_yecran;
 
@@ -27,11 +52,13 @@ global $balises_ysaisie;
 
 global $poly_xsaisie; // Tableau des coordonnées écran de la zone de navigation après rotation face au vent
 global $poly_ysaisie;
+
 global $ligne_xsaisie; // Tableau des coordonnées écran de la ligne de déambulation des concurrents après rotation face au vent
 global $ligne_ysaisie;
 
 global $zonenav_lon;   // Tableau des coordonnées géographiques (longitude) de la zone de navigation
 global $zonenav_lat;   // Tableau des coordonnées géographiques (latitude) de la zone de navigation
+
 global $zoneconc_lon;  // Tableau des coordonnées géographiques (longitude) de la zone des concurrents
 global $zoneconc_lat;  // Tableau des coordonnées géographiques (latitude) de la zone des concurrents
 
@@ -39,13 +66,17 @@ global $balises_name;
 global $balises_lon;
 global $balises_lat;   
 global $nbouees; // nombre max de bouées mobiles à placer.
-global $ecartBoueesXmetres;
-global $ecartBoueesYmetres;
 global $tab_distances;
 global $deltaXpixelsSite;
 global $deltaYpixelsSite;
 global $ecartbordure; // Deux mètres pour éviter de taper la berge
 global $deltaBordure;
+ 
+global $xouest;
+global $xest;
+global $ysud;
+global $ynord; 
+global $rectanglesCandidats;
  
     $zoneconc_lon=array();
     $zoneconc_lat=array();
@@ -57,6 +88,7 @@ global $deltaBordure;
     $balises_lon=array();
     $balises_lat=array();    
 
+    // Polyligne des concurrents
     foreach ($dataObject->geojsonZoneConcurrents->features[0]->geometry->coordinates as $key => list($lon,$lat)){
         $zoneconc_lon[$key]=$lon;
         $zoneconc_lat[$key]=$lat;
@@ -276,24 +308,25 @@ $ymaxPoly=-1000000; // en pixels
 $distance_H_MillePixels=distanceHorizontalePixels(0,0,1000);
 $distance_V_MillePixels=distanceVerticalePixels(0,0,1000); 
 
+
 // Grands plans d'eau
-$ecartBordure=2; // Deux mètres pour éviter de taper la berge
+$ecartBordure=ECARTBORDURE; // Deux mètres pour éviter de taper la berge
 $deltaBordure=howMuchXPixelsForMeters($ecartBordure);
 
-$ecartBoueesXmetres=14; // Distance entre bouées de la porte Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
-$ecartBoueesYmetres=64;  // Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+$ecartBoueesXmetres=ECART_BOUEES_X_METRES_LONG; // Distance entre bouées de la porte Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+$ecartBoueesYmetres=ECART_BOUEES_Y_METRES_LONG;  // Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
 
 $deltaXpixelsDixMetres=howMuchXPixelsForMeters($ecartBoueesXmetres+2*$ecartBordure);
 $deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres+2*$ecartBordure);
 
 // Petits plans d'eau
-if (abs($xminPoly-$xmaxPoly) < 10 * $deltaXpixelsDixMetres){
-    $ecartBoueesXmetres=10; // Ecart des portes : 6 mètres 
+if (abs($xminPoly-$xmaxPoly) < $ecartBoueesXmetres * $deltaXpixelsDixMetres){
+    $ecartBoueesXmetres=ECART_BOUEES_X_METRES_COURT; // Ecart des portes : 10 mètres 
     $deltaXpixelsDixMetres=howMuchXPixelsForMeters($ecartBoueesXmetres+2*$ecartBordure);
 }
 
 if (abs($yminPoly-$ymaxPoly) < 2 * $deltaYpixelsCinquanteMetres){
-    $ecartBoueesYmetres=50; // 46 mètres de dog leg à porte sous le vent
+    $ecartBoueesYmetres=ECART_BOUEES_Y_METRES_COURT; //soit 46 mètres de dog leg à porte sous le vent
     $deltaYpixelsCinquanteMetres=howMuchYPixelsForMeters($ecartBoueesYmetres+2*$ecartBordure);
 }
 
@@ -377,7 +410,6 @@ if ($debug1){
     $sensprogression=1;
     $xInitial=$xminPoly;
     $xFinal=$xmaxPoly;
-****************************************/
 
 /* *******************************************************************************
 *  Tentative pour améliorer le placement au plus près de la ligne des concurrents 
@@ -396,25 +428,82 @@ else{
 }
 
 
-$incrementX=$sensprogression*INCREMENT; // Environ 1m vers l'Est ou vers l'Ouest
+$incrementX=$sensprogression*INCREMENT; // Environ 10 m vers l'Est ou vers l'Ouest
     
-$encore=true;
-$succes=false;
-while ($encore && !$succes){
-    // nouvelle recherche
-    $succes= rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression); 
-    if (!$succes){
+    $encore=true;
+    $succes=false;
+    $indexRect=-1;
+    while ($encore){
+        // nouvelle recherche
+        // Modifie par effet de bord ($xest, $xouest, $ynord, $ysud)
+        $succes= rechercher_rectangle_utile($incrementX, $xInitial, $xFinal, $sensprogression); 
+        if ($succes){
+            // stocker 
+            //stocker_rectangle($xouest, $xest, $ysud, $ynord);
+            $indexRect++;
+            $rectanglesCandidats[$indexRect][0]=$xouest;
+            $rectanglesCandidats[$indexRect][1]=$xest;
+            $rectanglesCandidats[$indexRect][2]=$ysud;
+            $rectanglesCandidats[$indexRect][3]=$ynord;
+        }
         $x0+=$sensprogression * GRAND_INCREMENT;
         if ($sensprogression==1){
             $encore= ($x0 <= $xFinal);
+            $xInitial=$xest;
         }
         else{
-            $encore= ($x0 >= $xFinal);
-        }    
+            $encore= ($x0 >= $xFinal);   
+            $xInitial=$xouest;             
+        }
     }
-}
+    
+    // Choisir le rectangle le plus favorable
+    if ($debug1){
+        echo "<br />###########################################################</br>\n";
+        echo "RectanglesCandidats<br />\n";
+        print_r($rectanglesCandidats);
+        echo "<br />###########################################################<br />\n";
+    }    
+    return choix_rectangle($debug1);
+}  // Fin de traitement
 
-return $succes;
+
+//---------------------------
+function  choix_rectangle($debug){
+// sélectionne un rectangle parmi ceux trouvés
+    global $rectanglesCandidats; 
+    global $distancesCandidats;
+    $indexRect=-1;
+    if (count($rectanglesCandidats)>0) {
+        for($i=0; $i<count($rectanglesCandidats); $i++){
+            $xouest=$rectanglesCandidats[$i][0];
+            $xest=$rectanglesCandidats[$i][1]; 
+            $ysud=$rectanglesCandidats[$i][2];
+            $ynord=$rectanglesCandidats[$i][3];
+            $distancesCandidats[$i]=calculeDistancesDepartConcurrents($xouest, $xest, $ysud, $ynord, $debug);    
+        }
+        if (count($distancesCandidats)>0){
+            // Ordonner et retourner la valeur min
+            $distancemin=1000000;            
+            for ($i=0; $i<count($distancesCandidats); $i++){
+                if ($distancesCandidats[$i]<$distancemin){
+                    $distancemin=$distancesCandidats[$i];
+                    $indexRect=$i;
+                }         
+            }
+            if ($indexRect>=0){
+                // Choisir le rectangle le plus favorable
+                if ($debug){
+                    echo "<br />###########################################################</br>\n";
+                    echo "Rectangle Sélectionné<br />\n";
+                    print_r($rectanglesCandidats[$indexRect]);
+                    echo "<br />###########################################################<br />\n";
+                }               
+                return $rectanglesCandidats[$indexRect];
+            }
+        }
+    }
+    return null;    
 }
 
 ?>
