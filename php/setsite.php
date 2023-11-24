@@ -1,8 +1,7 @@
 <?php
-// Placement automatique de bouées de régate sur un site pour toutes les directions de la rose des vent
-// Ce code est assez peu efficient !
-
-
+// setsite.php : appel Ajax
+// Placement automatique de bouées de régate sur un site pour toutes les directions de la rose des vent par pas de 15 degrés
+// Le nom du site est reçu par GET
 include ("./include/config.php");
 include ("./include/saisie.php");
 include ("./include/geo_utils.php");
@@ -18,8 +17,7 @@ $nomSite=''; // Pour les données sauvegardées
 $nomSite2=''; // Pour le nom de fichier des données saugegardees 
 $site='';   // pour le nom de fichier de données importées concernant les données du site
 $nbouees=6; // nombre max de bouées mobiles à placer.
-$ecartBoueesXmetres=10;
-$ecartBoueesYmetres=60;
+
 
 $reponse_ok = '{"ok":1}';
 $reponse_not_ok = '{"ok":0}';
@@ -43,9 +41,6 @@ $nomSite='';
 $nomSite2='';
 $site='';
 $data=array();
-// Pour la rose des vents
-// $windsector=array("N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","N");
-// 
 $reponse=""; // response
 
 
@@ -72,7 +67,7 @@ if (!empty($_GET['site'])){
     $site=strtolower($nomSite2);
 }
 
-
+// Pour toute la rose des vents avec pas de 15°
 $twd_degre=0; 
 while ($twd_degre<360){
     
@@ -92,9 +87,23 @@ while ($twd_degre<360){
     * Chargement des données en input 
     * ****************************************/
     if (!empty($dataObject)){
-        $succes=traitement_initial($dataObject);
-        if ($succes){    
-            placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre            
+        //$succes=traitement_initial($dataObject);
+        //if ($succes){    
+        //    placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre
+        
+ 
+        // Chargement des données et transformations géométriques
+        // Recherche un rectangle candidat au placement des bouées
+        if (!empty($dataRect=traitement_initial($dataObject, $twd_radian))){
+    
+            $xouest=$dataRect[0];
+            $xest=$dataRect[1]; 
+            $ysud=$dataRect[2];
+            $ynord=$dataRect[3]; 
+           
+            placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre
+
+                    
 
             /******************************************
              * Sauvegarder les position
@@ -122,8 +131,8 @@ while ($twd_degre<360){
                 $data.=']';
             }
     
-            // Rectangle de placement des bouéés    
-            // L'afficheur ./placerbouees/chargerbouees.html doit aussi être positionnée en mod debug dans le fichier de configuration ./js/config.js
+            // Rectangle de placement des bouées    
+            // L'afficheur ./placerbouees/chargerbouees.html doit aussi être positionné en mode debug dans le fichier de configuration ./js/config.js
             if ($debug){
                 if (!empty($exitLonLat)){
                     $data.=',"rectangle":[';
@@ -144,9 +153,9 @@ while ($twd_degre<360){
                     $i=0;
                     while ($i<count($poly_xsaisie)-1){
                         $data.='{"lon":'.get_lon_Xecran($poly_xsaisie[$i]).',"lat":'.get_lat_Yecran($poly_ysaisie[$i]).'},';
-                        $i++;      
+                        $i++;                          
+                        $data.='{"lon":'.get_lon_Xecran($poly_xsaisie[$i]).',"lat":'.get_lat_Yecran($poly_ysaisie[$i]).'}';
                     }
-                    $data.='{"lon":'.get_lon_Xecran($poly_xsaisie[$i]).',"lat":'.get_lat_Yecran($poly_ysaisie[$i]).'}';
                     $data.=']';
                 }
             }
@@ -166,6 +175,7 @@ while ($twd_degre<360){
     }
     $twd_degre+=15;
 }
+
 if ( !empty($reponse)){
     $reponse=substr($reponse, 0, strlen($reponse)-1);     // Retirer la dernière virgule 
     $reponse='{"site":"'.$nomSite2.'","twd":['.$reponse.'],"ok":1}';
