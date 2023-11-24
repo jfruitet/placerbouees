@@ -8,7 +8,7 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = true;
+$debug = false;
 $debug1 = false;
 $debug2 = false;
 $debug3 = false;
