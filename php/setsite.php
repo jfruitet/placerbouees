@@ -8,7 +8,7 @@ include ("./include/geo_utils.php");
 include ("./include/initial.php");
 include ("./include/algo.php");
 
-$debug = false;
+$debug = true;
 $debug1 = false;
 $debug2 = false;
 $debug3 = false;
@@ -91,11 +91,10 @@ while ($twd_degre<360){
         //if ($succes){    
         //    placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre
         
- 
         // Chargement des données et transformations géométriques
+        traitement_initial($dataObject);
         // Recherche un rectangle candidat au placement des bouées
-        if (!empty($dataRect=traitement_initial($dataObject, $twd_radian))){
-    
+        if (!empty($dataRect=traitement_central($twd_degre, $twd_radian, $debug))){    
             $xouest=$dataRect[0];
             $xest=$dataRect[1]; 
             $ysud=$dataRect[2];

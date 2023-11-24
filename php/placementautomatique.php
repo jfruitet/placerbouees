@@ -7,7 +7,7 @@
 include ("./include/config.php");
 include ("./include/saisie.php");
 
-$debug=false;
+$debug=true;
 $nomSite='';
 $site='';
 $file = "plans_eau_robonav.xml"; 

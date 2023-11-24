@@ -12,9 +12,7 @@
 
     // Zone des Concurrents 
  
-$rectanglesCandidats = array(); // [[$xouest,$xest,$ysud,$ynord], [$xouest,$xest,$ysud,$ynord]]: diagonale retenue
-$distancesCandidats = array();
- 
+
 /**************************************
  * 
  * Initialise les variables globales  
@@ -25,19 +23,12 @@ $distancesCandidats = array();
 function traitement_initial($dataObject){    
 
 global $debug1;
-global $twd_degre;
-global $twd_radian;
 global $lonmin; // en degré géographique
 global $latmin;
 global $lonmax; // en degré géographique EST ligne de changement d'horaire
 global $latmax;
 global $milieu_lon;
 global $milieu_lat;
-
-// Ecart entre bouées de départ en tenant compte de la bordure de sécurité
-global $ecartBoueesXmetres;
-// Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
-global $ecartBoueesYmetres;
 
 
 global $poly_xecran; // Tableau des coordonnées écran de la zone de navigation
@@ -47,14 +38,6 @@ global $ligne_xecran; // Tableau des coordonnées écran de la ligne de déambul
 global $ligne_yecran;
 
 global $balisesEcran;      // Tableau de Objets balises fixes dans le repère écran
-global $balises_xsaisie;           // coordonnées des balises fixes dans le repère de saisie
-global $balises_ysaisie;
-
-global $poly_xsaisie; // Tableau des coordonnées écran de la zone de navigation après rotation face au vent
-global $poly_ysaisie;
-
-global $ligne_xsaisie; // Tableau des coordonnées écran de la ligne de déambulation des concurrents après rotation face au vent
-global $ligne_ysaisie;
 
 global $zonenav_lon;   // Tableau des coordonnées géographiques (longitude) de la zone de navigation
 global $zonenav_lat;   // Tableau des coordonnées géographiques (latitude) de la zone de navigation
@@ -64,19 +47,7 @@ global $zoneconc_lat;  // Tableau des coordonnées géographiques (latitude) de 
 
 global $balises_name;
 global $balises_lon;
-global $balises_lat;   
-global $nbouees; // nombre max de bouées mobiles à placer.
-global $tab_distances;
-global $deltaXpixelsSite;
-global $deltaYpixelsSite;
-global $ecartbordure; // Deux mètres pour éviter de taper la berge
-global $deltaBordure;
- 
-global $xouest;
-global $xest;
-global $ysud;
-global $ynord; 
-global $rectanglesCandidats;
+global $balises_lat;    
  
     $zoneconc_lon=array();
     $zoneconc_lat=array();
@@ -117,7 +88,7 @@ global $rectanglesCandidats;
         $index++;
     }
     
-if ($debug1){    
+    if ($debug1){    
     echo "<br>Zone Concurrents<br>\n";    
     echo "<br>ZC_lon<br>\n";
     print_r($zoneconc_lon);
@@ -138,16 +109,16 @@ if ($debug1){
     echo "<br>balises_lat<br>\n";
     print_r($balises_lat);   
     echo "<br>\n";
-}
+    }
 
 
 /*******************************************************************
  * Transformation en coordonnées "écran" pour accélérer l'algorithme 
  * *****************************************************************/
-init_ecran_ZN();
-init_ecran_bouees_fixes();
+    init_ecran_ZN();
+    init_ecran_bouees_fixes();
 
-if ($debug1){
+    if ($debug1){
     echo "<br>Polygone de navigation en coordonées écran<br>\n<table border=\"1\">\n<tr><th>X</th>\n";
     foreach ($poly_xecran as $x){
         echo "<td>".$x."</td>";
@@ -167,8 +138,52 @@ if ($debug1){
         echo "<td>".$y."</td>";
     }
     echo "</tr>\n</table>\n";
-
+    }
 }
+ 
+//-----------------------
+function traitement_central($twd_degre, $twd_radian, $debug){    
+
+global $debug1;
+
+// Ecart entre bouées de départ en tenant compte de la bordure de sécurité
+global $ecartBoueesXmetres;
+// Distance du dog leg à la porte pour les grands plans d'eau en tenant compte de la bordure de sécurité
+global $ecartBoueesYmetres;
+
+
+global $poly_xecran; // Tableau des coordonnées écran de la zone de navigation
+global $poly_yecran;
+
+global $ligne_xecran; // Tableau des coordonnées écran de la ligne de déambulation des concurrents
+global $ligne_yecran;
+
+global $balisesEcran;      // Tableau de Objets balises fixes dans le repère écran
+global $balises_xsaisie;           // coordonnées des balises fixes dans le repère de saisie
+global $balises_ysaisie;
+
+global $poly_xsaisie; // Tableau des coordonnées écran de la zone de navigation après rotation face au vent
+global $poly_ysaisie;
+
+global $ligne_xsaisie; // Tableau des coordonnées écran de la ligne de déambulation des concurrents après rotation face au vent
+global $ligne_ysaisie;
+
+global $nbouees; // nombre max de bouées mobiles à placer.
+global $tab_distances;
+global $deltaXpixelsSite;
+global $deltaYpixelsSite;
+global $ecartbordure; // Deux mètres pour éviter de taper la berge
+global $deltaBordure;
+ 
+global $xouest;
+global $xest;
+global $ysud;
+global $ynord; 
+global $rectanglesCandidats;
+global $distancesCandidats;
+$rectanglesCandidats = array(); // [[$xouest,$xest,$ysud,$ynord], [$xouest,$xest,$ysud,$ynord]]: diagonale retenue
+$distancesCandidats = array();
+ 
 
 /******************************************
  * Transformations 
@@ -187,6 +202,10 @@ if ($debug1){
 
 rotation_ecran_ZN($twd_radian);
 rotation_ecran_Balises($twd_radian);
+if ($debug){
+    echo "<br><br>/**********************************<br><br><b>TWD DEGRE</b> ".$twd_degre." <b>TWD RADIAN</b> ".$twd_radian."<br>******************************/\n";
+    echo "<br>\n";
+}
 
 if ($debug1){
     echo "<br><b>Coordonnées des Balises dans l'écran de saisie</b>\n";
@@ -219,6 +238,7 @@ if ($debug1){
 }
  
 // Vérification
+/************
 if ($debug1){
     echo "<br>VERIFICATION DES TRANSFORMATIONS<br>\n";
     echo "<br>Milieu (lon,lat) : ".$milieu_lon.", ".$milieu_lat."\n";
@@ -280,7 +300,7 @@ if ($debug1){
     }
     echo "</tr>\n</table><br>\n";
 }    
-
+***********************************/
 if ($debug1){
     echo "<br>Données chargées avec succès. Transformations vérifiées. Début de l'algorithme calcul<br>\n";
 }
@@ -458,13 +478,13 @@ $incrementX=$sensprogression*INCREMENT; // Environ 10 m vers l'Est ou vers l'Oue
     }
     
     // Choisir le rectangle le plus favorable
-    if ($debug1){
+    if ($debug){
         echo "<br />###########################################################</br>\n";
         echo "RectanglesCandidats<br />\n";
         print_r($rectanglesCandidats);
         echo "<br />###########################################################<br />\n";
     }    
-    return choix_rectangle($debug1);
+    return choix_rectangle($debug);   
 }  // Fin de traitement
 
 

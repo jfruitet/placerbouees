@@ -139,19 +139,20 @@ if (empty($dataObject)){
 }
  
 // Chargement des données et transformations géométriques
+traitement_initial($dataObject);
 // Recherche un rectangle candidat au placement des bouées
-if (!empty($dataRect=traitement_initial($dataObject, $twd_radian))){
+if (!empty($dataRect=traitement_central($twd_degre, $twd_radian, $debug))){
+    if ($debug){
+        echo "<br />###########################################################</br>\n";
+        echo "FIN DU TRAITEMENT pour <br />\n";
+        echo "<b>TWD DEGRE</b> ".$twd_degre." <b>TWD RADIAN</b> ".$twd_radian."<br>\n";        
+        echo "<br />###########################################################<br />\n";
+    }    
     
     $xouest=$dataRect[0];
     $xest=$dataRect[1]; 
     $ysud=$dataRect[2];
-    $ynord=$dataRect[3]; 
-    if ($debug){
-        echo "<br />###########################################################</br>\n";
-        echo "Rectangle Sélectionné<br />\n";
-        print_r($dataRect);
-        echo "<br />###########################################################<br />\n";
-    }    
+    $ynord=$dataRect[3];  
            
     placer_bouees($xouest, $xest, $ysud, $ynord); // Attention à l'ordre
 
