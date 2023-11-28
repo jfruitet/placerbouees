@@ -140,10 +140,19 @@ dans le fichier <*nomdusite.json*> sous éditeur texte type **PSPad**.
 
 ### Chaîne de production des données 
 
-C'est l'application *.placerbouees/index.html* qui produit les fichiers d'entrée de l'application *./placerbouees/chargerbouees.html*
+Page d'accueil *.placerbouees/index.html* 
 
-Le script PHP  *./placerbouees/php/placer_bouees.php* réalise cette tâche de façon automatique (mais non optimale !:>))
+La page *.placerbouees/placerbouees.html* qui produit de façon automatique les fichiers d'entrée de l'application *./placerbouees/chargerbouees.html*
 
+La page *.placerbouees/chargerbouees.html* qui produit de façon automatique les fichiers d'entrée de l'application *./placerbouees/chargerbouees.html*
+
+La page *.placerbouees/editer.html* permet de créer des parcours à la souris ou de déplacer des parcours existants (qu'ils aient été générés de façon automatique ou à la main).
+
+Le script PHP  *./placerbouees/php/placer_bouees.php* permet de tester l'algorithme de placement automatique pour un site et une direction du vent.
+
+### Documentation
+
+La documentation en ligne est située dans le dossier ./documentation
 
 ### Sources
 ```
