@@ -284,13 +284,13 @@ function ajax_SetSite(url, mystr, nomDuSite){
     if ((url !== undefined) && (url.length>0) && (mystr !== undefined) && (mystr.length>0)){        
         // GET avec fetch()
         fetch(url+"?"+mystr, myInitGet)
-        .then(response => response.json()) 
+        .then(response => response.json()
+        ) 
         .then((data) => {
-            //console.debug(data);
-            if (data.ok==1){
+            if ((data !== undefined) && (data.ok==1)){
                 console.debug("Traitement "+data.site+" OK");  
                 getDataSite(nomDuSite);              
-            }   
+            }  
         })                          
         .catch(error => console.debug("Erreur : "+error));
     }
@@ -300,9 +300,9 @@ function ajax_SetSite(url, mystr, nomDuSite){
 //-----------------------
 function setSiteBoueesMobile(site){
     document.getElementById("myListData").innerHTML=""; 
-    console.debug("Lancement du programme de génération des fichiers robonav_site_twd_date.json");
+    console.debug("Lancement du programme de génération des fichiers 'robonav_site_twd_date.json'");
     if ((site!==undefined) && (site.length>0)){
-        //console.debug("Génération pour le plan d'eau\n"+ site);    
+        console.debug("Génération pour le plan d'eau\n"+ site);    
         var url= url_serveur+'setsite.php';
         var mystr="site="+encodeURI(site);    
         ajax_SetSite(url, mystr, site);
@@ -393,7 +393,7 @@ function afficheDataDispo(){
                 }                        
                 if ((compteur1 % 3) == 1){
                     str1+="<td>&nbsp;</td></tr>";
-    ÿ    첁翴     }
+                }
                 str1+="</table>";                        
                 str2+="</table>";
                 document.getElementById("myListData").innerHTML=str1+"\n"+str2;           

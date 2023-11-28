@@ -430,7 +430,7 @@ if ($debug2){
     }
     else{
         // Echec
-        echo '{"OK":0}';
+        // echo '{"OK":0}';
         // exit;
         return false;
     }
@@ -645,7 +645,7 @@ if ($debug2){
     }
     else{
         // Echec
-        echo '{"OK":0}';
+        // echo '{"OK":0}';
         return false;
     }
 

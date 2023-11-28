@@ -1,6 +1,7 @@
 <?php
 // setsite.php : appel Ajax
 // Placement automatique de bouées de régate sur un site pour toutes les directions de la rose des vent par pas de 15 degrés
+// // http://localhost/placerbouees/php/setsite.php?site=LePlessis
 // Le nom du site est reçu par GET
 include ("./include/config.php");
 include ("./include/saisie.php");
@@ -172,6 +173,7 @@ while ($twd_degre<360){
             $reponse.=$twd_degre.',';
         }
     }
+    
     $twd_degre+=15;
 }
 
