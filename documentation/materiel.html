@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="RoBoNav`s Home">
+  <meta name="author" content="Jean Fruitet">
+  <!-- base href="http://localhost/robonav/" target="_blank" -->
+  <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+  <title>RoBoNav`s Hardware</title>
+  <!-- Feuilles de style -->
+<link rel="stylesheet" href="../css/style.css"> 
+</head>
+<body>
+<h2>RoBoNav`s Hardware</h2>
+<p><a href="mailto:robonav@free.fr?subject=RoBoNav">robonav@free.fr</a></p>
+<img src="./images/parcours_regate-vrc_imagette.jpg" alt="logo" style="max-width:100%;height:auto;">
+<table>
+<tr><th>Documentation</th><td><a href="./"><b>Le projet RoBoNav</b></a></td><td colspan="2">Présentation et sources</td></tr>
+<tr><td width="20%"><a href="./tutoriel.html">Tutoriel</a></td><td>Prise en main</td><td><a href="./outils.html">Outils</a><td>Présentation des outils</td></tr>
+<tr><td width="20%"><a href="materiel.html"><b>Matériel</b></a></td><td>Liste des matériels et fabrication</td><td width="20%"><a href="./algorithmes.html">Algorithmes</a></td><td>Placement automatique</td></tr>
+</table>
+<p><a href="../index.html">Retour</a></p>
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) JF</p>
+
+<h3>Présentation</h3>
+<p>Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 
+entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
+<br />
+Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation 
+de bouées asservies chacune à une position GPS.
+<br />
+Les pages Web  <i>editer.html</i>, <i>chargerbouees.html</i> et <i>placerbouees.html</i>  sont des composantes de ce projet.
+</p> 
+
+<h3>Architecture</h3>
+<img src="./images/architecture-RoBoNav.png" alt="logo" style="max-width:100%;height:auto;">
+<p>La réalisation de bouées de régates de voiliers radiocommandés n'est pas nouvelle.
+Différentes réalisations sont accessibles en ligne du moins pour ce qui est de la description.
+<br />Notre projet vise à :
+<ul>
+<li>Construire des bouées à moindre coût</li>
+<li>Ne pas utiliser de carte "contrôleur de vol" existante parce cela semble plus intéressant de concevoir l'électronqiue de contrôle de A à Z avec des composants peu coûteux.
+</li><li>Programmer une application sur smartphone pour le pilotage des bouées et l'affectation des positions à tenir.</li>
+</ul>
+
+<h3>Réalisation</h3>
+Il a été convenu de réaliser :
+<ul><li>Une carte électronique basée sur le chip ESP32 pour la connexion WiFi et le pilotage de chaque bouée
+<br />
+<img src="./images/carte_contrôleur_v2.png" alt="logo" style="max-width:100%;height:auto;">
+</li>
+<li>Une carte d'alimentation électrique avec des connecteurs différents pour supporter différents modèles de batteries
+<br />
+<img src="./images/alimentation.jpg" alt="logo" style="max-width:100%;height:auto;">
+</li>
+<li>Un interrupteur d'alimentation électrique par contact magnétique</li>
+<li>Un bouée de test en EPP avec une tourelle rotative et des aériens pour l'antenne WiFi et le GPS</li> 
+</ul>
+
+<h3>Liste des composants</h3>
+<p>Cette liste seroa fournie quand le projet aura été complètement validé.</p>
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) <a href="mailto:robonav@.free.fr?subject=RoBoNav">JF</a></p>
+</body>
+</head>

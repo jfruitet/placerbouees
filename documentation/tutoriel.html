@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="RoBoNav`s Home">
+  <meta name="author" content="Jean Fruitet">
+  <!-- base href="http://localhost/robonav/" target="_blank" -->
+  <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+  <title>RoBoNav`s Tutoriel</title>
+  <!-- Feuilles de style -->
+<link rel="stylesheet" href="../css/style.css"> 
+</head>
+<body>
+<h1>RoBoNav's Tutoriel</h1>
+<p><a href="mailto:robonav@free.fr?subject=RoBoNav">robonav@free.fr</a></p>
+<img src="./images/parcours_regate-vrc_imagette.jpg" alt="logo" style="max-width:100%;height:auto;">
+<table>
+<tr><th>Documentation</th><td><a href="./">Le projet RoBoNav</a></td><td colspan="2">Présentation et sources</td></tr>
+<tr><td width="20%"><a href="./tutoriel.html"><b>Tutoriel</b></a></td><td>Prise en main</td><td><a href="./outils.html">Outils</a><td>Présentation des outils</td></tr>
+<tr><td width="20%"><a href="materiel.html">Matériel</a></td><td>Liste des matériels et fabrication</td><td width="20%"><a href="./algorithmes.html">Algorithmes</a></td><td>Placement automatique</td></tr>
+</table>
+<p><a href="../index.html">Retour</a></p>
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) <a href="mailto@robonav.free.fr?subject=RoBoNav">JF</a></p>
+
+<h2>Présentation</h2>
+<p>Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 
+entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
+<br />
+Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation 
+de bouées asservies chacune à une position GPS.
+<br />
+Les pages Web  <i>editer.html</i>, <i>chargerbouees.html</i> et <i>placerbouees.html</i>  sont des composantes de ce projet.
+</p> 
+
+<img src="./images/architecture-RoBoNav.png" alt="logo" style="max-width:100%;height:auto;">
+<p>La conception de bouées autonomes pour les régates de voiliers n'est pas nouvelle.
+Différentes réalisations sont accessibles en ligne du moins pour ce qui est de la description.
+<br />Notre projet vise à :
+<ul>
+<li>Construire des bouées destinées aux régates de voiliers radiocommandés, à moindre coût ;</li>
+<li>Ne pas utiliser de carte "contrôleur de vol" existante parce cela semble plus intéressant de concevoir l'électronique de contrôle et les logiciels de A à Z, avec des composants peu coûteux ;
+</li>
+<li>Programmer des applications sur smartphone pour d'une part piloter les bouées mobiles et leur affecter des positions à tenir (applet <b>RoBoNav</b> sous Android),
+d'autre part définir des parcours en fonction du vent en sélectionnant parmi les bouées fixes ou mobiles d'un site de régate (applet <b>CartoLePlessis</b> sous Android) ;</li>
+<li>Programmer une collection d'applications Web de création de parcours et de positionnement des bouées mobiles en fonction du site et du vent (Pages Web du site <b>robonav</b>.</li>  
+</ul>
+
+<h2>Mise en oeuvre</h2>
+<p>Il est nécessaire de disposer de données de position GPS pour l'ensemble des sites de navigation.
+<br />C'est le propos de ce tutoriel de vous aider à remplir cette tâche.</p>
+
+<h3>Données d'entrée (Input)</h3>
+
+<h4>Liste des sites de navigation</h2>
+<p>Un site de navigation est caractérisé par :
+<ol>
+<li>Un nom de site</li><li>Un club gestionnaire</li><li>Une zone de navigation et une zone de déambulation des concurrents</li> 
+<li>Une liste éventuellement vide de bouées fixes et de points d'accès (pontons de mise à l'eau)</li>
+</ol>
+<p>La liste  des sites renseignés de votre bassin de navigation est conservée dans le fichier  <a target="_blank" href="./json/plans_eau_robonav.xml"><b>.../json/plans_eau_robonav.xml</b></a>
+<br />Modifiez ou complétez cette liste sous éditeur de texte type PSPad ou Notepad++ en respectant sa structure XML. </p>
+
+<h4>Données GPS</h4> 
+<p>Pour chaque site recensé dans le fichier  <i>plans_eau_robonav.xml</i> vous devez créer un fichier  &lt;<b>nomdusite.json</b>&gt;
+sur le modèle du fichier <a target="_blank" href="./json/leplessis.json"><i>leplessis.json</i></a>.
+</p><p>
+La façon la plus efficace de procéder est de :
+<ol><li>Faire une copie sous un nouveau nom (<i>nomdusite.json</i>) du fichier <i>leplessis.json</i> ;</li>
+<li>Saisir à la souris la zone de navigation (polygone), le chemin des concurrents (Linestring continue) 
+et les éventuelles positions des pontons et bouées fixes avec l'éditeur en ligne de cartes OpenStreetMap <a target="_blank" href="https://geojson.io/"><b>geojson.io</b></a> ;</li> 
+<li>Modifier le fichier &lt;<i>nomdusite.json</i>&gt; sous éditeur texte type <i>PSPad</i>, en remplaçant les différents contenus des tags <i>{"Property":{...}}</i> et <i>{"Geometry":{...}}</i> par les éléments saisis avec <i>geojson.io</i> ; </li>
+<li>Vérifier la syntaxe JSON du fichier obtenu avec l'éditeur en ligne <a target="_blank" href="https://jsoneditoronline.org/"><b>https://jsoneditoronline.org/</b></a>.</li>
+</ol>
+
+<h3>Données en sortie</h3>
+<p>Le  programme vous permet de générer, pour chaque site et chaque direction du vent de la rose des vents (de 0° à 360° par pas de 15°),
+les points GPS attribués à chaque bouée mobile d'un parcours de régate.
+<br />Ces fichiers <i>robonav_&lt;NomDuPlanDEau&gt;_&lt;twd&gt;_&lt;aaaammjj&gt;.json</i> sont placés dans le dossier <i>.../data/</i>.
+</p>
+
+<h4>Output : générer des fichiers de positionnement des bouées mobiles</h4>
+<p>Les données produites sont placées dans le dossier du serveur <i>.../data/</i>
+</p>
+<p>Elles consistent, pour chaque site et chaque orentation du vent, en une liste de bouées avec leurs positions GPS, 
+le mode de franchissement (bâbord, tribord) et la position relative (départ, dog leg, porte, arrivée) dans un parcours de régate standart.
+<br />par exemple
+&lt; <a target="_blank" href="./data/robonav_LePlessis_180_a-ne-pas-supprimer.json"><i>robonav_LePlessis_180_20230903.json</i></a>&gt;, pour l'étang du Plessis et un vent de direction 45°.
+</p>
+
+<h3>Mise en oeuvre</h3>
+Il y a deux façons de générer ces fichiers :
+<ol>
+<li>"A la main", avec la page <i>.../editer.html</i>
+<br />Les fichiers ont un nom de la forme  <i>robonav_NomDuPlanDEau_twd_aaaammjj.json</i>.
+</li>
+<li>"Automatique" avec la page <i>.../placerbouees.html</i>, qui génère automatiquement, pour le site sélectionné, les fichiers de positionnement pour l'ensemble 
+de la rose des vents (pas de 15°).<br />Les fichiers ont un nom de la forme  <i>robonav_NomDuPlanDEau_twd_aaaammjj<b>_auto</b>.json</i>.
+</li>
+</ol> 
+<p>
+Les données produites sont placées dans le dossier du serveur <i>.../data/</i>.
+</p>
+
+<h3>Vérification : affichage sur une carte OpenStreetmap</h3>
+<p>Les positions produites par le placement automatiques ne sont pas optimales quand l'axe du vent n'est pas à peu près parallèle au chemin de déambulation des concurrents.
+<br /> C'est pourquoi il est recommandé de vérifier le positionnement des bouées des fichiers <i>robonav_NomDuPlanDEau_twd_aaaammjj<b>_auto</b>.json</i>.</p>
+<p>La page <i>.../charger.html</i> affiche les positions lues dans le dossier du serveur <i>.../data/</i> sans possibilité de déplacement ou de modification.</p>
+<p>La page <i>.../editer.html</i> permet, en plus d'ajouter ou de retirer des bouées à un parcours, de déplacer en bloc 
+les positions lues dans un fichier du dossier du serveur <i>.../data/</i>.
+<ul><li>Commencer par sélectionner le site à consulter : bouton "<b>Sites</b>" </li>
+<li>Cliquer sur le bouton "<b>Déplacer</b>".
+<li>Sélectionnez une direction du vent (de 0° à 360° par pas de 15°) ;</li>
+<li>Sélectionnez un fichier ;</li>
+<li>Placez le rectangle destination et suvegardez ;</li>
+</ul>
+
+  
+   
+<h2>Outils et liens</h2> 
+<ul>
+<li>
+<a target="_blank" href="https://www.openstreetmap.org/">OpenStreetMap</a> : alternative libre et ouverte à GoogleMaps
+</li>
+<li>
+<a target="_blank" href="https://geojson.io/">GeoJSON</a> : éditeur en ligne de fichier geojson
+</li><li>
+<a target="_blank" href="https://jsoneditoronline.org/">JSON Editor OnLine</a> : comme son nom l'indique. 
+</li><li>
+<a target="_blank" href="http://www.pspad.com/fr/">PSPad</a> : éditeur de fichiers sources
+</li>
+</ul>
+<h2>Droits d'utilisation et de modification (License)</h2>
+<p>Tout ce projet est en Open source.
+<ul>
+<li>Pour le code source : <a target="_blank" href="https://github.com/pandao/editor.md/blob/master/LICENSE">MIT, Free software</a>
+</li><li>
+Pour les documents :  <a target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</i></a>
+</li>
+</ul>
+
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) <a href="mailto:robonav@.free.fr?subject=RoBoNav">JF</a></p>
+</body>
+</head>

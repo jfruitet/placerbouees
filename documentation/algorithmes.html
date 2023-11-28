@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="RoBoNav`s Home">
+  <meta name="author" content="Jean Fruitet">
+  <!-- base href="http://localhost/robonav/" target="_blank" -->
+  <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+  <title>RoBoNav`s Documentation</title>
+  <!-- Feuilles de style -->
+<link rel="stylesheet" href="../css/style.css"> 
+</head>
+<body>
+<h2>RoBoNav's Documentation</h2>
+<p><a href="mailto:robonav@free.fr?subject=RoBoNav">robonav@free.fr</a></p>
+<img src="./images/parcours_regate-vrc_imagette.jpg" alt="logo" style="max-width:100%;height:auto;">
+<table>
+<tr><th>Documentation</th><td><a href="./"><b>Le projet RoBoNav</b></a></td><td colspan="2">Présentation et sources</td></tr>
+<tr><td width="20%"><a href="./tutoriel.html">Tutoriel</a></td><td>Prise en main</td><td><a href="./outils.html">Outils</a><td>Présentation des outils</td></tr>
+<tr><td width="20%"><a href="materiel.html">Matériel</a></td><td>Liste des matériels et fabrication</td><td width="20%"><a href="./algorithmes.html"><b>Algorithmes</b></a></td><td>Placement automatique</td></tr>
+</table>
+<p><a href="../index.html">Retour</a></p>
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) JF</p>
+
+<h3>Algorithme de positionnement automatique de bouées mobiles pour des régates de voiliers radio commandés</h3>
+<p>Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 
+entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
+<br />
+Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation 
+de bouées asservies chacune à une position GPS.
+<br />
+La page web <i>placerbouees.html</i> implante un algorithme de positionnement élémentaire.
+</p> 
+
+<h4>Principe</h4>
+<img src="./images/algo_placement_01.png" alt="algo" style="max-width:100%;height:auto;">
+<p>Déterminer un rectangle englobant orienté dans l'axe du vent, au plus près de la ligne de déplacement des concurrents ;
+puis y placer 6 bouées selon un parcours standard constitué de :</p>
+<ol>
+<li>Deux bouées au vent (dog leg bâbord)</li>
+<li>Une porte sous le vent</li>
+<li>Un ligne de départ située à 1/3 de la distance entre la porte sous le vent et le dog leg au vent.
+</ol>
+
+<h4>Données en entrée</h4>
+<ul>
+<li>Configuration du plan d'eau ciblé : coordonnées géographiques, zone de navigation, circuit de déplacement des concurrents, liste de bouées fixes.</li>
+<li>Direction <i>TWD</i> d'où vient le vent, en degré, selon la <i>rose des vents</i>.
+<br />Les directions sont explorées de 0° à 360° avec un pas de 15°;
+<br />["N: 0°", "15°", "NNE: 30°", "NE: 45°", "ENE: 60°", "E: 90°", " 105°", "ESE: 120°", "SE: 135°", "SSE : 150°", " 165°", "S: 180°", " 195°", " 210°", "SW: 225°", "235: WSW","W: 270°"," 285°","WNW: 300°","WNW : 315°", "NW: 330°", "NNW: 345°"];
+</li>
+</ul>
+
+<h4>Etapes de l'algorithme</h4>
+<ol>
+<li>Calculer l'orientation du vent en radian ;</li>
+<li>Déterminer la boîte englobante de la zone de navigation (polygone à N sommets) en coordonnées géographiques (longitude, Latitude);</li>
+<li>Faire un changement de repère pour se ramener à des coordonnées cartésiennes d'un repère direct ;</li>
+<li>Faire une transformation géométrique (rotation) afin de ramener "la direction du vent" selon l'axe des Y, pour faciliter les calculs d'intersection ;
+<li>Déterminer le sommet le plus proche de la ligne de déambulation des concurrents selon l'axe perpendiculaire au vent ;</li>
+<li>En fonction de la situation du plan d'eau par rapport à la ligne de déambulation des concurrents :
+<ul>
+<li>Calculer un seuil minimal (<i>seuilH</i>) d'espacement des portes et un seuil minimal (<i>seuilV</i>) d'espacement entre le dog leg 
+au vent et la porte sous le vent, en fonction de la place disponible sur le plan d'eau ;
+<br />Un espacement de 7 à 15 mètres est acceptable pour l'écart entre les bouée de départ :
+<br />Un espacement de 50 à 100 mètres est acceptable entre la porte au vent et la porte sous le vent ;
+</li>
+<li>Tant que le plan d'eau n'est pas entièrement balayé
+<ul>
+    <li>Balayer le plan d'eau par des droites d'abscisse <i>x=constante</i> de xmin à xmax ou de xmax à xmin selon un pas de <i>PasXHorizontal</i> (1 mètre)
+    <ul><li>Déterminer, pour chaque valeur de x, les points d'intersection (minY1 et maxY1) avec le polygone de navigation ;
+    </li><li>Si la distance verticale distance(minY1,maxY1) est supérieure ou égale au seuil vertical <i>seuilV</i> : 
+    <ul>
+        <li>Fixer la position X1=x et initialiser la recherche d'une seconde droite vertical X2=X1+PasXHorizontal</li>
+        <li>Tant que la <i>distance(X1,X2)&lt;seuilH</i> et que <i>distance(minY2,maxY2)&lt;seuilV</i> reprendre le balayage 
+        pour trouver une deuxième droite "verticale" d'intersection (minY2,maxY2) avec le polygone de navigation ;    
+        </li>
+        <li>Quand ces conditions sont remplies vérifier que l'espacement vertical est suffisant,
+        à savoir <i>distance(max(minY1,minY2), min(maxY1,maxY2)) &gt;= seuilV</i> ;
+</ul>
+<li>Si c'est le cas la bande rectangulaire de diagonale Sommet1(X1, max(minY1,minY2)) , Sommet2(X2, min(maxY1,maxY2) 
+peut contenir un très grand nombre de rectangles de hauteur <i>seuilV</i>.
+<ul><li>Pour en limiter le nombre on s'en tient à un dizaine au plus par bande verticale ; 
+<br />On calcule un pas vertical PasDeYVertical = <i>max(2, round((distance(max(minY1,minY2), min(maxY1,maxY2)) - seuilV) / 10))</i></li>
+<li>Pour chaque rectangle de la bande verticale distants de <i>PasDeYVertical</i> on stocke 
+ les coordonnées (<i>xOuest, xEst, ySud, yNord</i>) pour un traitement ultérieur.
+</li>
+</ul>
+</ul>
+        <li>Décaler X1 de la distance (X1,X1+PasXHorizontal) et reprendre les calculs.</li> 
+
+    </ul>
+    </li>
+</li> 
+</ul>
+<li>Trier les rectangles candidats par rapport à leur distance à la zone de déambulation des concurrents (ZC).
+</li>
+<li>Si un rectangle est   trouvé y placer les bouées.</li>
+</ol>
+</li>
+</ol>
+<h4>Données en sortie</h4>
+<ul>
+<li>Un fichier <i>.../data/<b>robonav_&lt;NomDuPlanDEau&gt;_&lt;TWD&gt;_aaaammjj.json</b></i> 
+contenant la liste des bouées et leur positions GPS
+</li>
+</ul>
+
+<h3>Implantation</h3
+<p>En pratique le placement n'est pas optimal pour les directions du vent perpendiculaires à la zone d'évolution des concurrents, 
+car la distance aux bouées de départ et aux bouées au vent peut être rédhibitoire.
+<br />C'est pourquoi on propose de retoucher le parcours automatique avec l'outil d'édition <i>.../editer.html</i>
+
+<h3>Droits d'utilisation et de modification (License)</h3>
+<p>Tout ce projet est en Open source.
+<ul>
+<li>Pour le code source : <a target="_blank" href="https://github.com/pandao/editor.md/blob/master/LICENSE">MIT, Free software</a>
+</li><li>
+Pour les documents :  <a target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</i></a>
+</li>
+</ul>
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) <a href="mailto:robonav@.free.fr?subject=RoBoNav">JF</a></p>
+</body>
+</head>

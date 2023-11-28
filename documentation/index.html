@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <meta charset="UTF-8">  
+  <meta name="keywords" content="HTML, CSS, JavaScript">
+  <meta name="description" content="RoBoNav`s Home">
+  <meta name="author" content="Jean Fruitet">
+  <!-- base href="http://localhost/robonav/" target="_blank" -->
+  <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+  <title>RoBoNav`s Documentation</title>
+  <!-- Feuilles de style -->
+<link rel="stylesheet" href="../css/style.css"> 
+</head>
+<body>
+<h2>RoBoNav's Documentation</h2>
+<p><a href="mailto:robonav@free.fr?subject=RoBoNav">robonav@free.fr</a></p>
+<img src="./images/parcours_regate-vrc_imagette.jpg" alt="logo" style="max-width:100%;height:auto;">
+<table>
+<tr><th>Documentation</th><td><a href="./"><b>Le projet RoBoNav</b></a></td><td colspan="2">Présentation et sources</td></tr>
+<tr><td width="20%"><a href="./tutoriel.html">Tutoriel</a></td><td>Prise en main</td><td><a href="./outils.html">Outils</a><td>Présentation des outils</td></tr>
+<tr><td width="20%"><a href="materiel.html">Matériel</a></td><td>Liste des matériels et fabrication</td><td width="20%"><a href="./algorithmes.html">Algorithmes</a></td><td>Placement automatique</td></tr>
+</table>
+<p><a href="../index.html">Retour</a></p>
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) <a href="mailto@robonav.free.fr?subject=RoBoNav">JF</a></p>
+
+<h3>Présentation</h3>
+<p>Le positionnement et l'ancrage virtuel par GPS de bouées de régates de voiliers radiocommandés est un projet initié en février 2023 
+entre l'ARBL (Association Radiomodéliste des Bords de Loire) et l'ICAM de Nantes.
+<br />
+Il consiste à proposer une ensemble logiciel et matériel permettant de positionner par radiocommande puis de maintenir en place une constellation 
+de bouées asservies chacune à une position GPS.
+<br />
+Les pages Web  <i>editer.html</i>, <i>chargerbouees.html</i> et <i>placerbouees.html</i>  sont des composantes de ce projet.
+</p> 
+
+<h3> Développement</h3>
+<p>Effectué par JF en javascript et PHP. 
+<br />Sous license libre <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>
+<br />Contact : <a mailto:jean.fruitet@free.fr?subject="RoBoNav">jean.fruitet@free.fr</a></p>
+<ul>
+<li>La page web <a target="_blank" href=../editer.html"><i>editer.html</i></a> permet d'affecter / déplacer les positions GPS de bouées mobiles et autonomes sur une carte OpenStreetMap, en fonction de la direction du vent.
+</li><li>
+La page web  <a target="_blank" href=../chargerbouees.html"><i>chargerbouees.html</i></a> affiche ces bouées autonomes sur une carte OpenStreetMap.
+</li><li>
+La page web <a target="_blank" href=../placerbouees.html"><i>placerbouees.html</i></a> génère automatique les placements pour toutes les valeurs de la rose des vents.
+</li>
+</ul>
+
+<p>Les fichiers de positionnement <i>robonav_NomDuPlanDEau_twd_aaaammjj.json</i>, sont placés dans le dossier <i>./data/</i> .
+
+Les sources et la documentation détaillées sont disponibles sur le site du <a target="_blank" href="https://github.com/jfruitet/placerbouees">GitHub RoBoNav</a>
+
+<h3>Page <i>editer.html</i> : éditeur de placement de bouées mobiles autonomes</h3>
+
+<h4> Ecran, partie supérieure</h4>
+<p>Sélection d'un site de navigation et chargement des données afférentes.
+<br />
+Le descriptif des sites de navigation disponibles sont placés dans le dossier <i>./json/</i>
+</p>
+<h4>Partie droite</h4> 
+<p>Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, de la zone de déambulation des concurrents et, éventuellement, des bouées ancrées (bouées fixes, à demeure).
+</p>
+<h4>Partie gauche</h4> 
+<ul>
+<li>Ajout à la souris de bouées de parcours de régate, en s'appuyant aussi bien sur les bouées ancrées (fixes) que sur des bouées mobiles (des balises autonomes ancrées virtuellement).
+</li><li>Déplacement à la souris d'un lot de bouées déjé enregistrées dans un fichier de positionnement.
+</li>
+</ul>
+<h4>Mise en oeuvre</h4>
+<p>Après positionnement à la souris d'un jeu de bouées organisées en <i>ligne de départ</i>, <i>ligne d'arrivée</i>, <i>porte</i> et <i>dog leg</i> 
+sur la partie gauche de l'écran, les bouées sont affichées sur la carte et leurs coordonnées GPS (longitude, latitude).
+<br /> Elles sont alors sauvegardées sur le serveur du site <b>RoBoNav</b> pour être mises à disposition de l'application de pilotage pour smartphone <i>RoBoNav</i>.
+
+<h4>Interface</h4>
+<ul>Informations
+    <ul>
+    <li>TWD°:&lt;<i>valeur</i>&gt;, TWD radian:&lt;<i>valeur</i>&gt;, Zoom:&lt;<i>valeur</i>&gt;
+    </li><li>X: Y : <i>position</i>  du pointeur souris en coocrdonnées écran
+    </li><li>Lon: Lat : <i>position géographique</i> du pointeur souris
+    </li><li>Distance : <i>distance</i> entre deux points en mètres            
+    </li>
+    </ul>
+</ul>    
+<ul>Saisie 
+    <ul>
+    <li>Textbox <i>TWD</i> : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés puis cliquer sur le bouton "<i>Soumettre</i>") ;
+    </li><li><i>Zoom</i> : "+", "-", "1"  (remise à l'échelle 1) ;
+    </li>
+    <li>Boutons
+        <ul>
+        <li>"<i>Bouées</i>" : Saisie des positions à la souris ;   
+        </li><li>"<i>Retirer</i>" : Supprime la dernière position saisie ;        
+        </li><li>"<i>Vider</i>" : Supprime toutes les positions saisies ;    
+        </li><li>"<i>Valider</i>" : Met fin à la saisie et affiche les bouées saisies sur la carte OpenStreetMap ;
+        </li><li>"<i>Transférer</i>" : Sauvegarde des positions saisies dans un fichier &lt;<i>./data/robonav_NomPlanEau_TWD_AAAAMMDD.json</i>&gt;
+        </li><li>Radio boutons         
+        <br>- Radio boutons : <i>Bâbord</i>, <i>Tribord</i> : indication du franchissement
+        <br>- Radio boutons : <i>Départ</i>, <i>Arrivée</i>, <i>Porte</i>, <i>Dog leg</i> : Rôles dans le parcours de régate 
+        </li>
+        </ul>
+    </li> 
+    </ul>       
+</ul>
+<ol> Légende
+  <li> Tracé d'une flèche indiquant la <i>direction vers laquelle soufle le vent</i>, <i>TWD</i> (true wind direction), en  ° ;
+  </li><li><i>"Bouées fixes"</i> telles que lues dans le fichier <i>geojson</i> attaché au plan d'eau considéré ;
+  </li><li><i>"Boouées mobiles"</i> :
+    <ul><li> Bouées de départ en jaune
+    </li><li> Bouée d'arrivée en bleu
+    </li><li> Bouée de dog leg en noir
+    </li><li> Bouée d'une porte en violet
+    </li>
+    </ul>
+  </li>
+</ol>      
+<p>Les bouées placées sont surmontées d'un drapeau de couleur verte (bouée à laisser à tribord) ou rouge (bouée à laisser à bâbord).
+</p>
+<h5> Connexion avec un serveur externe</h5>
+<p>Le bouton "<i>Transmettre</i>" envoie à un serveur externe les coordonnées géographiques (Longitude, Latitude) des bouées et balises retenues pour constituer le parcours ; 
+ces coordonnées sont disponibles pour la page Web <i>chargerbouees.html</i> et pour l'applet <i>RoBoNav</i> de pilotage des balises autonomes.
+
+<h3>Page <i>chargerbouees.html</i> : afficher le placement des bouées</h3>
+<h4>Ecran, partie supérieure</h4>
+ <ul>
+ <li>Sélection d'un site de navigation ;
+ </li><li>Saisie de la direction du vent. 
+ </li>
+ </ul>
+<p>Les plans d'eau disponibles sont enregistrés dans le fichier XML <b>plans_eau_robonav.xml</b> qui est placé dans le dossier <i>.../json/</i>.
+<br />
+Les fichiers de position des balises mobiles par site et par direction du vent sont placés dans le dossier <i>.../data/</i>
+
+<h3>Ecran, Partie inférieure</h3> 
+<ul>
+<li>A gauche
+    <ul> 
+    <li><i>TWD</i> : Saisie de la direction d'où soufle le vent (entrer la valeur TWD en degrés) ; cliquer sur le bouton "<i>Soumettre</i>" ;
+    </li><li>Liste des fichiers de position disponibles pour ce site et ce choix de direction du vent
+    </li><li>Autres fichiers de position pour ce site
+    </li>
+    </ul>
+<li>A droite
+    <ul>
+    <li>Affichage sur une carte OpenStreetmap du plan d'eau sélectionné, du périmètre de navigation, 
+de la zone de déambulation des concurrents, des balises ancrées (bouées fixes, à demeure), éventuellement des bouées fixes mobilisées 
+pour le parcours, et enfin des bouées mobiles placées à leur position GPS.
+    </li>
+    </ul>
+</li>
+</ul>    
+
+<h3>Connexion avec le serveur de données</h3>
+<p>Un serveur externe stocke et retourne tous les fichiers utiles à l'application :</p>
+<ul>
+<li>Fichier fichier XML <i>plans_eau_robonav.xml</i> des sites enregistrés ;
+</li><li>Fichiers <i>.../json/nomdusite.json</i> des données de chaque plan d'eau ;
+</li><li>Fichiers <i>.../data/robonav_*.json</i> stockant les coordonnées géographiques (Longitude, Latitude) des bouées et balises constituant un parcours de régate pour une direction de vent donnée ; 
+    <br />
+    Ces données sont celles que l'applet <i>RoBoNav</i> de pilotage des balises autonomes envoie à la constellation de bouées à positionner sur un plan d'eau.
+</li>
+</ul>
+
+<h3>Fonctionnement du serveur</h3>
+<p>Il y a quelques conditions au fonctionnement du serveur :</p>
+<ol><li>La connexion Web doit être activée (ou les <i>Données mobiles</i> activées)
+</li><li>Le serveur doit être activé.
+</li><li>Dans la version actuelle l'URL du serveur est codée en dur dans le code source des scripts <i>./js/config.js</i> et <i>./php/include/config.php</i>.
+</li>
+</ol>
+
+<h2>Ajout de sites de navigation</h2>
+<p>Pour ajouter de nouveaux sites de navigation, modifier sous éditeur de texte type PSPad ou Notepad++ le fichier <i>.../data/plans_eau_robonav.xml</i>.
+<br />
+Puis ajouter dans le dossier <i>.../json/</i> un fichier &lt;<i>nomdusite.json</i>&gt; par exemple sur le modèle du fichier &lt;<i>leplessis.json</i>&gt;.
+</p><p>
+Le plus efficace est de saisir à la souris la zone de navigation (polygone), 
+le chemin des concurrents (Linestring continue) et les éventuelles positions des pontons et bouées fixes, 
+avec l'éditeur en ligne <i>geojson.io</i> ; 
+<br />
+Replacer ensuite les contenus des tags <i>{"type":"Featurecollection"}</i> de ces scripts <i>geojson</i>  dans le fichier &lt;<i>nomdusite.json</i>&gt; sous éditeur texte type <i>PSPad</i>.
+<br />
+On pourra vérifier la syntaxe .json du fichier obtenu avec l'éditeur json en ligne <a target="_blank" href="https://jsoneditoronline.org/">https://jsoneditoronline.org/</a> .
+</p>
+
+<h3>Data</h3>
+<h4>Output : générer des fichiers de positionnement</h4>
+<p>Les données produites par <i>.../editer.html</i> sont placées dans le dossier du serveur <i>.../data/</i>
+</p>
+<p>Elles consistent, pour chaque site et chaque orentation du vent en une liste des bouées 
+et de leurs positions GPS, stockées dans des fichiers &lt;<i>robonav_NonPlanEau_twd_yyyymmdd.json</i>&gt;, par exemple
+&lt;<i>robonav_LePlessis_45_20230803.json</i>&gt;, pour l'étang du Plessis et un vent de direction 45°.
+</p>
+<p>La page <i>.../placerbouees.html</i> génère automatique les fichiers de positionnement pour l'ensemble 
+de la rose des vents (pas de 22.5°) du site sélectionné. 
+<br />
+Les données produites sont placées dans le dossier du serveur <i>.../data/</i> et les fichiers ont le nom de la forme  <i>robonav_NomDuPlanDEau_twd_aaaammjj_auto.json</i>.
+</p>
+
+<h4>Input : Afficher les bouées in situ</h4>
+<p>La page <i>.../charger.html</i> affiche les positions lues dans le dossier du serveur <i>.../data/</i> 
+</p>  
+
+<h2>Ce qui reste à faire</h2>
+<h3>Sur le plan logiciel</h3>
+<ol>
+<li>Interfacer l'application <i>PlacerBouees</i> avec le programme <i>RoBoNav</i> de positionnement et de pilotage de bouées de régate avec ancrage virtuel par GPS ; 
+<br />Cela consistera à importer dans l'applet <i>RoBoNav</i> pour smartphones les fichiers <i>robonav_NomDuPlanDEau_twd_aaaammjj.json</i>.
+<br />L'applet <i>RoBoNav</i> de pilotage se chargeant ensuite d'affecter leurs positions GPS au bouées mobiles;
+</li>
+<li>Finaliser l'applet <i>RoBoNav</i> ; c'est l'équipe de l'ICAM de Nantes qui est en charge de cette partie du projet.
+</ol>
+<h3><h2>Sur le plan matériel</h2>
+<ol> Au 1er septembre 2023
+<li>Achever la fabrication de la carte électronique embarquée</li>
+<li>Achever l'intégration dans les bouées de test</i>
+<li>Tester le positionnement automatique des bouées</li>
+</ol>
+
+<h2>Installation</h2>
+<p>Les sources sont ouvertes et disponibles sous licence  <a target="_blank" href="https://github.com/pandao/editor.md/blob/master/LICENSE">MIT Free Software</a>
+sur le site GiHub RoBoNav <a href="https://github.com/jfruitet/placerbouees">https://github.com/jfruitet/placerbouees</a>.</p>
+<ol>   
+<li>Recopier l'ensemble des sources dans un dossier <i>...</i> de votre serveur httpd.
+</li>
+<li>Modifier le contenu des fichiers <i>./js/config.js</i> et <i>./php/include/config.php</i> pour indiquer l'adresse de votre serveur.
+</li><li>Tester le bon fonctionnement de l'ensemble</li>
+</ol>
+   
+<h2>Outils et liens</h2> 
+<ul>
+<li>
+<a target="_blank" href="https://www.openstreetmap.org/">OpenStreetMap</a> : alternative libre et ouverte à GoogleMaps
+</li><li>
+<a target="_blank" href="http://ai2.appinventor.mit.edu/">MIT App Inventor</a> : langage de programmation par blocs pour smartphones Android
+</li><li>
+<a target="_blank" href="https://geojson.io/">GeoJSON</a> : éditeur en ligne de fichier geojson
+</li><li>
+<a target="_blank" href="https://jsoneditoronline.org/">JSON Editor OnLine</a> : comme son nom l'indique. 
+</li><li>
+<a target="_blank" href="https://leafletjs.com/">Leaflet</a> : bibliothèque Javascript pour les cartes OpenStreetMap
+</li><li>
+<a target="_blank" href="https://www.apachefriends.org/fr/">Xampp</a> : serveur httpd pour Windows
+</li><li>
+<a target="_blank" href="http://www.pspad.com/fr/">PSPad</a> : éditeur de fichiers sources
+</li><li>
+<a target="_blank" href="https://dngrep.github.io/">dnGrep</a> : recherche de chaînes de caractères multi dossier
+</li><li>
+<a target="_blank" href="https://www.figma.com/">Figma</a> : éditeur de pages web et création d'objets vectoriels au format svg
+</li>
+</ul>
+<h2>Droits d'utilisation et de modification (License)</h2>
+<p>Tout ce projet est en Open source.
+<ul>
+<li>Pour le code source : <a target="_blank" href="https://github.com/pandao/editor.md/blob/master/LICENSE">MIT, Free software</a>
+</li><li>
+Pour les documents :  <a target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</i></a>
+</li>
+</ul>
+
+<p>(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>) <a href="mailto:robonav@.free.fr?subject=RoBoNav">JF</a></p>
+</body>
+</head>
