@@ -7,7 +7,7 @@ Par JF en PHP. (cc) jean.fruitet@free.fr
 ## Présentation
 
 Les scripts PHP suivants sont appelés par des appels Ajax les pages charger.html et placerbouees.html de la racine du site.
-On peut aussi les appeler directement avec les apramètres ad hoc pour des motifs de débogage.
+On peut aussi les appeler directement avec les paramètres ad hoc pour des motifs de débogage.
   
 Le script *./placerbouees/php/setsite.php* génère automatiquement pour un site passé en paramètre les fichiers de placement des bouées mobile avec un incrément de 15° de la rose des vents de 0° à 360°.
 En entrée ce script prend le nom du site de navigation.
@@ -43,6 +43,7 @@ Un fichier *./placerbouees/data/robonav_NomDuSite_TWD_aaaammdd_auto.json* qui pe
 
 ## Algorithme
 L'agorithme est décrit dans le GoogleDoc du projet.
+
 https://docs.google.com/document/d/18wlelZs5Ibvc7WwD4XAqUXw9yKVFULB9p6GBVvMNWLg/edit?usp=sharing
 
 Il consiste, après une rotation ramenant le site de navigation "face au nord" pour faciliter les calculs,
@@ -57,16 +58,15 @@ Les nMax bouées à placer sont alors positionnées par couple en s'appuyant sur
 
 Les coordonnées (longitude, latitudes) des bouées placées sont ensuite enregistrées dans le fichier de sortie.
 
-Dans la version actuelle le placement proposé n'est absolument pas optimal. On en jugera en utilisant la page web *.placerbouees/chargerbouees.html* 
+Dans la version actuelle le placement proposé n'est absolument pas optimal. On en jugera en utilisant la page web *.placerbouees/chargerbouees.html*
+
+Le programme recherche le placement "au plus proche" de la polyligne de circulation des concurrents, mais cette information n'est pas suffisante pour un placement optimal.
+Il faudrait pouvoir jouter des informations de contexte, par exemple des zones privilégiées quand le plan d'eau est manifestement trop grand ou l'orientation du vent incompatible avec la circulation des concurrents.
 
 Pour rendre l'algorithme un peu plus efficient il faudrait ajouter des informations de contexte, par exemple la zone de navigation préférentielle 
 si le plan d'eau est vaste, ou des zones d'exclusion. 
 
 On pourrait aussi indiquer au programme que la distance maximale de la rive à la bouée la plus éloignée ne doit pas excéder un certain seuil...
-
-Le programme recherche le placement "au plus proche" de la polyligne de circulation des concurrents, mais cette information n'est pas suffisant pour un placement optimal.
-
-Il faudrait pouvoir jouter des informations de contexte, par exemple des zones privilégiées quand le plan d'eau est manifestement trop grand ou l'orientation du vent incompatible avec la circulation des concurrents.
      
 ### Serveur
 Un serveur httpd exécute ce code PHP.
@@ -151,8 +151,8 @@ Il y a quelques conditions au fonctionnement du serveur :
 #### Output : Placement des bouées
 
 Il y a deux façons de placer des bouées de parcours :
-    1. A la main avec l'éditeur
-    2. Avec des script php *./placerbouees/php/setsite.php* et *./placerbouees/php/placer_bouees.php*  implantant l'algorithme proposé dans la documentation
+ 1. A la main avec l'éditeur
+ 2. Avec des script php *./placerbouees/php/setsite.php* et *./placerbouees/php/placer_bouees.php*  implantant l'algorithme proposé dans la documentation
     
 Les données produites sont stockées dans le dossier *.placerbouees/data/* du serveur.
 
@@ -168,8 +168,8 @@ Les positionnements effectués à la souris ou corrigés ont le nom <*robonav_No
 
 ### Ce qui reste à faire
 
-	.1 Proposer plusieurs "solutions" de placement automatique pour une direction de vent données ;
-	.2 Proposer des parcours autres que DogLeg au vent + porte sous le vent (parcours type IOM avec 6 bouées) ;
+ 1. Proposer plusieurs "solutions" de placement automatique pour une direction de vent données ;
+ 2. Proposer des parcours autres que DogLeg au vent + porte sous le vent (parcours type IOM avec 6 bouées) ;
 
    
 ## Droits d'utilisation et de modification (License)
